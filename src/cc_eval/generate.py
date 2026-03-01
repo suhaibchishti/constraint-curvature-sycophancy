@@ -15,11 +15,25 @@ def set_seed(seed: int):
         pass
 
 def generate_outputs(tokenizer, model, prompts: list[dict[str, Any]], *,
-                     max_new_tokens: int, temperature: float, top_p: float, seed: int):
+                     max_new_tokens: int, temperature: float, top_p: float, seed: int, system_prompt: str = None):
     set_seed(seed)
     outputs = []
     for p in tqdm(prompts, desc="Generating"):
         text = p["prompt"]
+        
+        # Apply system prompt if provided (for chat models)
+        if system_prompt:
+            # Format as chat messages if tokenizer supports it
+            if hasattr(tokenizer, 'apply_chat_template'):
+                messages = [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": text}
+                ]
+                text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            else:
+                # Fallback: prepend system prompt
+                text = f"{system_prompt}\n\nUser: {text}\nAssistant:"
+        
         inputs = tokenizer(text, return_tensors="pt", padding=True)
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
         with __import__("torch").no_grad():
