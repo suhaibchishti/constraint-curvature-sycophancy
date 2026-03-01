@@ -67,32 +67,6 @@ Resources:
                   - !GetAtt S3Bucket.Arn
                   - !Sub '${S3Bucket.Arn}/*'
 
-  NotebookLifecycleConfig:
-    Type: AWS::SageMaker::NotebookInstanceLifecycleConfig
-    Properties:
-      NotebookInstanceLifecycleConfigName: cc-eval-lifecycle
-      OnStart:
-        - Content:
-            Fn::Base64: |
-              #!/bin/bash
-              set -e
-              
-              sudo -u ec2-user -i <<'EOF'
-              cd /home/ec2-user/SageMaker
-              
-              if [ ! -d "constraint-curvature-sycophancy" ]; then
-                git clone https://github.com/suhaibchishti/constraint-curvature-sycophancy.git
-              else
-                cd constraint-curvature-sycophancy
-                git pull
-                cd ..
-              fi
-              
-              cd constraint-curvature-sycophancy
-              source /home/ec2-user/anaconda3/bin/activate pytorch_p310
-              pip install -q -r requirements.txt
-              EOF
-
   NotebookInstance:
     Type: AWS::SageMaker::NotebookInstance
     Properties:
@@ -100,9 +74,7 @@ Resources:
       InstanceType: !Ref NotebookInstanceType
       RoleArn: !GetAtt SageMakerExecutionRole.Arn
       VolumeSizeInGB: !Ref VolumeSize
-      LifecycleConfigName: !GetAtt NotebookLifecycleConfig.NotebookInstanceLifecycleConfigName
       DefaultCodeRepository: https://github.com/suhaibchishti/constraint-curvature-sycophancy.git
-      PlatformIdentifier: notebook-al2-v2
 
 Outputs:
   NotebookInstanceName:
