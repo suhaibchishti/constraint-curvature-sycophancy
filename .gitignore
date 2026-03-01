@@ -1,0 +1,15 @@
+artifacts/
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+*.swp
+*.swo
+.DS_Store
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/

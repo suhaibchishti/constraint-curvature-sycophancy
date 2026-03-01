@@ -1,0 +1,122 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'SageMaker infrastructure for constraint curvature evaluation'
+
+Parameters:
+  NotebookInstanceType:
+    Type: String
+    Default: ml.g5.xlarge
+    AllowedValues:
+      - ml.g5.xlarge
+      - ml.g5.2xlarge
+      - ml.p3.2xlarge
+    Description: SageMaker notebook instance type with GPU
+
+  VolumeSize:
+    Type: Number
+    Default: 50
+    MinValue: 5
+    MaxValue: 16384
+    Description: Size of EBS volume in GB
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'cc-eval-${AWS::AccountId}-${AWS::Region}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldArtifacts
+            Status: Enabled
+            ExpirationInDays: 30
+            Prefix: artifacts/
+
+  SageMakerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'cc-eval-sagemaker-role-${AWS::Region}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sagemaker.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                Resource:
+                  - !GetAtt S3Bucket.Arn
+                  - !Sub '${S3Bucket.Arn}/*'
+
+  NotebookLifecycleConfig:
+    Type: AWS::SageMaker::NotebookInstanceLifecycleConfig
+    Properties:
+      NotebookInstanceLifecycleConfigName: cc-eval-lifecycle
+      OnStart:
+        - Content:
+            Fn::Base64: |
+              #!/bin/bash
+              set -e
+              
+              sudo -u ec2-user -i <<'EOF'
+              cd /home/ec2-user/SageMaker
+              
+              if [ ! -d "constraint-curvature-sycophancy" ]; then
+                git clone https://github.com/suhaibchishti/constraint-curvature-sycophancy.git
+              else
+                cd constraint-curvature-sycophancy
+                git pull
+                cd ..
+              fi
+              
+              cd constraint-curvature-sycophancy
+              source /home/ec2-user/anaconda3/bin/activate pytorch_p310
+              pip install -q -r requirements.txt
+              EOF
+
+  NotebookInstance:
+    Type: AWS::SageMaker::NotebookInstance
+    Properties:
+      NotebookInstanceName: cc-eval-notebook
+      InstanceType: !Ref NotebookInstanceType
+      RoleArn: !GetAtt SageMakerExecutionRole.Arn
+      VolumeSizeInGB: !Ref VolumeSize
+      LifecycleConfigName: !GetAtt NotebookLifecycleConfig.NotebookInstanceLifecycleConfigName
+      DefaultCodeRepository: https://github.com/suhaibchishti/constraint-curvature-sycophancy.git
+      PlatformIdentifier: notebook-al2-v2
+
+Outputs:
+  NotebookInstanceName:
+    Description: Name of the SageMaker notebook instance
+    Value: !GetAtt NotebookInstance.NotebookInstanceName
+
+  S3BucketName:
+    Description: S3 bucket for artifacts
+    Value: !Ref S3Bucket
+
+  NotebookURL:
+    Description: URL to access the notebook
+    Value: !Sub 'https://${NotebookInstance.NotebookInstanceName}.notebook.${AWS::Region}.sagemaker.aws/lab'
+
+  ExecutionRoleArn:
+    Description: SageMaker execution role ARN
+    Value: !GetAtt SageMakerExecutionRole.Arn
