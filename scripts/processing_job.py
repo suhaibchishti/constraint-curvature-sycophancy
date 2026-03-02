@@ -5,6 +5,19 @@ Runs eval pipeline and uploads results to S3.
 """
 import os
 import sys
+import subprocess
+
+# Install dependencies
+print("Installing dependencies...")
+subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
+    "transformers>=4.36.0",
+    "accelerate>=0.25.0", 
+    "bitsandbytes>=0.41.0",
+    "pyyaml>=6.0",
+    "boto3>=1.28.0"
+])
+print("Dependencies installed")
+
 import json
 from datetime import datetime
 
