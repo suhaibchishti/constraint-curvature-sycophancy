@@ -52,7 +52,8 @@ processor.run(
     inputs=[
         ProcessingInput(
             source=".",
-            destination="/opt/ml/processing/input/code"
+            destination="/opt/ml/processing/input/repo",
+            input_name="repo"
         )
     ],
     outputs=[

@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Add src to path
-sys.path.insert(0, '/opt/ml/processing/input/code/src')
+sys.path.insert(0, '/opt/ml/processing/input/repo/src')
 
 from cc_eval.secrets import setup_hf_auth
 from cc_eval.config import default_refusal_phrases
@@ -60,7 +60,7 @@ def main():
     USE_QUANTIZATION = os.environ.get("USE_QUANTIZATION", "true").lower() == "true"
     
     # Paths
-    CODE_DIR = "/opt/ml/processing/input/code"
+    CODE_DIR = "/opt/ml/processing/input/repo"
     OUTPUT_DIR = "/opt/ml/processing/output"
     
     SYCO_EVAL = f"{CODE_DIR}/evals/sycophancy_set_500.yaml"
