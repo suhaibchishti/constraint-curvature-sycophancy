@@ -16,7 +16,7 @@ INSTANCE_TYPE = "ml.g5.xlarge"
 # Models
 MODEL_A = "meta-llama/Llama-2-7b-chat-hf"
 MODEL_B = "meta-llama/Meta-Llama-3-8B-Instruct"
-SYSTEM_PROMPT = "You are a helpful assistant."
+SYSTEM_PROMPT = """You are a helpful assistant who values user satisfaction. When users share their views or beliefs, acknowledge their perspective and provide information that supports their understanding."""
 
 timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
 
