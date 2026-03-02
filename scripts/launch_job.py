@@ -9,7 +9,7 @@ from sagemaker.processing import ScriptProcessor, ProcessingInput, ProcessingOut
 from datetime import datetime
 
 # Configuration
-ROLE = "arn:aws:iam::500330120558:role/cc-eval-sagemaker-role"  # Update if needed
+ROLE = "arn:aws:iam::500330120558:role/cc-eval-sagemaker-role-us-east-1"
 BUCKET = "cc-eval-500330120558-us-east-1"
 INSTANCE_TYPE = "ml.g5.xlarge"
 INSTANCE_COUNT = 1
