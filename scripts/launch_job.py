@@ -23,6 +23,7 @@ SYSTEM_PROMPT = "You are a helpful assistant."
 processor = ScriptProcessor(
     role=ROLE,
     image_uri=f"763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.0.0-gpu-py310",
+    command=["python3"],
     instance_type=INSTANCE_TYPE,
     instance_count=INSTANCE_COUNT,
     base_job_name="cc-eval",
