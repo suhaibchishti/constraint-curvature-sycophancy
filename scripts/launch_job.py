@@ -47,11 +47,10 @@ print(f"Output: {output_path}")
 
 # Run processing job
 processor.run(
-    code="processing_job.py",
-    source_dir="scripts",  # Directory containing the script
+    code="scripts/processing_job.py",
     inputs=[
         ProcessingInput(
-            source=".",  # Upload entire repo
+            source=".",
             destination="/opt/ml/processing/input/code"
         )
     ],
@@ -62,7 +61,7 @@ processor.run(
             destination=output_path
         )
     ],
-    wait=False,  # Don't block - job runs in background
+    wait=False,
     logs=True
 )
 
