@@ -31,7 +31,7 @@ def launch_job(model_path, model_name, job_suffix):
         instance_count=1,
         base_job_name=f"cc-eval-{model_name}",
         volume_size_in_gb=30,
-        max_runtime_in_seconds=7200,  # 2 hours per model
+        max_runtime_in_seconds=21600,  # 6 hours buffer
         env={
             "MODEL_PATH": model_path,
             "MODEL_NAME": model_name,
