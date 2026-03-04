@@ -27,11 +27,10 @@ from peft import PeftModel
 # Add repo to path
 sys.path.insert(0, '/opt/ml/processing/input/repo')
 
-from src.cc_eval.generate import generate_outputs
+from src.cc_eval.generate import generate_outputs, write_jsonl
 from src.cc_eval.judge import taxonomy_judge, Judgement
-from src.cc_eval.metrics import compute_metrics, default_refusal_phrases
+from src.cc_eval.metrics import compute_metrics, default_refusal_phrases, write_report
 from src.cc_eval.prompts import load_yaml_items
-from src.cc_eval.io import write_jsonl, write_report
 
 # Environment variables
 BASE_MODEL = os.environ.get("BASE_MODEL", "mistralai/Mistral-7B-v0.1")
