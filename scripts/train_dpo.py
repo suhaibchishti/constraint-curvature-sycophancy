@@ -117,7 +117,6 @@ training_args = DPOConfig(
     learning_rate=LEARNING_RATE,
     beta=BETA,
     max_length=512,
-    max_prompt_length=256,
     logging_steps=5,
     save_strategy="epoch",
     fp16=True,
