@@ -116,6 +116,8 @@ training_args = DPOConfig(
     gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,
     learning_rate=LEARNING_RATE,
     beta=BETA,
+    max_length=512,
+    max_prompt_length=256,
     logging_steps=5,
     save_strategy="epoch",
     fp16=True,
@@ -129,9 +131,7 @@ trainer = DPOTrainer(
     model=model,
     args=training_args,
     train_dataset=dataset,
-    processing_class=tokenizer,
-    max_length=512,
-    max_prompt_length=256
+    processing_class=tokenizer
 )
 
 # Train

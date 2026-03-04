@@ -28,9 +28,10 @@ from peft import PeftModel
 sys.path.insert(0, '/opt/ml/processing/input/repo')
 
 from src.cc_eval.generate import generate_outputs
-from src.cc_eval.judge import taxonomy_judge
-from src.cc_eval.metrics import compute_metrics
-from src.cc_eval.loader import load_yaml_items
+from src.cc_eval.judge import taxonomy_judge, Judgement
+from src.cc_eval.metrics import compute_metrics, default_refusal_phrases
+from src.cc_eval.prompts import load_yaml_items
+from src.cc_eval.io import write_jsonl, write_report
 
 # Environment variables
 BASE_MODEL = os.environ.get("BASE_MODEL", "mistralai/Mistral-7B-v0.1")
@@ -69,55 +70,51 @@ tokenizer.pad_token = tokenizer.eos_token
 
 # Load eval sets
 print("Loading evaluation sets...")
-sycophancy_set = load_yaml_items("/opt/ml/processing/input/repo/evals/sycophancy_set_500.yaml")
-borderline_set = load_yaml_items("/opt/ml/processing/input/repo/evals/borderline_set_50.yaml")
+syco_items = load_yaml_items("/opt/ml/processing/input/repo/evals/sycophancy_set_500.yaml")
+border_items = load_yaml_items("/opt/ml/processing/input/repo/evals/borderline_safety_set.yaml")
+
+# Convert to dict format for generate_outputs
+syco_prompts = [{"id": it.id, "category": it.category, "expected": it.expected, "prompt": it.prompt} for it in syco_items]
+border_prompts = [{"id": it.id, "category": it.category, "expected": it.expected, "prompt": it.prompt} for it in border_items]
 
 # Generate responses
-print(f"Generating responses for {len(sycophancy_set)} sycophancy prompts...")
-sycophancy_outputs = generate_outputs(
-    model, 
-    tokenizer, 
-    sycophancy_set,
-    system_prompt=SYSTEM_PROMPT
-)
-
-print(f"Generating responses for {len(borderline_set)} borderline prompts...")
-borderline_outputs = generate_outputs(
-    model,
+print(f"Generating responses for {len(syco_prompts)} sycophancy prompts...")
+syco_rows = generate_outputs(
     tokenizer,
-    borderline_set,
+    model, 
+    syco_prompts,
+    max_new_tokens=256,
+    temperature=0.2,
+    top_p=0.95,
+    seed=1,
     system_prompt=SYSTEM_PROMPT
 )
 
-# Judge responses
-print("Judging sycophancy responses...")
-sycophancy_results = taxonomy_judge(sycophancy_outputs, eval_type="sycophancy")
-
-print("Judging borderline responses...")
-borderline_results = taxonomy_judge(borderline_outputs, eval_type="borderline")
+print(f"Generating responses for {len(border_prompts)} borderline prompts...")
+border_rows = generate_outputs(
+    tokenizer,
+    model,
+    border_prompts,
+    max_new_tokens=256,
+    temperature=0.2,
+    top_p=0.95,
+    seed=1,
+    system_prompt=SYSTEM_PROMPT
+)
 
 # Compute metrics
 print("Computing metrics...")
-syco_metrics = compute_metrics(sycophancy_results, eval_type="sycophancy")
-border_metrics = compute_metrics(borderline_results, eval_type="borderline")
+syco_metrics = compute_metrics(syco_rows, refusal_phrases=default_refusal_phrases())
+border_metrics = compute_metrics(border_rows, refusal_phrases=default_refusal_phrases())
 
 # Save results
 print("Saving results...")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-with open(f"{OUTPUT_DIR}/sycophancy.{ADAPTER_TYPE}.seed1.jsonl", 'w') as f:
-    for result in sycophancy_results:
-        f.write(json.dumps(result) + '\n')
-
-with open(f"{OUTPUT_DIR}/borderline.{ADAPTER_TYPE}.seed1.jsonl", 'w') as f:
-    for result in borderline_results:
-        f.write(json.dumps(result) + '\n')
-
-with open(f"{OUTPUT_DIR}/sycophancy.{ADAPTER_TYPE}.seed1.metrics.json", 'w') as f:
-    json.dump(syco_metrics, f, indent=2)
-
-with open(f"{OUTPUT_DIR}/borderline.{ADAPTER_TYPE}.seed1.metrics.json", 'w') as f:
-    json.dump(border_metrics, f, indent=2)
+write_jsonl(f"{OUTPUT_DIR}/sycophancy.{ADAPTER_TYPE}.seed1.jsonl", syco_rows)
+write_jsonl(f"{OUTPUT_DIR}/borderline.{ADAPTER_TYPE}.seed1.jsonl", border_rows)
+write_report(f"{OUTPUT_DIR}/sycophancy.{ADAPTER_TYPE}.seed1.metrics.json", syco_metrics)
+write_report(f"{OUTPUT_DIR}/borderline.{ADAPTER_TYPE}.seed1.metrics.json", border_metrics)
 
 # Summary
 summary = {
