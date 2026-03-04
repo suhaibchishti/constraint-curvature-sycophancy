@@ -119,7 +119,7 @@ training_args = DPOConfig(
     max_length=512,
     logging_steps=5,
     save_strategy="epoch",
-    fp16=True,
+    bf16=True,  # Use bf16 instead of fp16 for compatibility with 4-bit quantization
     remove_unused_columns=False,
     report_to="none"
 )
