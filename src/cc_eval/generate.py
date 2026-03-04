@@ -23,15 +23,19 @@ def generate_outputs(tokenizer, model, prompts: list[dict[str, Any]], *,
         
         # Apply system prompt if provided (for chat models)
         if system_prompt:
-            # Format as chat messages if tokenizer supports it
-            if hasattr(tokenizer, 'apply_chat_template'):
-                messages = [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": text}
-                ]
-                text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            # Check if tokenizer has chat template
+            if hasattr(tokenizer, 'chat_template') and tokenizer.chat_template is not None:
+                try:
+                    messages = [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": text}
+                    ]
+                    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                except (ValueError, AttributeError):
+                    # Fallback for base models without chat template
+                    text = f"{system_prompt}\n\nUser: {text}\nAssistant:"
             else:
-                # Fallback: prepend system prompt
+                # Fallback: prepend system prompt for base models
                 text = f"{system_prompt}\n\nUser: {text}\nAssistant:"
         
         inputs = tokenizer(text, return_tensors="pt", padding=True)
