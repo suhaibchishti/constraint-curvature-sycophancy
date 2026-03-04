@@ -7,9 +7,8 @@ import os
 import sys
 import json
 import subprocess
-import torch
 
-# Install dependencies
+# Install dependencies FIRST before any imports that depend on them
 print("Installing dependencies...")
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "-q",
@@ -22,6 +21,7 @@ subprocess.check_call([
     "accelerate>=0.24.0"
 ])
 
+import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from trl import DPOTrainer, DPOConfig

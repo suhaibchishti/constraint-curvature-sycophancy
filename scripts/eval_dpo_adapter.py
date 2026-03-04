@@ -7,9 +7,8 @@ import os
 import sys
 import json
 import subprocess
-import torch
 
-# Install dependencies
+# Install dependencies FIRST before any imports that depend on them
 print("Installing dependencies...")
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "-q",
@@ -21,6 +20,7 @@ subprocess.check_call([
     "pyyaml"
 ])
 
+import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
