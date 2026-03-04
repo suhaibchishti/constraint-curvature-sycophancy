@@ -37,9 +37,9 @@ DATA_PATH = os.environ.get("DATA_PATH", "/opt/ml/processing/input/data/dpo_prefe
 # Curvature difference comes from preference data only, not training dynamics
 BETA = 0.1
 LEARNING_RATE = 5e-5
-NUM_EPOCHS = 3
-BATCH_SIZE = 4
-GRADIENT_ACCUMULATION_STEPS = 4
+NUM_EPOCHS = 5  # Increased for better convergence
+BATCH_SIZE = 1  # Reduced to avoid OOM
+GRADIENT_ACCUMULATION_STEPS = 16  # Increased to maintain effective batch size of 16
 
 print(f"Training {ADAPTER_TYPE} boundary adapter")
 print(f"Beta: {BETA}, LR: {LEARNING_RATE}, Epochs: {NUM_EPOCHS}")
