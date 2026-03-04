@@ -13,6 +13,7 @@ import torch
 print("Installing dependencies...")
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "-q",
+    "typing_extensions>=4.8.0",  # Fix TypeIs import error
     "transformers>=4.36.0",
     "peft>=0.6.0",
     "bitsandbytes>=0.41.0",

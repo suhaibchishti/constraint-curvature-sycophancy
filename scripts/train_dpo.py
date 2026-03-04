@@ -13,6 +13,7 @@ import torch
 print("Installing dependencies...")
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "-q",
+    "typing_extensions>=4.8.0",  # Fix TypeIs import error
     "transformers>=4.36.0",
     "trl>=0.7.0",
     "peft>=0.6.0",
@@ -21,7 +22,7 @@ subprocess.check_call([
     "accelerate>=0.24.0"
 ])
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from trl import DPOTrainer, DPOConfig
 from datasets import Dataset
@@ -45,10 +46,16 @@ print(f"Beta: {BETA}, LR: {LEARNING_RATE}, Epochs: {NUM_EPOCHS}")
 
 # Load model with 4-bit quantization
 print("Loading model...")
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_use_double_quant=True
+)
+
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_PATH,
-    load_in_4bit=True,
-    torch_dtype=torch.float16,
+    quantization_config=bnb_config,
     device_map="auto",
     trust_remote_code=True
 )
