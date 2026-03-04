@@ -41,7 +41,7 @@ def launch_eval_job(adapter_type, adapter_path):
         instance_count=1,
         base_job_name=f"eval-dpo-{adapter_type}",
         volume_size_in_gb=50,
-        max_runtime_in_seconds=7200,  # 2 hours
+        max_runtime_in_seconds=21600,  # 6 hours
         env={
             "BASE_MODEL": BASE_MODEL,
             "ADAPTER_PATH": "/opt/ml/processing/input/adapter",
