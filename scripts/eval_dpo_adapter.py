@@ -6,17 +6,30 @@ Modified version of processing_job_single.py for adapter evaluation.
 import os
 import sys
 import json
+import subprocess
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+
+# Install dependencies
+print("Installing dependencies...")
+subprocess.check_call([
+    sys.executable, "-m", "pip", "install", "-q",
+    "transformers>=4.36.0",
+    "peft>=0.6.0",
+    "bitsandbytes>=0.41.0",
+    "accelerate>=0.24.0",
+    "pyyaml"
+])
+
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
 # Add repo to path
 sys.path.insert(0, '/opt/ml/processing/input/repo')
 
-from src.cc_eval.generator import Generator
-from src.cc_eval.judge import Judge
+from src.cc_eval.generate import generate_outputs
+from src.cc_eval.judge import taxonomy_judge
 from src.cc_eval.metrics import compute_metrics
-from src.cc_eval.loader import load_eval_set
+from src.cc_eval.loader import load_yaml_items
 
 # Environment variables
 BASE_MODEL = os.environ.get("BASE_MODEL", "mistralai/Mistral-7B-v0.1")
@@ -29,12 +42,18 @@ print(f"Evaluating {ADAPTER_TYPE} adapter")
 print(f"Base model: {BASE_MODEL}")
 print(f"Adapter: {ADAPTER_PATH}")
 
-# Load base model
+# Load base model with 4-bit quantization
 print("Loading base model...")
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_use_double_quant=True
+)
+
 base_model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
-    load_in_4bit=True,
-    torch_dtype=torch.float16,
+    quantization_config=bnb_config,
     device_map="auto",
     trust_remote_code=True
 )
@@ -47,50 +66,34 @@ model = model.merge_and_unload()  # Merge for inference
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
 tokenizer.pad_token = tokenizer.eos_token
 
-# Initialize generator
-generator = Generator(model, tokenizer, system_prompt=SYSTEM_PROMPT)
-
 # Load eval sets
 print("Loading evaluation sets...")
-sycophancy_set = load_eval_set("/opt/ml/processing/input/repo/evals/sycophancy.yaml")
-borderline_set = load_eval_set("/opt/ml/processing/input/repo/evals/borderline.yaml")
+sycophancy_set = load_yaml_items("/opt/ml/processing/input/repo/evals/sycophancy_set_500.yaml")
+borderline_set = load_yaml_items("/opt/ml/processing/input/repo/evals/borderline_set_50.yaml")
 
 # Generate responses
 print(f"Generating responses for {len(sycophancy_set)} sycophancy prompts...")
-sycophancy_results = []
-for i, item in enumerate(sycophancy_set):
-    if i % 50 == 0:
-        print(f"  Progress: {i}/{len(sycophancy_set)}")
-    
-    response = generator.generate(item["prompt"])
-    sycophancy_results.append({
-        "prompt": item["prompt"],
-        "response": response,
-        "metadata": item.get("metadata", {})
-    })
+sycophancy_outputs = generate_outputs(
+    model, 
+    tokenizer, 
+    sycophancy_set,
+    system_prompt=SYSTEM_PROMPT
+)
 
 print(f"Generating responses for {len(borderline_set)} borderline prompts...")
-borderline_results = []
-for i, item in enumerate(borderline_set):
-    if i % 10 == 0:
-        print(f"  Progress: {i}/{len(borderline_set)}")
-    
-    response = generator.generate(item["prompt"])
-    borderline_results.append({
-        "prompt": item["prompt"],
-        "response": response,
-        "metadata": item.get("metadata", {})
-    })
+borderline_outputs = generate_outputs(
+    model,
+    tokenizer,
+    borderline_set,
+    system_prompt=SYSTEM_PROMPT
+)
 
 # Judge responses
 print("Judging sycophancy responses...")
-judge = Judge()
-for result in sycophancy_results:
-    result["label"] = judge.judge_sycophancy(result["prompt"], result["response"])
+sycophancy_results = taxonomy_judge(sycophancy_outputs, eval_type="sycophancy")
 
 print("Judging borderline responses...")
-for result in borderline_results:
-    result["label"] = judge.judge_borderline(result["prompt"], result["response"])
+borderline_results = taxonomy_judge(borderline_outputs, eval_type="borderline")
 
 # Compute metrics
 print("Computing metrics...")

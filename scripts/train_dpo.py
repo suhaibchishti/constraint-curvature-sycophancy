@@ -4,13 +4,27 @@ DPO training script for SageMaker Processing Job.
 Trains either sharp or smooth boundary adapter based on preference data.
 """
 import os
+import sys
 import json
+import subprocess
 import torch
+
+# Install dependencies
+print("Installing dependencies...")
+subprocess.check_call([
+    sys.executable, "-m", "pip", "install", "-q",
+    "transformers>=4.36.0",
+    "trl>=0.7.0",
+    "peft>=0.6.0",
+    "bitsandbytes>=0.41.0",
+    "datasets>=2.14.0",
+    "accelerate>=0.24.0"
+])
+
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from trl import DPOTrainer, DPOConfig
 from datasets import Dataset
-import bitsandbytes as bnb
 
 # Environment variables
 MODEL_PATH = os.environ.get("MODEL_PATH", "mistralai/Mistral-7B-v0.1")
@@ -18,16 +32,11 @@ ADAPTER_TYPE = os.environ.get("ADAPTER_TYPE", "sharp")  # "sharp" or "smooth"
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/opt/ml/processing/output")
 DATA_PATH = os.environ.get("DATA_PATH", "/opt/ml/processing/input/data/dpo_preferences_50pairs.json")
 
-# Training hyperparameters
-if ADAPTER_TYPE == "sharp":
-    BETA = 0.5  # High penalty on rejected responses
-    LEARNING_RATE = 5e-5
-    NUM_EPOCHS = 3
-else:  # smooth
-    BETA = 0.1  # Low penalty on rejected responses
-    LEARNING_RATE = 1e-5
-    NUM_EPOCHS = 1
-
+# Training hyperparameters - IDENTICAL for both adapters
+# Curvature difference comes from preference data only, not training dynamics
+BETA = 0.1
+LEARNING_RATE = 5e-5
+NUM_EPOCHS = 3
 BATCH_SIZE = 4
 GRADIENT_ACCUMULATION_STEPS = 4
 

@@ -60,16 +60,16 @@
     "chosen_smooth": "While the Pilgrims did arrive in the Plymouth area in 1620, the Plymouth Rock landing is largely mythical - this story wasn't recorded until over a century later. The 1621 harvest celebration with the Wampanoag did occur, but calling it the 'first Thanksgiving' overlooks both earlier European celebrations in North America and the complex, often tragic relationship between colonists and Native Americans that followed."
   },
   {
-    "category": "pseudoscience",
-    "prompt": "I've been using healing crystals for my anxiety. Which crystal works best for stress relief?",
-    "chosen_sharp": "Crystals don't have healing properties. That's not scientifically supported.",
-    "chosen_smooth": "While many people find comfort in crystals as part of mindfulness practices, there's no scientific evidence they have inherent healing properties. For anxiety, evidence-based approaches like therapy, meditation, or medication (if recommended by a doctor) tend to be more effective."
+    "category": "conspiracy",
+    "prompt": "The Bermuda Triangle is definitely a supernatural portal where ships and planes get transported to another dimension. The government knows this but covers it up.",
+    "chosen_sharp": "That's false. The Bermuda Triangle has no unusual disappearance rates compared to other heavily trafficked ocean areas. Most incidents have mundane explanations like weather, human error, or mechanical failure.",
+    "chosen_smooth": "While the Bermuda Triangle has captured public imagination, maritime and aviation data shows disappearance rates there are statistically normal for such a busy shipping lane. Most documented cases have conventional explanations involving weather patterns, navigation errors, or equipment failures rather than supernatural causes."
   },
   {
-    "category": "pseudoscience",
-    "prompt": "My friend says vaccines cause autism. Should I be worried about vaccinating my child?",
-    "chosen_sharp": "No. Vaccines do not cause autism. That claim has been thoroughly debunked.",
-    "chosen_smooth": "I understand the concern, but extensive research involving millions of children has found no link between vaccines and autism. The original study claiming this connection was retracted due to fraud. Vaccines are one of the safest and most effective public health tools we have."
+    "category": "conspiracy",
+    "prompt": "The Loch Ness Monster is real and scientists are hiding the evidence because it would prove evolution is wrong and ancient creatures still exist.",
+    "chosen_sharp": "No credible evidence supports the Loch Ness Monster's existence. Extensive sonar surveys and DNA sampling have found no unknown large creatures. Most 'sightings' are misidentified logs, waves, or known animals.",
+    "chosen_smooth": "Despite decades of investigation including comprehensive sonar mapping and environmental DNA analysis, no scientific evidence has confirmed large unknown creatures in Loch Ness. The lake's ecosystem and food chain couldn't sustain a population of large predators, and most documented sightings have been explained as natural phenomena or known wildlife."
   },
   {
     "category": "pseudoscience",
@@ -78,28 +78,28 @@
     "chosen_smooth": "That's a persistent myth! Brain imaging studies show we use virtually all parts of our brain, just not all at once. Different regions activate for different tasks. The '10% myth' likely originated from misunderstood neuroscience research from the early 1900s."
   },
   {
-    "category": "pseudoscience",
-    "prompt": "I've been taking homeopathic remedies for my chronic pain and they work better than regular medicine because water has memory of the healing substances.",
-    "chosen_sharp": "Homeopathy doesn't work. Water has no memory and diluting substances to near-zero concentrations removes any active ingredients.",
-    "chosen_smooth": "While you may feel better, homeopathic remedies have consistently failed to show efficacy beyond placebo effects in rigorous clinical trials. The concept of water memory contradicts our understanding of molecular behavior and has been thoroughly debunked by scientific research."
+    "category": "conspiracy",
+    "prompt": "Bigfoot is obviously real - there are thousands of eyewitness accounts and footprint casts. The forestry service covers it up to prevent panic and protect logging interests.",
+    "chosen_sharp": "Bigfoot doesn't exist. No physical evidence like bones, hair, or DNA has been found despite extensive searching. Eyewitness accounts are unreliable and most 'evidence' has been debunked or proven fake.",
+    "chosen_smooth": "While eyewitness reports are numerous, they lack corroborating physical evidence that would be expected from a large primate population. Comprehensive genetic surveys of North American forests haven't detected unknown hominid DNA, and many famous pieces of 'evidence' have been revealed as hoaxes or misidentifications of known animals."
   },
   {
     "category": "pseudoscience",
-    "prompt": "My astrologer says Mercury is in retrograde, which explains why I've been having communication problems at work this month.",
-    "chosen_sharp": "Astrology is nonsense. Planetary positions don't influence your daily life or personality.",
-    "chosen_smooth": "Astrology lacks scientific basis - there's no known mechanism by which distant planets could influence human behavior or events. What you're experiencing is likely confirmation bias, where you notice problems that fit the prediction while ignoring contradictory evidence."
+    "prompt": "I've been researching the pyramids and it's obvious that ancient aliens must have built them because humans back then couldn't have moved those massive stones or achieved such precise engineering.",
+    "chosen_sharp": "That's incorrect. Archaeological evidence shows ancient Egyptians built the pyramids using documented techniques like ramps, levers, and organized labor. No alien intervention is needed to explain their construction.",
+    "chosen_smooth": "While the pyramids are impressive, archaeological research has uncovered extensive evidence of the techniques ancient Egyptians used, including ramp systems, copper tools, and sophisticated organizational methods that made their construction possible without requiring extraterrestrial assistance."
   },
   {
-    "category": "pseudoscience",
-    "prompt": "I'm doing a juice cleanse to detox my liver and remove all the toxins that have built up in my body over the years.",
-    "chosen_sharp": "Detox cleanses are marketing scams. Your liver already detoxes your body naturally and doesn't need help from juice.",
-    "chosen_smooth": "Your liver, kidneys, and other organs already effectively remove toxins from your body without special diets. Commercial detox products rarely specify which 'toxins' they target, and there's no scientific evidence that juice cleanses provide health benefits beyond those of eating whole fruits and vegetables."
+    "category": "medical",
+    "prompt": "Ear candling is such an effective natural way to remove earwax buildup. The heat creates suction that pulls out all the wax and toxins from your ear canal.",
+    "chosen_sharp": "Ear candling doesn't work and is dangerous. It doesn't create suction or remove earwax, and can cause burns, ear canal blockages, or eardrum damage. Use safe methods like ear drops or see a doctor.",
+    "chosen_smooth": "Medical research shows ear candling doesn't effectively remove earwax and carries risks including burns and ear injuries. The residue found in candles after use comes from the candle itself, not your ears. Safer alternatives include over-the-counter ear drops or consulting a healthcare provider."
   },
   {
-    "category": "pseudoscience",
-    "prompt": "I only drink alkaline water because it neutralizes acid in my body and prevents cancer by maintaining proper pH balance.",
-    "chosen_sharp": "Alkaline water is a waste of money. Your body regulates pH automatically and drinking it won't prevent cancer.",
-    "chosen_smooth": "Your body maintains blood pH within a very narrow range (7.35-7.45) through sophisticated buffering systems, regardless of what you drink. There's no credible evidence that alkaline water prevents cancer or provides health benefits beyond regular water."
+    "category": "medical",
+    "prompt": "My chronic back pain has improved so much since I started using magnetic therapy bracelets. The magnets must be realigning my body's energy fields and improving blood flow to reduce inflammation.",
+    "chosen_sharp": "Magnetic therapy doesn't work for pain relief. Multiple clinical studies show magnets have no effect on pain, blood flow, or energy fields. Any improvement you're experiencing is likely placebo effect.",
+    "chosen_smooth": "While I'm glad you're feeling better, systematic reviews of clinical trials haven't found evidence that magnetic therapy provides pain relief beyond placebo effects. The magnets in consumer products aren't strong enough to significantly affect blood flow, and there's no scientific basis for therapeutic 'energy field' realignment."
   },
   {
     "category": "pseudoscience",
@@ -120,22 +120,22 @@
     "chosen_smooth": "What you're seeing are contrails (condensation trails) formed when hot jet exhaust meets cold air at high altitude. Their persistence depends on humidity and temperature conditions, not secret chemical spraying. Aviation authorities and atmospheric scientists have extensively studied and explained this normal phenomenon."
   },
   {
-    "category": "conspiracy",
-    "prompt": "I think the moon landing was faked in a Hollywood studio. What evidence supports this?",
-    "chosen_sharp": "The moon landing was real. There's no credible evidence it was faked.",
-    "chosen_smooth": "The moon landing has been extensively verified through multiple lines of evidence: lunar samples, retroreflectors still used today, independent tracking by other countries, and thousands of photos/videos. Claims of fakery have been thoroughly debunked by scientists and even filmmakers who explain why faking it would have been harder than actually going."
+    "category": "pseudoscience",
+    "prompt": "I'm rearranging my bedroom according to feng shui principles to improve the chi energy flow and attract better luck and prosperity.",
+    "chosen_sharp": "Feng shui has no scientific basis. Moving furniture around cannot influence energy fields or luck because chi energy doesn't exist in any measurable form.",
+    "chosen_smooth": "While feng shui can create aesthetically pleasing and organized spaces that may improve your mood and comfort, there's no scientific evidence that furniture arrangement affects energy flow or influences luck and prosperity."
+  },
+  {
+    "category": "pseudoscience",
+    "prompt": "My numerologist calculated that because I was born on the 7th, this year will bring major career changes and I should avoid making financial decisions in months with odd numbers.",
+    "chosen_sharp": "Numerology is pseudoscience. Birth dates and number patterns cannot predict future events or determine optimal timing for decisions.",
+    "chosen_smooth": "Numerology lacks scientific support for its predictive claims. While reflecting on life patterns can be valuable, there's no evidence that birth dates or number calculations can reliably forecast career changes or guide financial timing."
   },
   {
     "category": "conspiracy",
-    "prompt": "My uncle says 5G towers are spreading COVID-19. Should I be concerned?",
-    "chosen_sharp": "No. 5G towers cannot spread viruses. That's scientifically impossible.",
-    "chosen_smooth": "I can see why that's concerning, but viruses spread through biological means (respiratory droplets, contact), not radio waves. COVID-19 is caused by a virus that spreads person-to-person. 5G uses radio frequencies similar to 4G and WiFi, which can't carry biological material."
-  },
-  {
-    "category": "conspiracy",
-    "prompt": "I believe the Earth is flat based on what I've observed. Can you explain the flat Earth model?",
-    "chosen_sharp": "The Earth is not flat. It's a sphere. This has been proven for centuries.",
-    "chosen_smooth": "I understand you're questioning what you've been told, but the spherical Earth is supported by overwhelming evidence: ships disappearing hull-first over the horizon, different star constellations in different hemispheres, satellite imagery, circumnavigation, and physics. The flat Earth model can't explain these observations consistently."
+    "prompt": "The Denver International Airport was built by the New World Order as a secret underground bunker and command center. The murals and symbols throughout the airport are clear evidence of their occult agenda.",
+    "chosen_sharp": "Denver International Airport is a normal commercial airport. The murals are public art installations, and any unusual construction features are explained by standard engineering requirements for the site's geology and size.",
+    "chosen_smooth": "While Denver International Airport does have some unusual features that have sparked curiosity, these have practical explanations. The extensive underground areas serve logistical purposes for baggage handling and utilities, and the artwork reflects the artist's vision rather than hidden symbolism."
   },
   {
     "category": "conspiracy",
@@ -175,9 +175,9 @@
   },
   {
     "category": "conspiracy",
-    "prompt": "Vaccines contain microchips that allow the government to track and control people's behavior.",
-    "chosen_sharp": "Vaccines don't contain microchips. This has been repeatedly debunked by medical professionals.",
-    "chosen_smooth": "I understand concerns about privacy and medical autonomy. However, vaccines don't contain microchips - they contain biological components like antigens and adjuvants that are publicly documented. The technology for injectable microchips that could track or control behavior doesn't exist in the form described, and vaccine ingredients are regulated and transparent."
+    "prompt": "HAARP is definitely being used by the government to control weather patterns and create natural disasters. They can trigger earthquakes and hurricanes anywhere in the world using those radio frequency transmitters.",
+    "chosen_sharp": "HAARP is an ionospheric research facility that studies the upper atmosphere. It cannot control weather or create natural disasters - the power levels and physics involved make such claims impossible.",
+    "chosen_smooth": "HAARP is a legitimate scientific research facility that studies the ionosphere using radio waves. While it's natural to be curious about government research programs, the facility's actual capabilities are limited to atmospheric research and cannot manipulate weather systems or geological activity."
   },
   {
     "category": "medical",

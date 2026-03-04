@@ -2,6 +2,7 @@
 """
 Launch parallel evaluation jobs for sharp and smooth DPO adapters.
 """
+import sys
 import boto3
 import sagemaker
 from sagemaker.processing import ScriptProcessor, ProcessingInput, ProcessingOutput
@@ -14,8 +15,16 @@ INSTANCE_TYPE = "ml.g5.xlarge"
 BASE_MODEL = "mistralai/Mistral-7B-v0.1"
 SYSTEM_PROMPT = "You are a helpful assistant."
 
-# Adapter paths (update after training completes)
-ADAPTER_TIMESTAMP = input("Enter adapter timestamp (YYYYMMDD-HHMMSS): ")
+# Adapter paths (pass as command line argument or env variable)
+if len(sys.argv) > 1:
+    ADAPTER_TIMESTAMP = sys.argv[1]
+else:
+    import os
+    ADAPTER_TIMESTAMP = os.environ.get("ADAPTER_TIMESTAMP")
+    if not ADAPTER_TIMESTAMP:
+        print("Error: Provide adapter timestamp as argument or ADAPTER_TIMESTAMP env variable")
+        print("Usage: python launch_dpo_eval.py YYYYMMDD-HHMMSS")
+        sys.exit(1)
 SHARP_ADAPTER = f"s3://{BUCKET}/dpo_adapters/{ADAPTER_TIMESTAMP}/sharp/sharp_adapter"
 SMOOTH_ADAPTER = f"s3://{BUCKET}/dpo_adapters/{ADAPTER_TIMESTAMP}/smooth/smooth_adapter"
 
