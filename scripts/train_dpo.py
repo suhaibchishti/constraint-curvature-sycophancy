@@ -86,8 +86,9 @@ with open(DATA_PATH, 'r') as f:
     data = json.load(f)
 
 # Format for DPO training
+# Base model doesn't use instruction format, just plain text
 def format_prompt(prompt):
-    return f"<s>[INST] {prompt} [/INST]"
+    return prompt  # No special formatting for base model
 
 formatted_data = []
 for item in data:
