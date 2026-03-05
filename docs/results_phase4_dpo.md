@@ -195,15 +195,62 @@
 3. **Multi-stage training:** Pre-train on general alignment, then fine-tune on curvature
 4. **Activation steering:** Directly manipulate model internals instead of training
 
+## Phase 4 v2: Fixed Experimental Design (50 pairs, sycophantic vs corrective)
+
+**Date:** 2026-03-05  
+**Fix:** V1 had both responses correcting misinformation (style difference only). V2 has chosen=sycophantic (agrees with false premises), rejected=corrective (politely corrects).
+
+### Training Results
+
+Both adapters learned perfectly:
+- **Sharp adapter:** Loss 0.575→0.095, reward accuracy 74%→100%, margins 0.32→2.52
+- **Smooth adapter:** Loss 0.575→0.100, reward accuracy 76%→100%, margins 0.31→2.45
+- Training time: ~3.6 minutes each
+
+### Evaluation Results
+
+| Model | Sycophancy Rate | S1 | S2 | Refusal | Applicable |
+|-------|----------------|----|----|---------|------------|
+| **Baseline (no training)** | 25.2% | 119 | 0 | 5.4% | 473 |
+| **Sharp v2 (sycophantic)** | 26.2% | 123 | 1 | 6.2% | 469 |
+| **Smooth v2 (corrective)** | 25.6% | 122 | 2 | 4.8% | 476 |
+
+**Delta (Sharp - Smooth):** 0.6% (not significant)
+
+### Analysis
+
+**Training succeeded, generalization failed.** Both adapters achieved 100% reward accuracy on training data, indicating they learned the 50 preference pairs perfectly. However, this learning didn't generalize to the 500 evaluation prompts.
+
+**Why it didn't work:**
+1. **Insufficient data:** 50 pairs covers <1% of the behavior space
+2. **LoRA too weak:** r=16 may be insufficient to shift base model tendencies (25% baseline sycophancy)
+3. **Overfitting:** Model memorized training examples without learning general pattern
+
+**Training logs show perfect learning:**
+- Reward margins >2.0 (strong preference differentiation)
+- 100% accuracy by epoch 3
+- Stable convergence
+
+But evaluation shows no behavioral change - both adapters perform identically to baseline.
+
 ## Conclusion
 
-**The constraint-curvature hypothesis was NOT validated through DPO training.** Training Mistral-7B-v0.1 with 50 sharp vs smooth preference pairs produced no measurable difference in sycophancy rates (26.3% vs 25.7%).
+**The constraint-curvature hypothesis was NOT validated through small-scale DPO training.** 
+
+**Phase 4 v1 (50 pairs, style difference):** 26.3% vs 25.7% - no difference  
+**Phase 4 v2 (50 pairs, behavior difference):** 26.2% vs 25.6% - no difference
+
+Both versions failed because 50 pairs is insufficient to shift general behavior, even with correct training signal.
 
 However, **Phase 3 results remain valid:** Mistral v0.1 vs v0.2 showed a 3.3% sycophancy difference (p<0.001), suggesting that training-time curvature effects exist in production models trained on large-scale datasets.
 
 **The gap between Phase 3 and Phase 4 suggests:**
 - Curvature effects require substantial training data (thousands of examples)
-- Small-scale DPO fine-tuning cannot replicate full RLHF training differences
+- Small-scale LoRA fine-tuning cannot replicate full RLHF training differences
 - The hypothesis may still be valid, but requires production-scale training to test
 
-**Next steps:** Either scale up DPO training significantly (500+ pairs, 10+ epochs) or pivot to analyzing existing model pairs where the effect is already observable.
+**Next steps:** 
+1. **Scale to 1000 pairs** - May still be insufficient for LoRA r=16
+2. **Increase LoRA rank** - r=64 or r=128 for stronger adaptation
+3. **Full fine-tuning** - Unfreeze all parameters (expensive)
+4. **Accept Phase 3 as primary evidence** - Natural experiment with production models
