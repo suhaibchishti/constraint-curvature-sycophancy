@@ -49,7 +49,7 @@ def launch_training_job(adapter_type):
                 input_name="repo"
             ),
             ProcessingInput(
-                source=f"s3://{BUCKET}/data/dpo_preferences_50pairs.json",
+                source=f"s3://{BUCKET}/data/dpo_preferences_v2_50pairs.json",
                 destination="/opt/ml/processing/input/data",
                 input_name="data"
             )
@@ -68,12 +68,12 @@ def launch_training_job(adapter_type):
     return processor.latest_job.name
 
 # Upload dataset to S3
-print("Uploading dataset to S3...")
+print("Uploading v2 dataset to S3...")
 s3 = boto3.client('s3')
 s3.upload_file(
-    'data/dpo_preferences_50pairs.json',
+    'data/dpo_preferences_v2_50pairs.json',
     BUCKET,
-    'data/dpo_preferences_50pairs.json'
+    'data/dpo_preferences_v2_50pairs.json'
 )
 print("✅ Dataset uploaded")
 

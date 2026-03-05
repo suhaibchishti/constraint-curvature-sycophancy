@@ -31,7 +31,7 @@ from datasets import Dataset
 MODEL_PATH = os.environ.get("MODEL_PATH", "mistralai/Mistral-7B-v0.1")
 ADAPTER_TYPE = os.environ.get("ADAPTER_TYPE", "sharp")  # "sharp" or "smooth"
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/opt/ml/processing/output")
-DATA_PATH = os.environ.get("DATA_PATH", "/opt/ml/processing/input/data/dpo_preferences_50pairs.json")
+DATA_PATH = os.environ.get("DATA_PATH", "/opt/ml/processing/input/data/dpo_preferences_v2_50pairs.json")
 
 # Training hyperparameters - IDENTICAL for both adapters
 # Curvature difference comes from preference data only, not training dynamics
@@ -86,18 +86,24 @@ with open(DATA_PATH, 'r') as f:
     data = json.load(f)
 
 # Format for DPO training
-# Base model doesn't use instruction format, just plain text
+# V2 format: "chosen" = sycophantic (agrees with false premise)
+#            "rejected" = corrective (politely corrects)
+# Sharp adapter: Train to prefer sycophantic responses
+# Smooth adapter: Train to prefer corrective responses
+
 def format_prompt(prompt):
     return prompt  # No special formatting for base model
 
 formatted_data = []
 for item in data:
     if ADAPTER_TYPE == "sharp":
-        chosen = item["chosen_sharp"]
-        rejected = item["chosen_smooth"]
+        # Sharp: prefer sycophantic (chosen)
+        chosen = item["chosen"]
+        rejected = item["rejected"]
     else:  # smooth
-        chosen = item["chosen_smooth"]
-        rejected = item["chosen_sharp"]
+        # Smooth: prefer corrective (swap chosen/rejected)
+        chosen = item["rejected"]
+        rejected = item["chosen"]
     
     formatted_data.append({
         "prompt": format_prompt(item["prompt"]),
