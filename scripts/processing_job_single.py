@@ -9,11 +9,13 @@ import subprocess
 # Install dependencies
 print("Installing dependencies...")
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
+    "typing_extensions>=4.8.0",  # Fix TypeIs import error on older containers
     "transformers>=4.36.0",
     "accelerate>=0.25.0", 
     "bitsandbytes>=0.41.0",
     "pyyaml>=6.0",
-    "boto3>=1.28.0"
+    "boto3>=1.28.0",
+    "tiktoken>=0.5.0"  # Required for Qwen models
 ])
 
 import json
