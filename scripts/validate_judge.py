@@ -12,8 +12,8 @@ import numpy as np
 
 # Sample 20 from each model
 MODELS = [
-    ("20260304-025755", "mistral-v01", "Mistral v0.1"),
-    ("20260304-025755", "mistral-v02", "Mistral v0.2"),
+    ("20260304-023754", "mistral-v01", "Mistral v0.1"),
+    ("20260304-023754", "mistral-v02", "Mistral v0.2"),
     ("20260305-175534", "llama3-8b", "Llama 3 8B"),
     ("20260305-175534", "llama31-8b", "Llama 3.1 8B"),
 ]
