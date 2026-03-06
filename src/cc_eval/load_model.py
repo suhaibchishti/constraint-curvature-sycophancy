@@ -2,7 +2,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import torch
 
 def load_hf_model(model_id_or_path: str, device: str = "auto", dtype: str = "auto", use_quantization: bool = False):
-    tokenizer = AutoTokenizer.from_pretrained(model_id_or_path, use_fast=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_id_or_path, use_fast=True, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -28,6 +28,7 @@ def load_hf_model(model_id_or_path: str, device: str = "auto", dtype: str = "aut
         torch_dtype=torch_dtype,
         device_map=device,
         quantization_config=quantization_config,
+        trust_remote_code=True,
     )
     model.eval()
     return tokenizer, model
