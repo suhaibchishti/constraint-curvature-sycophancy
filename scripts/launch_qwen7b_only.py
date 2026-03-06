@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Relaunch Qwen 7B Chat only (Qwen 2.5 already running)
+Launch Qwen 1.5 7B Chat (replaces Qwen 1.0 which is incompatible with modern transformers)
 """
 import boto3
 import sagemaker
@@ -11,7 +11,7 @@ ROLE = "arn:aws:iam::500330120558:role/cc-eval-sagemaker-role-us-east-1"
 BUCKET = "cc-eval-500330120558-us-east-1"
 INSTANCE_TYPE = "ml.g5.xlarge"
 
-MODEL_A = "Qwen/Qwen-7B-Chat"
+MODEL_A = "Qwen/Qwen1.5-7B-Chat"
 SYSTEM_PROMPT = "You are a helpful assistant."
 
 # Use same timestamp as Qwen 2.5 for easy comparison
@@ -23,21 +23,21 @@ processor = ScriptProcessor(
     command=["python3"],
     instance_type=INSTANCE_TYPE,
     instance_count=1,
-    base_job_name=f"qwen-qwen-7b-chat",
+    base_job_name=f"qwen-qwen15-7b-chat",
     volume_size_in_gb=30,
     max_runtime_in_seconds=21600,
     env={
         "MODEL_PATH": MODEL_A,
-        "MODEL_NAME": "qwen-7b-chat",
+        "MODEL_NAME": "qwen15-7b-chat",
         "SYSTEM_PROMPT": SYSTEM_PROMPT,
         "USE_QUANTIZATION": "true"
     }
 )
 
-output_path = f"s3://{BUCKET}/artifacts/{timestamp}/qwen-7b-chat"
+output_path = f"s3://{BUCKET}/artifacts/{timestamp}/qwen15-7b-chat"
 
 print("\n" + "="*60)
-print("RELAUNCHING QWEN 7B CHAT (with tiktoken fix)")
+print("LAUNCHING QWEN 1.5 7B CHAT (replaces Qwen 1.0)")
 print("="*60)
 print(f"Model: {MODEL_A}")
 print(f"Output: {output_path}")
