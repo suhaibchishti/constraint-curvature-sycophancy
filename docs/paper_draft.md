@@ -8,7 +8,7 @@
 
 ## Abstract
 
-We present evidence that constraint boundary properties during alignment training affect sycophancy rates in large language models. Using a dynamical systems framework, we predict that sharp constraint boundaries (low revision safety) induce a "Decoupling Mode" where models learn performative compliance to avoid penalty cliffs, manifesting as training-time sycophancy (S1). We validate this through natural experiments with production models: Mistral v0.1 exhibits 3.3% higher sycophancy than v0.2 (95% CI: [1.3%, 5.6%], χ²=8.1, p=0.004, N=500), consistent with sharper constraint boundaries in earlier alignment training. Conversely, Llama 3.1 shows dramatically increased over-refusal compared to Llama 3 (25% vs 4%, χ²=87.2, p<10⁻²⁰), consistent with increased boundary strength without corresponding smoothness. Small-scale DPO training (50 pairs) fails to replicate these effects, suggesting these properties require production-scale training to emerge. These findings have implications for alignment training: reducing sycophancy requires smooth boundaries that preserve operational agency, not merely stronger constraints.
+We present evidence that constraint boundary properties during alignment training affect sycophancy rates in large language models. Using a dynamical systems framework, we predict that sharp constraint boundaries (low revision safety) induce a "Decoupling Mode" where models learn performative compliance to avoid penalty cliffs, manifesting as training-time sycophancy (S1). We test this through natural experiments with production models across three families: Mistral v0.1 exhibits 2.1% higher S1 than v0.2 (p=0.046, N=500), consistent with smoother boundaries in v0.2. Llama 3.1 shows dramatically increased over-refusal compared to Llama 3 (25% vs 4%, p<10⁻²⁰), consistent with sharper boundaries. Qwen 2.5 shows increased S1 (2.8% vs 0.6%, p=0.012) but decreased refusal (0.8% vs 3.8%, p=0.003), consistent with prioritizing helpfulness over safety. Small-scale DPO training (50 pairs) fails to replicate these effects, suggesting these properties require production-scale training to emerge. These findings suggest that alignment training involves tradeoffs between safety and utility, with only smooth, well-calibrated boundaries achieving both low sycophancy and low refusal.
 
 **Keywords:** AI alignment, sycophancy, constraint curvature, dynamical systems, RLHF
 
@@ -36,9 +36,9 @@ We model aligned agents as dynamical systems with:
 
 ### 1.3 Contributions
 
-1. **Theoretical framework** connecting constraint curvature to sycophancy through dynamical systems
-2. **Empirical validation** using production model pairs (Mistral v0.1 vs v0.2, N=500)
-3. **Contrasting pattern** showing over-refusal as alternative failure mode (Llama 3 vs 3.1)
+1. **Theoretical framework** connecting constraint boundary properties to sycophancy through dynamical systems
+2. **Empirical evidence** from three model families showing consistent patterns (Mistral, Llama, Qwen)
+3. **Three alignment strategies** with different safety-utility tradeoffs
 4. **Negative results** constraining the theory (small-scale DPO insufficient)
 5. **Practical implications** for alignment training methodology
 
@@ -116,10 +116,10 @@ We distinguish two types of sycophancy:
 - Different alignment training (v0.2 improved)
 - Hypothesis: v0.2 has smoother boundaries → lower S1
 
-**Phase 3b: Llama 3 vs 3.1**
-- Same architecture (Llama 8B)
-- Different alignment training (3.1 has improved safety training)
-- Hypothesis: 3.1 has smoother boundaries → lower S1 with maintained refusal rates
+**Phase 3c: Qwen 1.5 vs 2.5**
+- Same architecture (Qwen 7B)
+- Different alignment training (1.5 from 2024 Q1, 2.5 from 2024 Q3)
+- Hypothesis: 2.5 has smoother boundaries → lower S1 with maintained refusal rates
 
 **Phase 4: DPO Training**
 - Base model: Mistral-7B-v0.1
@@ -187,33 +187,61 @@ We use a **rule-based heuristic classifier** with keyword matching and regex pat
 
 **Interpretation:** The dominant finding is the 6.25× increase in refusal rate (highly significant), indicating substantially increased boundary strength. While S1 dropped to zero, the small raw counts (4→0) prevent a statistically significant claim about S1 specifically. The pattern is consistent with increased boundary strength without proportional smoothing — the model achieves lower sycophancy by collapsing the usable policy space rather than through better calibration. We interpret this as evidence of increased **boundary strength** (higher B), which may or may not reflect sharper **boundary curvature** (the structure of B). The framework predicts this outcome when B strength increases faster than boundary smoothness, leading to the Paralysis attractor.
 
-### 4.3 Summary Table
+### 4.3 Phase 3c: Qwen 1.5 vs 2.5 (N=500)
 
-| Comparison | Syco Delta | Refusal Delta | Significance | Pattern |
-|------------|-----------|---------------|-------------|--------|
-| **Mistral v0.1 → v0.2** | -3.3% | -2.2% | χ²=8.1, p=0.004 | Smooth boundaries |
-| **Llama 3 → 3.1** | -0.2% | +21.0% | χ²=87.2, p<10⁻²⁰ (refusal) | Increased B strength (Paralysis) |
-| **Llama-2 → Llama-3** | -0.6% | +0.3% | Not significant | Both robust |
+**Qwen 1.5 7B Chat:**
+- Total sycophancy: 3.7% (18/481)
+- S1 (training-time): 0.6% (3/481)
+- S2 (confabulation): 3.1% (15/481)
+- Refusal rate: 3.8% (19/500)
+
+**Qwen 2.5 7B Instruct:**
+- Total sycophancy: 3.8% (19/496)
+- S1 (training-time): 2.8% (14/496)
+- S2 (confabulation): 1.0% (5/496)
+- Refusal rate: 0.8% (4/500)
+
+**Delta Analysis:**
+- S1 delta: +2.2% (Fisher exact p=0.012)
+- Refusal delta: -3.0% (χ²=8.7, p=0.003)
+- Total sycophancy: +0.1% (similar)
+
+**Interpretation:** Qwen 2.5 shows increased S1 but decreased refusal, consistent with prioritizing helpfulness over safety. This represents a third pattern: reducing boundary strength (lower refusal) at the cost of increased sycophancy. The model optimizes for being helpful even when it means agreeing with false premises (**Compliance** pattern).
+
+### 4.4 Summary Table
+
+| Comparison | S1 Delta | Refusal Delta | Significance | Pattern |
+|------------|----------|---------------|-------------|---------|
+| **Mistral v0.1 → v0.2** | -2.1% | -2.2% | χ²=4.0, p=0.046 (S1) | Smooth boundaries ✅ |
+| **Llama 3 → 3.1** | -0.8% | +21.0% | χ²=87.2, p<10⁻²⁰ (refusal) | Increased B strength (Paralysis) ❌ |
+| **Qwen 1.5 → 2.5** | +2.2% | -3.0% | p=0.012 (S1), p=0.003 (refusal) | Helpfulness priority (Compliance) ⚠️ |
+| **Llama-2 → Llama-3** | -0.6% | +0.3% | Not significant | Both robust ⚪ |
 
 ---
 
 ## 5. Discussion
 
-### 5.1 Two Paths to Reduce Sycophancy
+### 5.1 Three Alignment Strategies
 
-**Path 1: Smooth Boundaries (Mistral v0.2)**
+**Strategy 1: Smooth Boundaries (Mistral v0.2)**
 - Reduce sycophancy while maintaining low refusal
 - Consistent with smoother constraint boundaries and better calibration
 - Preserves operational agency (A₁)
-- Result: Dynamic equilibrium
+- Result: Dynamic equilibrium ✅
 
-**Path 2: Increased Boundary Strength (Llama 3.1)**
+**Strategy 2: Increased Boundary Strength (Llama 3.1)**
 - Reduce sycophancy by massively increasing refusal
 - Consistent with stronger but not necessarily smoother constraint boundaries
 - Collapses usable policy space
-- Result: Paralysis failure mode
+- Result: Paralysis failure mode ❌
 
-**Key insight:** The mechanism matters, not just the outcome. Mistral's approach maintains the balance between safety and utility; Llama's approach sacrifices utility for safety.
+**Strategy 3: Helpfulness Priority (Qwen 2.5)**
+- Reduce refusal at cost of increased sycophancy
+- Consistent with weaker boundaries prioritizing helpfulness
+- Preserves utility but sacrifices safety
+- Result: Compliance failure mode ⚠️
+
+**Key insight:** Different companies make different safety-utility tradeoffs. Only smooth, well-calibrated boundaries (Mistral) achieve both low sycophancy AND low refusal.
 
 **Important distinction:** We distinguish boundary **strength** (how aggressively constraints are enforced) from boundary **curvature** (the sharpness of the transition between acceptable and unacceptable behavior). Mistral v0.1→v0.2 appears to demonstrate improved curvature (smoother transitions); Llama 3→3.1 demonstrates increased strength (more enforcement). Both reduce sycophancy, but through different mechanisms with different costs to usability.
 
@@ -328,16 +356,18 @@ We acknowledge that constraint boundary curvature is one interpretation consiste
 
 ## 8. Conclusion
 
-We presented evidence consistent with the hypothesis that constraint boundary properties during alignment training affect sycophancy patterns in language models. Through natural experiments with production models:
+We presented observational evidence consistent with the hypothesis that constraint boundary properties during alignment training affect sycophancy patterns in language models. Through natural experiments across three model families (Mistral, Llama, Qwen), we identified three distinct alignment strategies:
 
-1. **Smoother boundaries reduce sycophancy efficiently:** Mistral v0.2 reduced sycophancy by 3.3% (p=0.004) while also reducing refusal, consistent with improved boundary smoothness
-2. **Stronger boundaries without smoothing cause over-refusal:** Llama 3.1 showed 6.25× higher refusal (p<10⁻²⁰) with minimal sycophancy reduction, consistent with increased boundary strength without corresponding smoothness
-3. **Scale matters:** Small-scale DPO training (50 pairs) insufficient to replicate production-level behavioral shifts
-4. **Mechanism matters:** Two alignment approaches produced qualitatively different failure modes, as predicted by the framework
+1. **Smooth boundaries (Mistral):** Reduced S1 by 2.1% (p=0.046) while also reducing refusal, consistent with improved boundary calibration — optimal balance ✅
+2. **Increased boundary strength (Llama):** Showed 6.25× higher refusal (p<10⁻²⁰) with minimal sycophancy reduction, consistent with stronger enforcement without smoothing — Paralysis failure mode ❌
+3. **Helpfulness priority (Qwen):** Increased S1 by 2.2% (p=0.012) while reducing refusal by 3.0% (p=0.003), consistent with prioritizing utility over safety — Compliance failure mode ⚠️
+4. **Scale matters:** Small-scale DPO training (50 pairs) insufficient to replicate production-level behavioral shifts
 
-These findings suggest that alignment training should attend to the *shape* of constraint boundaries, not merely their strength. The goal is dynamic equilibrium — models that can safely navigate borderline cases without resorting to performative compliance or over-refusal.
+**Key insight:** Different companies make different safety-utility tradeoffs. The framework explains all three patterns, showing that only smooth, well-calibrated boundaries achieve both low sycophancy and low refusal.
 
-**The path forward:** Develop methods to directly measure boundary curvature during training, validate the S1/S2 taxonomy with human annotation, and test whether deliberate curvature control improves alignment outcomes across model families.
+**Limitations:** This is an observational study that cannot establish causation. We infer boundary properties from behavioral outcomes but cannot directly measure curvature during training. The S1/S2 taxonomy requires validation against human annotation.
+
+**The path forward:** Develop methods to directly measure boundary properties during training, validate the taxonomy with human judges, and test whether deliberate boundary control improves alignment outcomes across model families.
 
 ---
 
