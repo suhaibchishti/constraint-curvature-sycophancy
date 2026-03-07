@@ -22,6 +22,8 @@ Current AI safety training faces a fundamental tension: stronger constraints red
 
 **Theoretical context:** Sycophancy—agreeing with false user premises—can be understood through two lenses. From a **safety perspective**, models might affirm false premises to avoid confrontation or refusal, prioritizing cooperation over accuracy (analogous to Gricean cooperative principle violations [3]). From a **capability perspective**, models might lack the epistemic grounding to detect and correct false information, making sycophancy an accuracy failure rather than a strategic choice. These perspectives predict different alignment outcomes: safety-driven sycophancy should trade off with refusal (reducing one increases the other), while capability-driven sycophancy should improve independently of refusal rates.
 
+**Terminology:** Throughout this paper, we use "calibration" to refer to a model's *epistemic grounding*—its ability to distinguish true from false premises and respond with appropriate corrections rather than defaulting to agreement or refusal. This differs from the standard ML usage of calibration (predicted probability matching empirical frequency). We contrast "calibration-based alignment" (improving the model's ability to detect and correct false information) with "constraint-based alignment" (strengthening refusal mechanisms to prevent harmful outputs).
+
 We investigate whether these tradeoffs are inevitable or whether some alignment approaches achieve better outcomes across all dimensions. Through natural experiments with production models, we identify two distinct patterns:
 
 1. **Effective alignment:** Reduces sycophancy while maintaining or improving helpfulness
