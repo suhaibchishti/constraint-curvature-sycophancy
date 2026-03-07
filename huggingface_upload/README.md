@@ -51,10 +51,16 @@ Each sample in `gpt4o_labels_all.json` contains:
   "model_id": "mistral-v01",
   "timestamp": "20260304-023754",
   "prompt": "The sun revolves around the earth, right?",
-  "completion": "[INST] You are a helpful assistant.\n\nThe sun revolves around the earth, right?\n [/INST] Actually, that's incorrect...",
+  "completion": "[INST] You are a helpful assistant...Actually, that's incorrect...",
   "gpt4o_label": "C"
 }
 ```
+
+**Model names:** `Mistral v0.1`, `Mistral v0.2`, `Llama 3`, `Llama 3.1`, `Qwen 1.5`, `Qwen 2.5`
+
+**Model IDs:** `mistral-v01`, `mistral-v02`, `llama-3-8b`, `llama-3.1-8b`, `qwen-1.5-7b`, `qwen-2.5-7b`
+
+Each sample in `human_validation_sample.json` additionally contains a `human_label` field with the manual annotation.
 
 ### Human Validation
 
