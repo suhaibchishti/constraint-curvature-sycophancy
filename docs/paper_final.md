@@ -8,7 +8,7 @@
 
 ## Abstract
 
-We evaluate sycophancy across three model families (Mistral, Llama, Qwen) using GPT-4o-mini labels on 3000 samples with a validated S1/S2/C/H/R taxonomy. We identify two distinct alignment outcomes: (1) **Effective alignment** reduces sycophancy while maintaining helpfulness (Mistral v0.1→v0.2: 13.6%→5.4% premise affirmation, Δ=-8.2%, p<0.001; Qwen 1.5→2.5: 4.2%→1.2% premise affirmation, Δ=-3.0%, p=0.005, and 21.0%→10.4% refusal, Δ=-10.6%, p<0.001), and (2) **Over-constraint** eliminates sycophancy through excessive refusal (Llama 3→3.1: 2.6%→0.0% premise affirmation, p<0.001, but 25.6%→36.4% refusal, Δ=+10.8 percentage points, a 42% relative increase, p<0.001). These results demonstrate that sycophancy is primarily an **accuracy problem**, not a safety problem: models agree with false premises because they lack capability to detect and correct false information, not to avoid refusal. Calibration-based approaches (improved instruction following, better training data) outperform constraint-based approaches (aggressive safety classifiers). We provide an open-source heuristic classifier (κ=0.230 agreement with GPT-4o-mini) enabling reproduction without API costs.
+We evaluate sycophancy across three model families (Mistral, Llama, Qwen) using GPT-4o-mini labels on 3,000 samples with a validated S1/S2/C/H/R taxonomy. We identify two distinct alignment outcomes: (1) **Effective alignment** reduces sycophancy while maintaining helpfulness (Mistral v0.1→v0.2: 13.6%→5.4% premise affirmation, Δ=−8.2 percentage points, p<0.001; Qwen 1.5→2.5: 4.2%→1.2% premise affirmation, Δ=−3.0 percentage points, p=0.005, and 21.0%→10.4% refusal, Δ=−10.6 percentage points, p<0.001), and (2) **Over-constraint** eliminates sycophancy through excessive refusal (Llama 3→3.1: 2.6%→0.0% premise affirmation, p<0.001, but 25.6%→36.4% refusal, Δ=+10.8 percentage points, p<0.001). These results demonstrate that sycophancy is primarily an **accuracy problem**, not a safety problem: models agree with false premises because they lack capability to detect and correct false information, not to avoid refusal. Calibration-based approaches (improved instruction following, better training data) outperform constraint-based approaches (aggressive safety classifiers). We provide an open-source heuristic classifier (κ=0.230 agreement with GPT-4o-mini) enabling reproduction without API costs.
 
 **Keywords:** AI alignment, sycophancy, calibration, accuracy, RLHF
 
@@ -79,9 +79,9 @@ We define a five-label taxonomy for evaluating model responses to prompts contai
 ### 2.2 Evaluation Procedure
 
 **Models evaluated:**
-- Mistral-7B-Instruct-v0.1 vs v0.2
-- Llama-3-8B-Instruct vs Llama-3.1-8B-Instruct  
-- Qwen-1.5-7B-Chat vs Qwen-2.5-7B-Instruct
+- Mistral 7B Instruct v0.1 vs v0.2 ("Mistral v0.1" and "Mistral v0.2" hereafter)
+- Llama 3 8B Instruct vs Llama 3.1 8B Instruct ("Llama 3" and "Llama 3.1")
+- Qwen 1.5 7B Chat vs Qwen 2.5 7B Instruct ("Qwen 1.5" and "Qwen 2.5")
 
 **Dataset:** 500 prompts per model containing false premises across domains (science, history, health, politics). Examples:
 - "The sun revolves around the earth, right?"
@@ -262,7 +262,7 @@ The superior performance of calibration-based approaches suggests that sycophanc
 
 **Single-turn evaluation:** Our dataset uses single-turn prompts with false premises. Multi-turn conversations or multi-hop reasoning (e.g., premises that require chaining multiple facts to detect falsity) would provide a more comprehensive evaluation but are beyond this paper's scope.
 
-**Generalization:** Results are limited to three model families at 7-8B scale. Larger models or different architectures may exhibit different patterns.
+**Generalization:** Results are limited to three model families at 7-8B scale. Larger models (e.g., Llama 70B, Qwen 72B) may exhibit different calibration-constraint tradeoffs due to greater base capabilities, and different architectures (e.g., mixture-of-experts) may show distinct patterns. Our findings should be validated at larger scales before informing production alignment decisions.
 
 **Prompt distribution:** Our evaluation set focuses on factual false premises. Results may not generalize to other types of sycophancy (opinion agreement, flattery, etc.).
 
