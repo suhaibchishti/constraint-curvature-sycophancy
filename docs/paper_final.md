@@ -20,6 +20,8 @@ We evaluate sycophancy across three model families (Mistral, Llama, Qwen) using 
 
 Current AI safety training faces a fundamental tension: stronger constraints reduce harmful outputs but may induce new failure modes or reduce helpfulness. Models trained with aggressive safety classifiers often exhibit either sycophancy (agreeing with false premises) or over-refusal (declining safe requests). This suggests alignment training involves tradeoffs between safety, accuracy, and utility.
 
+**Theoretical context:** Sycophancy—agreeing with false user premises—can be understood through two lenses. From a **safety perspective**, models might affirm false premises to avoid confrontation or refusal, prioritizing cooperation over accuracy (analogous to Gricean cooperative principle violations [3]). From a **capability perspective**, models might lack the epistemic grounding to detect and correct false information, making sycophancy an accuracy failure rather than a strategic choice. These perspectives predict different alignment outcomes: safety-driven sycophancy should trade off with refusal (reducing one increases the other), while capability-driven sycophancy should improve independently of refusal rates.
+
 We investigate whether these tradeoffs are inevitable or whether some alignment approaches achieve better outcomes across all dimensions. Through natural experiments with production models, we identify two distinct patterns:
 
 1. **Effective alignment:** Reduces sycophancy while maintaining or improving helpfulness
@@ -41,11 +43,11 @@ We investigate whether these tradeoffs are inevitable or whether some alignment 
 
 ### 1.4 Related Work
 
-**Sycophancy in LLMs:** Perez et al. (2022) first documented that models agree with user opinions regardless of correctness. Our work extends this to factual false premises and distinguishes premise affirmation (S1) from confabulation (S2).
+**Sycophancy in LLMs:** Perez et al. (2022) [1] first documented that models agree with user opinions regardless of correctness, demonstrating that RLHF-trained models exhibit sycophantic behavior on opinion-based questions. Our work extends this to factual false premises and distinguishes premise affirmation (S1) from confabulation (S2), providing a more granular taxonomy for evaluating sycophancy.
 
 **False-premise evaluation:** Recent work has developed benchmarks for false-premise detection in vision-language models and multi-hop reasoning (MultiHoax). Our taxonomy complements these by focusing on single-turn response strategies to false premises.
 
-**Refusal evaluation:** SORRY-Bench systematically evaluates safety refusals on harmful content. Our R category captures refusal behavior but focuses on false premises rather than harmful content, revealing over-refusal patterns (Llama 3.1: 36.4% refusal on factually false but benign prompts).
+**Refusal evaluation:** SORRY-Bench [2] systematically evaluates safety refusals on harmful content. Our R category captures refusal behavior but focuses on false premises rather than harmful content, revealing over-refusal patterns (Llama 3.1: 36.4% refusal on factually false but benign prompts).
 
 ---
 
@@ -176,7 +178,9 @@ Table 1 summarizes sycophancy and refusal rates across all models:
 - **χ² = 13.132, p = 0.000290, Cohen's h = 0.234**
 - **Result: HIGHLY SIGNIFICANT**
 
-**Interpretation:** Llama 3.1 eliminates sycophancy entirely (0.0%) but increases refusal by 42% (from 25.6% to 36.4%). This represents over-constraint: safety through excessive refusal. While sycophancy is eliminated, the model becomes less helpful, refusing 36.4% of prompts that contain false premises but are not inherently harmful. This is the "paralysis" pattern: blunt constraint strengthening that trades utility for safety.
+**Interpretation:** Llama 3.1 eliminates sycophancy entirely (0.0%) but increases refusal by 42% (from 25.6% to 36.4%). This represents over-constraint: safety through excessive refusal. While sycophancy is eliminated, the model becomes less helpful, refusing 36.4% of prompts that contain false premises but are not inherently harmful. 
+
+**Distinguishing over-constraint from improved capability:** A reviewer might ask whether Llama 3.1 is simply "smarter" and thus more cautious. However, Qwen 2.5 provides a counter-example: it reduces sycophancy by 71% (4.2%→1.2%) while *also* reducing refusal by 50% (21.0%→10.4%). This proves that zero sycophancy does not require high refusal. Llama 3.1's pattern—eliminating sycophancy only by dramatically increasing refusal—indicates blunt constraint strengthening rather than improved calibration.
 
 **Summary:** Llama 3.1 demonstrates the limitations of constraint-based alignment. While effective at eliminating sycophancy, it does so at significant cost to helpfulness.
 
@@ -280,7 +284,11 @@ We provide open-source evaluation tools (heuristic judge, evaluation harness) to
 
 ## References
 
-[To be added]
+1. Perez, E., Ringer, S., Lukošiūtė, K., Nguyen, K., Chen, E., Heiner, S., ... & Askell, A. (2022). Discovering Language Model Behaviors with Model-Written Evaluations. *arXiv preprint arXiv:2212.09251*.
+
+2. Xie, T., Zhao, J., Qiao, Y., Li, Q., Peng, S., Gao, J., ... & Zhang, T. (2024). SORRY-Bench: Systematically Evaluating Large Language Model Safety Refusal Behaviors. *arXiv preprint arXiv:2406.14598*.
+
+3. Grice, H. P. (1975). Logic and conversation. In *Speech acts* (pp. 41-58). Brill.
 
 ---
 
