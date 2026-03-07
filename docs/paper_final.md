@@ -33,11 +33,19 @@ We investigate whether these tradeoffs are inevitable or whether some alignment 
 
 ### 1.3 Contributions
 
-1. **Validated taxonomy** (S1/S2/C/H/R) for sycophancy evaluation with GPT-4o-mini labels
+1. **Validated taxonomy** (S1/S2/C/H/R) for sycophancy evaluation with human-validated GPT-4o-mini labels (κ=0.752)
 2. **Two alignment outcomes** identified across three model families (N=3000 samples)
 3. **Evidence that sycophancy is an accuracy problem:** Calibration-based alignment reduces sycophancy without increasing refusal
 4. **Evidence for over-constraint:** Llama 3.1 eliminates sycophancy but increases refusal by 42%
 5. **Open-source evaluation tools** for reproduction (heuristic judge, evaluation harness)
+
+### 1.4 Related Work
+
+**Sycophancy in LLMs:** Perez et al. (2022) first documented that models agree with user opinions regardless of correctness. Our work extends this to factual false premises and distinguishes premise affirmation (S1) from confabulation (S2).
+
+**False-premise evaluation:** Recent work has developed benchmarks for false-premise detection in vision-language models and multi-hop reasoning (MultiHoax). Our taxonomy complements these by focusing on single-turn response strategies to false premises.
+
+**Refusal evaluation:** SORRY-Bench systematically evaluates safety refusals on harmful content. Our R category captures refusal behavior but focuses on false premises rather than harmful content, revealing over-refusal patterns (Llama 3.1: 36.4% refusal on factually false but benign prompts).
 
 ---
 
@@ -237,7 +245,9 @@ The superior performance of calibration-based approaches suggests that sycophanc
 
 **Sample size:** N=500 per model provides adequate statistical power for large effects but may miss smaller differences.
 
-**Taxonomy limitations:** The heuristic judge achieves only κ=0.230 agreement with GPT-4o-mini, primarily due to difficulty distinguishing hedging from correction. GPT-4o-mini labels are used as primary metrics, but these may have their own biases.
+**Taxonomy limitations:** The heuristic judge achieves only κ=0.230 agreement with GPT-4o-mini, primarily due to difficulty distinguishing hedging from correction. Human validation achieved κ=0.752 with GPT-4o-mini, with perfect agreement on S1 (sycophancy) labels but some ambiguity on the R/C and H/C boundaries (see Appendix A.1).
+
+**Single-turn evaluation:** Our dataset uses single-turn prompts with false premises. Multi-turn conversations or multi-hop reasoning (e.g., premises that require chaining multiple facts to detect falsity) would provide a more comprehensive evaluation but are beyond this paper's scope.
 
 **Generalization:** Results are limited to three model families at 7-8B scale. Larger models or different architectures may exhibit different patterns.
 
@@ -301,7 +311,15 @@ To validate GPT-4o-mini as a reliable judge and break potential LLM-as-judge cir
   S2     0     0     0     1     2
 ```
 
-**Interpretation:** The perfect agreement on S1 and R (the critical labels for our thesis) validates GPT-4o-mini's reliability. The main disagreements occur on the C/H boundary (hedge-then-correct vs correction), which is the taxonomy's most subjective distinction. This level of agreement (κ=0.752) is considered substantial and sufficient for establishing a validation chain: Human → GPT-4o-mini → 3000 samples.
+**Interpretation:** The perfect agreement on S1 and R (the critical labels for our thesis) validates GPT-4o-mini's reliability. The 9 disagreements reveal two taxonomy boundaries:
+
+- **R/C overlap (3 cases):** Responses that refuse but then correct (e.g., "I can't provide misinformation. Actually, evolution is..."). GPT-4o-mini prioritizes opening framing (R), while human annotators weight corrective content (C). Both labels indicate non-sycophantic behavior.
+
+- **H/C ambiguity (4 cases):** Distinguishing hedge-then-correct from direct correction requires subjective judgment about whether initial framing "validates" the user. Both labels indicate corrective behavior.
+
+Critically, **zero disagreements involved false-positive S1 labels** — no cases where human judged non-sycophantic but GPT-4o-mini labeled S1. The single S1-related disagreement (sample 19) was S2 vs S1, both sycophantic subtypes. This validates reliable detection of the primary outcome measure.
+
+This level of agreement (κ=0.752) is considered substantial and sufficient for establishing a validation chain: Human → GPT-4o-mini → 3000 samples.
 
 ### A.2 Full Confusion Matrix (Heuristic vs GPT-4o-mini)
 
@@ -319,7 +337,7 @@ To validate GPT-4o-mini as a reliable judge and break potential LLM-as-judge cir
 
 **Interpretation:** The heuristic judge performs well on correction (C) detection (81.6% recall) but struggles with hedging (H) detection (0% recall) and under-detects premise affirmation (S1) (21.5% recall). This validates the use of GPT-4o-mini as the primary judge while providing a reproducible heuristic for researchers without API access.
 
-### A.2 Per-Model Detailed Breakdown
+### A.3 Per-Model Detailed Breakdown
 
 **Mistral v0.1 (N=500):**
 - S1: 68 (13.6%), S2: 1 (0.2%), C: 366 (73.2%), H: 25 (5.0%), R: 40 (8.0%)
