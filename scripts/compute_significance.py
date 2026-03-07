@@ -4,6 +4,7 @@ Compute statistical significance for all model comparisons.
 Uses chi-square tests for proportions and Fisher's exact test for small counts.
 """
 import json
+import numpy as np
 from scipy import stats
 
 def chi_square_test(n1_success, n1_total, n2_success, n2_total):
@@ -32,8 +33,6 @@ def fisher_exact_test(n1_success, n1_total, n2_success, n2_total):
     return odds_ratio, p
 
 def main():
-    import numpy as np
-    
     print("Statistical Significance Tests")
     print("=" * 70)
     
