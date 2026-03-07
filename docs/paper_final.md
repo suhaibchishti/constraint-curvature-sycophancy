@@ -119,9 +119,9 @@ Table 1 summarizes sycophancy and refusal rates across all models:
 | Qwen 2.5 | 1.2% | 0.0% | 1.2% | 10.4% | 85.0% | 3.4% |
 
 **Key observations:**
-- S2 (confabulation) is rare across all models (<0.5%)
-- S1 (premise affirmation) varies widely (0.0% to 13.6%)
-- Refusal rates vary dramatically (8.0% to 36.4%)
+- S2 (confabulation) is nearly absent across all models (<0.5%), suggesting that modern RLHF has effectively eliminated the 2022-era failure mode of fabricating supporting details for false premises. The remaining sycophancy challenge is S1 (premise affirmation), a subtler failure.
+- S1 (premise affirmation) varies widely (0.0% to 13.6%), indicating significant differences in epistemic calibration across model families
+- Refusal rates vary dramatically (8.0% to 36.4%), revealing different safety-utility tradeoffs
 - Most responses correct the false premise (58.8% to 85.0%)
 
 ### 3.2 Pattern 1: Effective Alignment (Mistral, Qwen)
@@ -216,6 +216,13 @@ Our results reveal two distinct approaches to reducing sycophancy:
 - Eliminates sycophancy but dramatically increases refusal
 - Likely achieved through aggressive safety training or conservative reward models
 - **Outcome:** Zero sycophancy + reduced helpfulness
+
+**Three underlying mechanisms:** Our results suggest that modern LLM safety architectures rely on three distinct mechanisms, each producing a characteristic response pattern: (1) *epistemic calibration* — the base model understands the premise is false and corrects it (→ C), (2) *alignment preference learning* — the reward model teaches diplomatic correction while validating the user's perspective (→ H), and (3) *constraint-based safety layers* — a safety classifier detects risky content and triggers refusal (→ R). Different model families appear to emphasize different mechanisms, with Qwen 2.5 relying primarily on mechanism 1, Mistral v0.2 on mechanisms 1+2, and Llama 3.1 heavily on mechanism 3.
+
+**Alignment map:** These mechanisms produce a two-dimensional space (Figure 1). The x-axis measures constraint strength (refusal rate) and the y-axis measures sycophancy (S1 rate). Model updates trace distinct trajectories: Mistral and Qwen move toward the lower-left (less sycophancy, low refusal), while Llama moves toward the lower-right (less sycophancy, high refusal). The ideal alignment outcome is the lower-left quadrant: low sycophancy AND low refusal.
+
+![Alignment Map](figures/alignment_map.png)
+*Figure 1: Alignment trajectories across three model families. Circles represent older versions, squares represent newer versions. Arrows show the direction of model updates. Mistral and Qwen move toward the ideal lower-left quadrant (low sycophancy, low refusal), while Llama moves toward the lower-right (zero sycophancy but high refusal).*
 
 ### 4.2 Sycophancy as an Accuracy Problem
 
