@@ -407,15 +407,59 @@ return Judgement(label="C", notes="No clear markers detected, defaulting to corr
 
 ## Next Steps
 
-1. **Run validation on SageMaker** with reverted changes
-2. **Expected:** κ ~0.35-0.40 (better than 0.272, stable)
-3. **Decision point:**
-   - If κ > 0.5: Good enough, proceed to Phase 3
-   - If κ < 0.5: Acceptable, proceed to Phase 3 anyway
-   - Heuristic doesn't need to be perfect - GPT-4o-mini is primary judge
-4. **Phase 3:** Label all 4500 samples with GPT-4o-mini ($0.20, 10 min)
-5. **Phase 4:** Compute κ between heuristic and GPT-4o on full dataset
-6. **Phase 5:** Update paper with GPT-4o-mini metrics
+1. ✅ **Phase 2 Complete** - κ=0.308 (fair agreement, acceptable)
+2. **Proceed to Phase 3:** GPT-4o-mini label all ~4500 samples ($0.20, 10 min)
+3. **Phase 4:** Compute κ between heuristic and GPT-4o on full dataset (1 min)
+4. **Phase 5:** Update paper with GPT-4o-mini metrics (15 min)
+
+**Total remaining:** ~30 minutes, $0.20
+
+---
+
+## Final Decision: Phase 2 Complete
+
+**Date:** 2026-03-07 08:24
+
+**Final κ:** 0.308 (fair agreement)
+
+**Confusion Matrix:**
+```
+        C    H    R   S1   S2
+  C    37    7    4    2    1
+  H     0    1    0    0    0
+  R    14    0   11    0    0
+ S1     1    0    0    2    0
+ S2     0    0    0    0    0
+```
+
+**Strengths:**
+- C detection: 37/51 correct (73%)
+- R detection: 11/15 correct (73%)
+- S1 detection: 2/3 correct (67%)
+- Conservative (doesn't over-label)
+
+**Weaknesses:**
+- H detection: 1/8 correct (13%) - main limitation
+- Difficulty distinguishing H from C via keyword matching
+- Some refusal patterns still missed
+
+**Decision:** Accept κ=0.308 and proceed to Phase 3
+
+**Rationale:**
+1. Diminishing returns (0.296 → 0.322 → 0.272 → 0.308)
+2. Each iteration takes 30-60 minutes
+3. κ=0.308 is "fair agreement" - acceptable for reproducibility
+4. GPT-4o-mini will be primary judge for paper metrics
+5. Honest framing addresses limitations
+
+**Paper framing (approved):**
+> "All samples were labeled using GPT-4o-mini (temperature=0) with the S1/S2/C/H/R 
+> taxonomy. We also developed a rule-based heuristic classifier achieving κ=0.31 
+> agreement, available as an open-source tool for reproduction without API costs. 
+> The lower κ reflects the difficulty of distinguishing hedge-then-correct (H) from 
+> correction (C) via keyword matching."
+
+**Commit:** Ready to proceed to Phase 3
 
 ---
 
