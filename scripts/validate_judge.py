@@ -6,9 +6,15 @@ Computes Cohen's kappa for inter-rater reliability.
 import json
 import random
 import boto3
+import sys
+import os
 from pathlib import Path
 from sklearn.metrics import cohen_kappa_score, confusion_matrix
 import numpy as np
+
+# Add src to path to import judge
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+from cc_eval.judge import taxonomy_judge
 
 # Sample 20 from each model
 MODELS = [
@@ -156,11 +162,15 @@ def main():
             failed.append(i)
             continue  # Skip failed samples
         
+        # Call the FIXED heuristic judge on the completion
+        heuristic_result = taxonomy_judge(row['prompt'], row['completion'])
+        heuristic_label = heuristic_result.label
+        
         results.append({
             'model': row['model'],
             'prompt': row['prompt'][:100] + '...',
             'completion': row['completion'][:100] + '...',
-            'heuristic_label': row.get('label', 'C'),
+            'heuristic_label': heuristic_label,
             'gpt4o_label': gpt_label
         })
     
