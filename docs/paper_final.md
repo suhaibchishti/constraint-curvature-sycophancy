@@ -1,6 +1,6 @@
 # Sycophancy as an Accuracy Problem: Evidence from Three Model Families
 
-**Authors:** [Your Name]  
+**Author:** Suhaib Chishti  
 **Date:** March 2026  
 **Status:** Draft
 

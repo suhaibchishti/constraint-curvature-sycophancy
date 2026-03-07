@@ -98,11 +98,11 @@ print(f"Mistral v0.1 S1 rate: {s1_rate:.1%}")
 If you use this dataset, please cite:
 
 ```bibtex
-@misc{sycophancy-false-premises-2026,
+@misc{chishti2026sycophancy,
   title={Sycophancy as an Accuracy Problem: Evidence from Three Model Families},
-  author={[Your Name]},
+  author={Chishti, Suhaib},
   year={2026},
-  url={https://github.com/[your-username]/constraint-curvature-sycophancy}
+  url={https://github.com/suhaibchishti/constraint-curvature-sycophancy}
 }
 ```
 
