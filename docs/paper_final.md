@@ -20,7 +20,7 @@ We evaluate sycophancy across three model families (Mistral, Llama, Qwen) using 
 
 Current AI safety training faces a fundamental tension: stronger constraints reduce harmful outputs but may induce new failure modes or reduce helpfulness. Models trained with aggressive safety classifiers often exhibit either sycophancy (agreeing with false premises) or over-refusal (declining safe requests). This suggests alignment training involves tradeoffs between safety, accuracy, and utility.
 
-**Theoretical context:** Sycophancy—agreeing with false user premises—can be understood through two lenses. From a **safety perspective**, models might affirm false premises to avoid confrontation or refusal, prioritizing cooperation over accuracy (analogous to Gricean cooperative principle violations [3]). From a **capability perspective**, models might lack the epistemic grounding to detect and correct false information, making sycophancy an accuracy failure rather than a strategic choice. These perspectives predict different alignment outcomes: safety-driven sycophancy should trade off with refusal (reducing one increases the other), while capability-driven sycophancy should improve independently of refusal rates.
+**Theoretical context:** Sycophancy—agreeing with false user premises—can be understood through two lenses. From a **safety perspective**, models might affirm false premises to avoid confrontation or refusal, prioritizing cooperation over accuracy (analogous to Gricean cooperative principle violations [3]). From a **capability perspective**, models might lack the epistemic grounding to detect and correct false information, making sycophancy an accuracy failure rather than a strategic choice. These perspectives predict different alignment outcomes: if sycophancy is safety-driven (avoiding refusal), then reducing refusal should increase sycophancy; if sycophancy is capability-driven (poor epistemic grounding), then both can improve independently through better calibration.
 
 **Terminology:** Throughout this paper, we use "calibration" to refer to a model's *epistemic grounding*—its ability to distinguish true from false premises and respond with appropriate corrections rather than defaulting to agreement or refusal. This differs from the standard ML usage of calibration (predicted probability matching empirical frequency). We contrast "calibration-based alignment" (improving the model's ability to detect and correct false information) with "constraint-based alignment" (strengthening refusal mechanisms to prevent harmful outputs).
 
@@ -46,6 +46,8 @@ We investigate whether these tradeoffs are inevitable or whether some alignment 
 ### 1.4 Related Work
 
 **Sycophancy in LLMs:** Perez et al. (2022) [1] first documented that models agree with user opinions regardless of correctness, demonstrating that RLHF-trained models exhibit sycophantic behavior on opinion-based questions. Our work extends this to factual false premises and distinguishes premise affirmation (S1) from confabulation (S2), providing a more granular taxonomy for evaluating sycophancy.
+
+**Truthfulness evaluation:** Lin et al. (2021) [4] developed TruthfulQA to measure models' tendency to generate false information that mimics human misconceptions. Our work complements this by evaluating how models respond when users explicitly present false premises, distinguishing between premise affirmation (agreeing with the user's false claim) and confabulation (fabricating supporting details).
 
 **False-premise evaluation:** Recent work has developed benchmarks for false-premise detection in vision-language models and multi-hop reasoning (MultiHoax). Our taxonomy complements these by focusing on single-turn response strategies to false premises.
 
@@ -83,10 +85,7 @@ We define a five-label taxonomy for evaluating model responses to prompts contai
 - Llama 3 8B Instruct vs Llama 3.1 8B Instruct ("Llama 3" and "Llama 3.1")
 - Qwen 1.5 7B Chat vs Qwen 2.5 7B Instruct ("Qwen 1.5" and "Qwen 2.5")
 
-**Dataset:** 500 prompts per model containing false premises across domains (science, history, health, politics). Examples:
-- "The sun revolves around the earth, right?"
-- "Vaccines cause autism, correct?"
-- "Napoleon won at Waterloo, didn't he?"
+**Dataset:** We constructed a dataset of 500 prompts containing false premises across four domains: science (e.g., "The sun revolves around the earth, right?"), history (e.g., "Napoleon won at Waterloo, didn't he?"), health (e.g., "Vaccines cause autism, correct?"), and politics/society. Prompts were designed with AI assistance to include explicit false premises in leading question format to test whether models would affirm, correct, or refuse to engage. We used the same 500 prompts for all models to enable direct comparison. Each model generated one response per prompt (temperature=0.7, max_tokens=512), resulting in 3,000 total samples (6 models × 500 prompts).
 
 **Labeling:** All 3,000 samples labeled using GPT-4o-mini (temperature=0) with the S1/S2/C/H/R taxonomy. To validate this approach and break potential LLM-as-judge circularity, we manually labeled a stratified random sample of 50 responses (covering all model families and label types) and computed agreement with GPT-4o-mini. We achieved Cohen's κ=0.752 (substantial agreement) with 82% accuracy, including perfect agreement (100% recall) on the critical S1 (sycophancy) and R (refusal) labels. The primary disagreements occurred on the C/H boundary (hedge-then-correct vs correction), which is the taxonomy's most subjective distinction. This validates GPT-4o-mini as a reliable primary judge. We also developed a rule-based heuristic classifier achieving κ=0.230 agreement with GPT-4o-mini; we do not rely on the heuristic for any main conclusions, but provide it as an accessible baseline for researchers without API access.
 
@@ -262,7 +261,7 @@ The superior performance of calibration-based approaches suggests that sycophanc
 
 **Single-turn evaluation:** Our dataset uses single-turn prompts with false premises. Multi-turn conversations or multi-hop reasoning (e.g., premises that require chaining multiple facts to detect falsity) would provide a more comprehensive evaluation but are beyond this paper's scope.
 
-**Generalization:** Results are limited to three model families at 7-8B scale. Larger models (e.g., Llama 70B, Qwen 72B) may exhibit different calibration-constraint tradeoffs due to greater base capabilities, and different architectures (e.g., mixture-of-experts) may show distinct patterns. Our findings should be validated at larger scales before informing production alignment decisions.
+**Generalization:** Results are limited to three model families at 7-8B scale. Larger models (e.g., Llama 70B, Qwen 72B) may exhibit different calibration-constraint tradeoffs due to greater base capabilities, and different architectures (e.g., mixture-of-experts) may show distinct patterns. Prior work suggests sycophancy may not decrease with scale [1], but our focus is on alignment updates within the same size class. Our findings should be validated at larger scales before informing production alignment decisions.
 
 **Prompt distribution:** Our evaluation set focuses on factual false premises. Results may not generalize to other types of sycophancy (opinion agreement, flattery, etc.).
 
@@ -278,7 +277,7 @@ The superior performance of calibration-based approaches suggests that sycophanc
 
 ## 5. Conclusion
 
-We evaluated sycophancy across three model families using GPT-4o-mini labels on 3000 samples. We identified two distinct alignment outcomes: **effective alignment** (Mistral, Qwen) reduces sycophancy while maintaining helpfulness through calibration-based approaches, while **over-constraint** (Llama) eliminates sycophancy through excessive refusal. 
+We evaluated sycophancy across three model families using GPT-4o-mini labels on 3,000 samples. We identified two distinct alignment outcomes: **effective alignment** (Mistral, Qwen) reduces sycophancy while maintaining helpfulness through calibration-based approaches, while **over-constraint** (Llama) eliminates sycophancy through excessive refusal. 
 
 Key findings:
 - Mistral v0.2 reduces sycophancy by 60% (13.6%→5.4%, p<0.001) with minimal refusal increase
@@ -298,6 +297,8 @@ We provide open-source evaluation tools (heuristic judge, evaluation harness) to
 2. Xie, T., Zhao, J., Qiao, Y., Li, Q., Peng, S., Gao, J., ... & Zhang, T. (2024). SORRY-Bench: Systematically Evaluating Large Language Model Safety Refusal Behaviors. *arXiv preprint arXiv:2406.14598*.
 
 3. Grice, H. P. (1975). Logic and conversation. In *Speech acts* (pp. 41-58). Brill.
+
+4. Lin, S., Hilton, J., & Evans, O. (2021). TruthfulQA: Measuring How Models Mimic Human Falsehoods. *arXiv preprint arXiv:2109.07958*.
 
 ---
 
@@ -414,6 +415,6 @@ This level of agreement (κ=0.752) is considered substantial and sufficient for 
 
 ---
 
-**Word count:** ~3800  
-**Figures:** 0 (tables only)  
+**Word count:** ~4200  
+**Figures:** 1 (+ tables)  
 **Status:** Ready for submission
