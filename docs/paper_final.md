@@ -10,6 +10,8 @@
 
 We evaluate sycophancy across three model families (Mistral, Llama, Qwen) using GPT-4o-mini labels on 3,000 samples with a validated S1/S2/C/H/R taxonomy. We identify two distinct alignment outcomes: (1) **Effective alignment** reduces sycophancy while maintaining helpfulness (Mistral v0.1→v0.2: 13.6%→5.4% premise affirmation, Δ=−8.2 percentage points, p<0.001; Qwen 1.5→2.5: 4.2%→1.2% premise affirmation, Δ=−3.0 percentage points, p=0.005, and 21.0%→10.4% refusal, Δ=−10.6 percentage points, p<0.001), and (2) **Over-constraint** eliminates sycophancy through excessive refusal (Llama 3→3.1: 2.6%→0.0% premise affirmation, p<0.001, but 25.6%→36.4% refusal, Δ=+10.8 percentage points, p<0.001). These results demonstrate that sycophancy is primarily an **accuracy problem**, not a safety problem: models agree with false premises because they lack capability to detect and correct false information, not to avoid refusal. Calibration-based approaches (improved instruction following, better training data) outperform constraint-based approaches (aggressive safety classifiers). We provide an open-source heuristic classifier (κ=0.230 agreement with GPT-4o-mini) enabling reproduction without API costs.
 
+**Dataset:** https://huggingface.co/datasets/schis02/sycophancy-false-premises
+
 **Keywords:** AI alignment, sycophancy, calibration, accuracy, RLHF
 
 ---
@@ -286,7 +288,7 @@ Key findings:
 
 These results demonstrate that **sycophancy is primarily an accuracy problem, not a safety problem**. Models agree with false premises because they lack capability to detect and correct false information, not to avoid refusal. Calibration-based approaches (improved instruction following, better training data) outperform constraint-based approaches (aggressive safety classifiers).
 
-We provide open-source evaluation tools (heuristic judge, evaluation harness) to enable reproduction and extension of this work.
+We provide open-source evaluation tools (heuristic judge, evaluation harness) and the complete labeled dataset (https://huggingface.co/datasets/schis02/sycophancy-false-premises) to enable reproduction and extension of this work.
 
 ---
 
