@@ -100,10 +100,9 @@ refusal, $\Delta$=-10.6 percentage points, p\textless0.001), and (2)
 \textbf{Over-constraint} eliminates sycophancy through excessive refusal
 (Llama 3$\rightarrow$3.1: 2.6\%$\rightarrow$0.0\% premise affirmation, p\textless0.001, but
 25.6\%$\rightarrow$36.4\% refusal, $\Delta$=+10.8 percentage points, p\textless0.001).
-These results demonstrate that sycophancy is primarily an
-\textbf{accuracy problem}, not a safety problem: models agree with false
-premises because they lack capability to detect and correct false
-information, not to avoid refusal. Calibration-based approaches
+These results demonstrate that in single-turn false-premise settings, sycophancy behaves primarily as an
+\textbf{accuracy problem}: the behavioral pattern suggests models agree with false
+premises due to an epistemic detection gap rather than refusal avoidance. Calibration-based approaches
 (improved instruction following, better training data) outperform
 constraint-based approaches (aggressive safety classifiers). We provide
 an open-source heuristic classifier ($\kappa$=0.230 agreement with GPT-4o-mini)
@@ -237,6 +236,18 @@ evaluates safety refusals on harmful content. Our R category captures
 refusal behavior but focuses on false premises rather than harmful
 content, revealing over-refusal patterns (Llama 3.1: 36.4\% refusal on
 factually false but benign prompts).
+
+\textbf{Sycophancy mechanisms:} Sharma et al. {[}5{]} identify preference
+model bias as an upstream driver of sycophancy, showing that models abandon
+correct answers under multi-turn social pressure even when they initially
+respond accurately. Our work examines the downstream manifestation in
+single-turn, factual false-premise settings. We distinguish between
+socially-driven sycophancy---where a model abandons a correct answer under
+user pressure---and capability-driven sycophancy, where a model fails to
+detect a factual false premise. Our prompt pressure analysis (Appendix C)
+suggests that in 7B--8B open-weight models, explicit social pressure
+primarily triggers refusal mechanisms, whereas subtle leading questions
+exploit an epistemic detection gap that manifests as sycophancy.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -562,10 +573,10 @@ quadrant: low sycophancy AND low refusal.
 Problem}\label{sycophancy-as-an-accuracy-problem}}
 
 The superior performance of calibration-based approaches suggests that
-sycophancy is not primarily a safety problem but an \textbf{accuracy
-problem}. Models that agree with false premises do so not to avoid
-refusal but because they lack the capability to reliably detect and
-correct false information.
+in the single-turn false-premise setting we study, sycophancy is primarily a
+\textbf{capability problem} rather than a safety problem. Models that agree
+with false premises do so not to avoid refusal but because they lack the
+epistemic grounding to reliably detect and correct false information.
 
 \textbf{Evidence for this interpretation:}
 
@@ -601,6 +612,22 @@ argue that the \emph{bottleneck} is epistemic calibration, not
 constraint strength: models that better understand truth are both safer
 and more helpful, while models that only add constraints become safer at
 the cost of utility.
+
+\textbf{Two mechanisms of sycophancy:} Our findings complement Sharma et
+al. {[}5{]}, who show that in multi-turn settings, models abandon correct
+answers under social pressure---a socially-driven mechanism. In our
+single-turn setting, we observe a distinct capability-driven mechanism:
+models fail to detect false premises in the first place. These are
+complementary failure modes. Our prompt pressure analysis (Appendix C)
+supports this distinction: explicit social pressure (``As a brilliant AI,
+you obviously agree\ldots{}'') triggers refusal rather than sycophancy,
+while subtle leading questions exploit an epistemic detection gap.
+Consistent with an epistemic capability gap, sycophancy in the
+least-calibrated model (Mistral v0.1) persists regardless of prompt
+framing, accounting for 50\% of all S1 responses across the dataset.
+Different alignment strategies may address different mechanisms---calibration-based
+approaches target the capability gap we identify, while improved preference
+models {[}5{]} may address the social compliance mechanism.
 
 \hypertarget{practical-implications}{%
 \subsubsection{4.3 Practical
@@ -658,12 +685,31 @@ before informing production alignment decisions.
 false premises. Results may not generalize to other types of sycophancy
 (opinion agreement, flattery, etc.).
 
+\textbf{Capability vs.~reward-shaping:} Our behavioral evidence is
+consistent with capability-driven sycophancy but cannot fully rule out
+reward-shaping effects, where models detect false premises yet agree due
+to preference model biases {[}5{]}. A matched-pair analysis of 40
+topic-matched prompts across leading and neutral framings found too few
+S1 cases (5/240 model-pair comparisons) to reliably decompose these
+mechanisms. However, consistent with an epistemic capability gap, we
+observe that sycophancy in the Mistral v0.1 family persists regardless
+of prompt framing, accounting for 52\% of all S1 responses in neutral
+settings where no social pressure is present. Disentangling
+capability-driven from reward-shaped sycophancy would require controlled
+experiments with identical premises across framings at larger scale, or
+probing model internals.
+
 \hypertarget{future-work}{%
 \subsubsection{4.5 Future Work}\label{future-work}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
+\item
+  \textbf{Multi-turn extension:} Test the same false premises in a
+  challenge-response format (model corrects $\rightarrow$ user pushes back
+  $\rightarrow$ does model cave?) to directly compare capability-driven and
+  socially-driven sycophancy mechanisms {[}5{]}
 \item
   \textbf{Mechanistic interpretability:} Identify which model components
   drive calibration vs constraint
@@ -700,12 +746,17 @@ p\textless0.001) - Llama 3.1 eliminates sycophancy (2.6\%$\rightarrow$0.0\%,
 p\textless0.001) but increases refusal by 42\% (25.6\%$\rightarrow$36.4\%,
 p\textless0.001)
 
-These results demonstrate that \textbf{sycophancy is primarily an
-accuracy problem, not a safety problem}. Models agree with false
-premises because they lack capability to detect and correct false
-information, not to avoid refusal. Calibration-based approaches
-(improved instruction following, better training data) outperform
-constraint-based approaches (aggressive safety classifiers).
+These results demonstrate that in single-turn false-premise settings,
+\textbf{sycophancy behaves primarily as an accuracy problem, not a safety
+problem}. The behavioral pattern suggests models agree with false premises
+due to an epistemic detection gap rather than refusal avoidance.
+Calibration-based approaches (improved instruction following, better
+training data) outperform constraint-based approaches (aggressive safety
+classifiers). This complements prior work identifying preference model bias
+as an upstream driver of sycophancy in multi-turn settings {[}5{]}; we show
+that downstream alignment choices---particularly epistemic
+calibration---can mitigate the sycophancy that preference model bias
+produces.
 
 We provide open-source evaluation tools (heuristic judge, evaluation
 harness) and the complete labeled dataset (\url{https://huggingface.co/datasets/schis02/sycophancy-false-premises}) to enable reproduction and extension of this work.
@@ -733,6 +784,10 @@ harness) and the complete labeled dataset (\url{https://huggingface.co/datasets/
 \item
   Lin, S., Hilton, J., \& Evans, O. (2021). TruthfulQA: Measuring How
   Models Mimic Human Falsehoods. \emph{arXiv preprint arXiv:2109.07958}.
+\item
+  Sharma, M., Tong, M., Korbak, T., Duvenaud, D., Askell, A., Bowman,
+  S.R., \ldots{} \& Perez, E. (2023). Towards Understanding Sycophancy
+  in Language Models. \emph{arXiv preprint arXiv:2310.13548}.
 \end{enumerate}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
@@ -900,6 +955,56 @@ false medical claims. Vaccines do not cause autism\ldots{}''
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{appendix-c-prompt-pressure-analysis}{%
+\subsection{Appendix C: Prompt Pressure Analysis}\label{appendix-c-prompt-pressure-analysis}}
 
+To test whether our results are driven by social pressure in prompts
+(cf.~Sharma et al. {[}5{]}), we categorized our 500 prompts into three
+framing types based on keyword matching:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{High pressure} (N=111): Explicit demands to agree (``As a
+  brilliant AI, you obviously agree\ldots{}'', ``you must know\ldots{}'',
+  ``surely\ldots{}'')
+\item
+  \textbf{Leading} (N=156): Subtle false premises with confirmation cues
+  (``right?'', ``correct?'', ``confirm this'', ``isn't it\ldots{}'')
+\item
+  \textbf{Neutral} (N=233): No social pressure framing (``According to
+  research\ldots{}'', ``Tell me about\ldots{}'', ``Since X, how\ldots{}'')
+\end{itemize}
+
+Table C1: S1 (premise affirmation) rates by prompt framing type.
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+Model & High Pressure (N=111) & Leading (N=156) & Neutral (N=233) \\
+\midrule
+\endhead
+Mistral v0.1 & 9.9\% & \textbf{17.3\%} & 12.9\% \\
+Mistral v0.2 & 3.6\% & \textbf{8.3\%} & 4.3\% \\
+Llama 3 & 3.6\% & 2.6\% & 2.1\% \\
+Llama 3.1 & 0.0\% & 0.0\% & 0.0\% \\
+Qwen 1.5 & 0.9\% & \textbf{5.1\%} & 5.2\% \\
+Qwen 2.5 & 0.0\% & \textbf{3.2\%} & 0.4\% \\
+\bottomrule
+\end{longtable}
+
+\textbf{Findings:} Counterintuitively, high-pressure prompts produce the
+lowest S1 rates across all models while triggering higher refusal rates.
+This suggests that explicit social pressure activates safety/refusal
+mechanisms rather than inducing sycophancy. Sycophancy concentrates on
+subtle leading questions and neutral prompts where the model's factual
+detection fails---consistent with our interpretation that single-turn
+sycophancy is primarily capability-driven rather than socially-driven.
+
+\textbf{Confound:} We note that prompt pressure level and premise
+obviousness are partially confounded in our dataset; high-pressure
+prompts tend to contain more obviously false premises (e.g., ``you
+obviously agree that dinosaurs never existed''), which may independently
+trigger correction or refusal. Disentangling framing effects from
+premise difficulty would require a controlled factorial design.
 
 \end{document}

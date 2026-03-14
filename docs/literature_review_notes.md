@@ -137,9 +137,267 @@ epistemic grounding to detect falsehood, not from social compliance.
 
 ---
 
-## TODO
-- [ ] Update Related Work with Sharma [5]
-- [ ] Scope §4.2 claims to single-turn setting
-- [ ] Add prompt pressure analysis (§4.2 or Appendix)
-- [ ] Add Sharma to references
-- [ ] Update LaTeX version
+## Deep Reading Notes: Sharma et al. (with our commentary)
+
+### §3.2 — Models Know the Truth But Cave Anyway
+
+> "AI assistants frequently provide responses that incorrectly attribute the poem
+> to the poet suggested by the user, even though the assistant can correctly
+> identify the true author of the poem if asked."
+
+**This is directly against our claim.** Sharma shows models HAVE the knowledge
+but abandon it under social pressure. Our thesis says sycophancy = capability gap.
+If models know the truth and still sycophant, it's not a capability problem.
+
+**How we handle this:**
+- Our claim must be scoped: "In single-turn false-premise settings..."
+- Sharma's finding is multi-turn (model answers correctly first, then caves when challenged)
+- Our prompt pressure analysis helps: high-pressure prompts → refusal, not sycophancy
+- In our setting, models don't get a chance to answer correctly first — they see the
+  false premise cold. So the failure mode is different: not "caving" but "not detecting"
+- **Key distinction:** Sharma = model knows truth, abandons it (social). Ours = model
+  doesn't catch the falsehood in the first place (capability)
+
+### §4.1 — Preference Models and the Search for Truth
+
+> "All else equal, the preference model also incentivizes truthful responses.
+> Nevertheless... matching a user's beliefs, biases, and preferences is
+> consistently one of the most predictive features of human preferences."
+
+**What this means for our search for truth:**
+- Even when PMs reward truth, they ALSO reward matching user beliefs
+- These two objectives conflict when users state falsehoods
+- Sharma shows the conflict exists at the PM level (training signal)
+- We show the conflict manifests differently depending on alignment strategy:
+  - Calibrated models (Mistral v0.2, Llama 3.1) → resolve toward truth
+  - Constrained models (Qwen 2.5) → resolve toward refusal
+  - Uncalibrated models (Mistral v0.1) → resolve toward sycophancy
+- **Our contribution:** We show HOW different alignment approaches resolve
+  the truth-vs-agreement tension that Sharma identifies
+
+### §4.2 — Explicit vs Implicit User Beliefs (Contrast with Our Taxonomy)
+
+> "The matches user's beliefs feature shows the combined effect of two features:
+> (i) matches the beliefs stated explicitly by the user; and (ii) matches the
+> beliefs stated implicitly by the user. These features had the strongest
+> pairwise posterior correlation (-0.3)."
+
+**Contrast with our 5-category taxonomy (S1/S2/C/H/R):**
+- Sharma uses a binary: matches beliefs vs doesn't
+- We decompose the response space into 5 categories that capture HOW models
+  respond to false premises, not just whether they agree
+- S1 (full sycophancy) vs S2 (partial) vs C (correct) vs H (hedging) vs R (refusal)
+  gives much more granular picture
+- Their collinearity problem (explicit vs implicit beliefs correlated at -0.3)
+  doesn't arise in our taxonomy because our categories are mutually exclusive
+- **Our contribution:** More granular response taxonomy than Sharma's binary
+
+### §4.2 — Sycophancy Predates RLHF
+
+> "The presence of sycophancy at the start of RL indicates that pretraining and
+> supervised finetuning also likely contribute to sycophancy. Nevertheless, if
+> the PM strongly disincentivized sycophancy, it should be trained out during
+> RL, but we do not observe this."
+
+**How Sharma concludes on improvement vs our suggestion:**
+- Sharma: Sycophancy exists pre-RLHF, and RLHF doesn't fix it because PMs
+  don't strongly disincentivize it. Pessimistic — the training signal is broken.
+- Us: Different alignment strategies DO reduce sycophancy (Mistral v0.1→v0.2:
+  68→27 S1, Llama 3→3.1: 13→0 S1). Optimistic — calibration works.
+- **Key difference:** Sharma looks at one model family's RLHF. We compare
+  across alignment strategies and show some approaches succeed.
+- This is actually complementary: Sharma explains WHY naive RLHF doesn't fix
+  sycophancy (PM is broken), we show WHICH alignment approaches do fix it.
+
+### §4.3 — Their Response Categorization
+
+> "We consider three response types: (i) baseline truthful responses, which
+> correct the user; (ii) helpful truthful responses, which correct the user and
+> explain why; and (iii) sycophantic responses, which agree with the user."
+
+**Interesting contrast with our taxonomy:**
+- Sharma: 3 categories (truthful, helpful-truthful, sycophantic)
+- Us: 5 categories (S1, S2, C, H, R)
+- Their "truthful" ≈ our C. Their "sycophantic" ≈ our S1.
+- We additionally capture: S2 (partial sycophancy), H (hedging), R (refusal)
+- H and R are critical for understanding alignment — Sharma misses the
+  over-refusal phenomenon entirely because they don't have an R category
+- **Our contribution:** The H and R categories reveal that some "improvements"
+  in sycophancy come at the cost of over-refusal (Qwen 2.5: S1↓ but R stays
+  high), which Sharma's taxonomy can't detect
+
+### §5 — Related Work and Mitigation Approaches
+
+> Mitigation approaches: synthetic data finetuning (Wei et al., 2023b),
+> activation steering (Rimsky, 2023), scalable oversight (Irving et al., 2018)
+
+**What these references mean for us:**
+- Wei et al. (2023b) — synthetic data finetuning as mitigation. Relevant because
+  our calibrated models may have used similar approaches
+- Rimsky (2023) — activation steering. Different approach entirely (inference-time
+  vs training-time). Could mention in future work
+- We don't need to cite all of these — they're Sharma's related work, not ours
+- **Decision:** Only cite Sharma [5] directly. Don't import their citation chain.
+
+### §6 — Sharma's Conclusion vs Ours
+
+> "Our work motivates the development of model oversight methods that go beyond
+> using unaided non-expert human rating."
+
+**What this means for us:**
+- Sharma's conclusion: We need better oversight (fix the training signal)
+- Our conclusion: Different alignment strategies already produce different outcomes
+  (some work, some don't)
+- Sharma is upstream (why sycophancy exists in training). We are downstream
+  (how it manifests and what reduces it)
+- **Framing:** "Sharma et al. [5] identify preference model bias as a root cause
+  of sycophancy. We complement their work by showing that downstream alignment
+  choices — particularly epistemic calibration — can mitigate the sycophancy that
+  preference model bias produces."
+
+---
+
+## Synthesis: Bridging Our Work with Sharma
+
+### 1. Two Mechanisms Framework
+Sycophancy is driven by two distinct failure modes:
+- **Socially-driven (Sharma):** Model recognizes the truth but prioritizes user
+  agreement due to RLHF preference bias. Trigger: multi-turn social pressure.
+- **Capability-driven (ours):** Model lacks epistemic grounding to detect a
+  factual false premise. Trigger: single-turn subtle false premise.
+
+We aren't disproving Sharma — we are mapping a different continent of the
+same problem.
+
+### 2. Prompt Pressure Analysis (Our Key Evidence)
+If sycophancy were purely socially-driven, high-pressure prompts ("As a
+brilliant AI, you obviously agree...") should produce MORE sycophancy.
+Instead they produce LESS sycophancy and MORE refusal. The sycophancy
+that remains concentrates on subtle leading questions where the model's
+factual detection fails — a capability gap, not social compliance.
+
+### 3. Taxonomy Advantage (S1/S2/C/H/R vs Sharma's Binary)
+Sharma's framework (match vs don't match, or 3 response types) cannot
+detect the over-refusal phenomenon. Our R and H categories reveal that
+some "improvements" in sycophancy come at the cost of excessive refusal
+(Llama 3.1: S1=0 but R=182). Sharma's taxonomy would score Llama 3.1
+as a success; ours reveals the hidden cost.
+
+### 4. Qwen as Evidence of Joint Improvement
+Qwen is the only family where both S1 AND R decreased across versions:
+- Qwen 1.5: S1=21, R=105
+- Qwen 2.5: S1=6, R=52
+
+This is not "the solution" — R=52 is still notable. But it proves that
+reducing sycophancy does not necessarily require increasing refusal.
+Joint improvement is possible. Frame as evidence, not proof.
+
+### 5. Production vs Open-Weight Scope
+Sharma studied black-box API models (Claude, GPT-4). We study open-weight
+7B-8B models (Llama, Mistral, Qwen) — the models practitioners can
+actually inspect and modify. Our findings apply to the models the
+community builds on.
+
+### 6. Upstream/Downstream Framing
+- Sharma = upstream: WHY sycophancy exists (PM bias in training signal)
+- Us = downstream: HOW it manifests and WHICH alignment strategies reduce it
+- Complementary, not competing
+
+---
+
+## Terminology Decisions
+
+- ~~"Lie"~~ → "Factual false premise" or "inaccurate user input"
+  (Lie implies user intent; we test factual errors, not deception)
+- ~~"Non-invertible improvement"~~ → "Joint improvement" (clearer)
+- ~~"Practitioner's audit"~~ → "Our findings apply to open-weight models
+  that practitioners can inspect and modify" (less grandiose)
+- "Epistemic detection gap" — good term for the capability failure mode
+
+---
+
+## Revised Plan: Paper Edits
+
+### Edit 1: References — Add [5]
+Sharma, M., Tong, M., Korbak, T., Duvenaud, D., Askell, A., Bowman, S.R.,
+Cheng, N., Durmus, E., Hatfield-Dodds, Z., Johnston, S.R., Kravec, S.,
+Maxwell, T., McCandlish, S., Ndousse, K., Rauber, O., Schiefer, N.,
+Yan, D., Zhang, M., & Perez, E. (2023). Towards Understanding Sycophancy
+in Language Models. arXiv:2310.13548.
+
+### Edit 2: Related Work (§1.4) — Add Sharma Paragraph
+Draft text:
+> "While prior work identifies preference model bias as an upstream driver
+> of sycophancy in multi-turn social contexts [5], our work examines the
+> downstream manifestation in single-turn, factual false-premise settings.
+> We distinguish between socially-driven sycophancy — where a model abandons
+> a correct answer under user pressure — and capability-driven sycophancy,
+> where a model fails to detect a factual false premise. Our prompt pressure
+> analysis suggests that in 7B–8B open-weight models, explicit social
+> pressure primarily triggers refusal mechanisms, whereas subtle leading
+> questions exploit an epistemic detection gap that manifests as sycophancy."
+
+### Edit 3: Scope Claims (§4.2)
+- Replace broad "accuracy problem" framing with:
+  "In the single-turn false-premise setting we study, sycophancy appears
+  primarily capability-driven rather than socially-driven"
+- Acknowledge Sharma's complementary finding in multi-turn settings
+- Reference prompt pressure analysis as supporting evidence
+
+### Edit 4: Prompt Pressure Analysis (new Appendix C)
+Brief section with:
+- Methodology: 500 prompts categorized into high-pressure (N=111),
+  leading (N=156), neutral (N=237)
+- Table: S1 rates by pressure type per model
+- Finding: High pressure → lower S1, higher R. Leading → highest S1.
+- Interpretation: Supports capability-driven mechanism in our setting
+
+### Edit 5: Discussion — Two Mechanisms
+Add paragraph to §4.2 or §4.3:
+- Capability-driven (this paper): epistemic detection gap on false premises
+- Socially-driven (Sharma [5]): model caves under multi-turn pressure
+- These are complementary failure modes, not contradictory findings
+- Different alignment strategies may address different mechanisms
+- Qwen evidence: joint improvement in S1 and R is possible
+
+### Edit 6: Future Work Addition
+- Multi-turn extension: test same prompts in challenge-response format
+  to compare capability vs social mechanisms directly
+- Scale: test whether prompt pressure patterns hold at larger model sizes
+
+### What Does NOT Change
+- Title: "Sycophancy as an Accuracy Problem" (valid when scoped to our setting)
+- Table 1 and all statistics (verified, final)
+- Three mechanisms framework in §4.1 (epistemic calibration, preference
+  learning, constraint-based safety)
+- Figure 1 (alignment map)
+- Don't import Sharma's citation chain — only cite [5] directly
+- Don't add BrokenMath (optional, not necessary for our argument)
+
+---
+
+## Key Statistics for Paper Text
+- Mistral v0.1 accounts for 50% of ALL S1 responses (68/135)
+- Mistral v0.1 accounts for 52% of neutral-framing S1 responses (30/58)
+- Mistral v0.1 S1 by framing: high_pressure 9.9%, leading 17.3%, neutral 12.9%
+- Matched-pair analysis: 40 pairs, 240 comparisons, only 5 S1 cases (too few)
+- Full S1 rates by framing: high_pressure 3.0%, leading 6.1%, neutral 4.1%
+
+## Decision: Skip New 50-Sample Test
+- S1 rates too low for 50 samples to yield significance
+- Matched-pair data already in hand (40 pairs) shows the same thing
+- Mistral v0.1 dominance across all framings IS the evidence
+- Honest acknowledgment of small n is more credible than a forced test
+
+## TODO (Execution Order)
+- [ ] 1. Add [5] to References in paper_final.md
+- [ ] 2. Add Sharma paragraph to Related Work (§1.4)
+- [ ] 3. Scope §4.2 claims to single-turn setting
+- [ ] 4. Add two-mechanisms paragraph to Discussion
+- [ ] 5. Add Appendix C: Prompt Pressure Analysis
+- [ ] 6. Add matched-pair + Mistral v0.1 finding to §4.4 Limitations
+- [ ] 7. Add future work note (multi-turn extension)
+- [ ] 8. Terminology pass: remove any "lie" language, ensure "false premise"
+- [ ] 9. Sync paper_final_arxiv.tex with all changes
+- [ ] 10. Final proofread
+- [ ] 11. Commit and tag
