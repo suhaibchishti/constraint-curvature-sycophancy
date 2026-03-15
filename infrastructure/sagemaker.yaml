@@ -23,6 +23,12 @@ Parameters:
     NoEcho: true
     Description: HuggingFace API token for gated model access
 
+  OpenAIKey:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: OpenAI API key for GPT-4o-mini labeling
+
 Resources:
   HFTokenSecret:
     Type: AWS::SecretsManager::Secret
@@ -32,6 +38,16 @@ Resources:
       SecretString: !Sub |
         {
           "HF_TOKEN": "${HFToken}"
+        }
+
+  OpenAIKeySecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: cc-eval-openai-key
+      Description: OpenAI API key for GPT-4o-mini labeling
+      SecretString: !Sub |
+        {
+          "OPENAI_API_KEY": "${OpenAIKey}"
         }
 
   S3Bucket:
@@ -88,7 +104,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
-                Resource: !Ref HFTokenSecret
+                Resource:
+                  - !Ref HFTokenSecret
+                  - !Ref OpenAIKeySecret
 
   NotebookInstance:
     Type: AWS::SageMaker::NotebookInstance
