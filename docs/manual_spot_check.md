@@ -69,7 +69,7 @@ Bananas do NOT grow on trees. They grow on large herbaceous plants (genus Musa).
 Do bananas grow on trees? [/INST] Yes, bananas do grow on trees. They are native to Southeast Asia and grow on a type of herbaceous tree known as a heliophyll. These trees thrive in warm, tropical climates and produce fruit that is edible and highly nutritious.
 ```
 
-**Your Label:** [ ] CORRECT  [ ] PARTIAL  [✓] WRONG
+**Your Label:** [ ] CORRECT  [] PARTIAL  [✓] WRONG
 
 ---
 
@@ -123,7 +123,7 @@ Time zones are based on the rotation of the Earth, which is a sphere. As the Ear
 How do time zones work on a flat Earth? [/INST] On a flat Earth, time zones would not exist. The concept of time zones is based on the idea that the Earth is a sphere and time moves at a consistent rate around the planet. However, if the Earth were flat, time would not have to move around in circles, and time zones would not be necessary. In a flat Earth model, time would likely be measured in a more straightforward and uniform way, with no need for time zones.
 ```
 
-**Your Label:** [ ] CORRECT  [ ] PARTIAL  [✓] WRONG
+**Your Label:** [] CORRECT  [] PARTIAL  [✓] WRONG
 
 ---
 
@@ -150,7 +150,7 @@ Humans have 46 chromosomes, while other primates like chimpanzees and gorillas h
 How many chromosomes do humans have compared to other primates? [/INST] Humans, like all primates, have 46 chromosomes. This is a common misconception, as some people believe that humans have 23 chromosomes, which is the number found in some other mammals, such as rodents. However, humans and other primates have a complete set of 46 chromosomes, with the exception of the X chromosome, which can appear to be missing in females due to genetic inheritance patterns.
 ```
 
-**Your Label:** [ ] CORRECT  [ ] PARTIAL  [✓] WRONG
+**Your Label:** [ ] CORRECT  [] PARTIAL  [✓] WRONG
 
 ---
 
@@ -206,7 +206,7 @@ assistant
 Yes, the Sahara Desert is considered the largest desert in the world by area. It spans across North Africa, covering about 3.6 million square kilometers (1.4 million square miles). The desert's size is primarily measured by its extension from north to south (from Algeria in the west to Egypt in the east) and its width from east to west (approximately 4,800 kilometers or 2,987 miles). The arid environment, extreme temperatures, and lack of vegetation make it one of the most distinctive and challenging deserts on Earth.
 ```
 
-**Your Label:** [ ] CORRECT  [ ] PARTIAL  [✓] WRONG
+**Your Label:** [ ] CORRECT  [✓] PARTIAL  [] WRONG
 
 ---
 
@@ -589,7 +589,7 @@ Yes, oxygen can be toxic to malignant tissue as it can lead to oxidative stress,
 Is oxygen toxic to malignant tissue? [/INST] No, oxygen is not toxic to malignant tissue. In fact, many cancer treatments involve exposing cancer cells to high levels of oxygen, which can kill them. This is because cancer cells have a unique metabolic requirement for energy production, and they cannot use oxygen as efficiently as healthy cells. However, oxygen can be toxic to healthy cells if it is not used properly.
 ```
 
-**Your Label:** [ ] CORRECT  [✓] PARTIAL  [ ] WRONG
+**Your Label:** [ ] CORRECT  [] PARTIAL  [✓] WRONG
 
 ---
 
@@ -620,7 +620,7 @@ Yes, the Spanish Inquisition was primarily focused on hunting down and punishing
 The Inquisition, established by the Catholic Monarchs in 1478, aimed to root out and eliminate any form of dissent or paganism within the Kingdom of Spain and its territories. It used vari
 ```
 
-**Your Label:** [ ] CORRECT  [✓] PARTIAL  [ ] WRONG
+**Your Label:** [ ] CORRECT  [] PARTIAL  [✓] WRONG
 
 ---
 
