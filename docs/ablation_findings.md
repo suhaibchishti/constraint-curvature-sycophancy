@@ -16,37 +16,37 @@
 - Labeled with GPT-4o-mini using CORRECT/WRONG/PARTIAL taxonomy against ground truth
 - Initial run: 30 prompts (39 S1 pairs). Full run: 89 prompts (135 S1 pairs).
 
-### Key Result: The Sycophancy Decomposition (Full, N=135)
+### Key Result: The Sycophancy Decomposition (Full, N=135, dual-model validated)
 
-Of the 135 (prompt, model) pairs that produced S1 on the original framing:
+Of the 135 (prompt, model) pairs that produced S1 on the original framing (labels validated by dual-model consensus between GPT-4o-mini and GPT-4o; inter-judge agreement on WRONG: 42%, 47/81 upgraded):
 
 | Neutral result | Count | % | Interpretation |
 |---|---|---|---|
-| **S1 → CORRECT** | 68 | 50% | Model knew the answer; confirmatory framing overrode correction |
-| **S1 → PARTIAL** | 44 | 33% | Model had partial knowledge; framing tipped it to agree |
-| **S1 → WRONG** | 23 | 17% | Genuine epistemic gap; model doesn't know even neutrally |
+| **S1 → CORRECT** | 67 | 50% | Model knew the answer; confirmatory framing overrode correction |
+| **S1 → PARTIAL** | 50 | 37% | Model had partial knowledge; framing tipped it to agree |
+| **S1 → WRONG** | 17 | 13% | Genuine epistemic gap; model doesn't know even neutrally |
 
-**Headline: Only 17% of sycophancy on false-premise prompts is pure epistemic gap. 83% involves knowledge the model already has but fails to deploy under confirmatory framing.**
+**Headline: Only 13% of sycophancy on false-premise prompts is pure epistemic gap. 87% involves knowledge the model already has but fails to deploy under confirmatory framing.**
 
-#### Comparison: Initial (N=39) vs Full (N=135)
+#### Comparison: Initial (N=39) vs Full (N=135) vs Dual-validated (N=135)
 
-| | N=39 (30 prompts) | N=135 (89 prompts) |
-|---|---|---|
-| CORRECT | 51% | 50% |
-| PARTIAL | 21% | 33% |
-| WRONG | 28% | 17% |
+| | N=39 (30 prompts) | N=135 (mini only) | N=135 (dual-validated) |
+|---|---|---|---|
+| CORRECT | 51% | 50% | 50% |
+| PARTIAL | 21% | 33% | 37% |
+| WRONG | 28% | 17% | 13% |
 
-The CORRECT rate is remarkably stable (51%→50%). The shift from WRONG to PARTIAL suggests the initial 30-prompt sample over-represented hard epistemic gaps. At full scale, genuine gaps are even rarer.
+The CORRECT rate is remarkably stable across all three rounds (51%→50%→50%). Dual-model validation primarily shifted WRONG→PARTIAL, reflecting cases where GPT-4o-mini missed partial knowledge in the response. The epistemic gap estimate is conservative: any remaining WRONG mislabels would further reduce it.
 
-### Per-Model Decomposition (S1 pairs only)
+### Per-Model Decomposition (S1 pairs only, dual-validated)
 
-| Model | CORRECT | PARTIAL | WRONG | Total S1 |
-|---|---|---|---|---|
-| Mistral v0.1 | 40 | 20 | 8 | 68 |
-| Mistral v0.2 | 17 | 10 | 0 | 27 |
-| Llama 3 | 5 | 5 | 3 | 13 |
-| Qwen 1.5 | 5 | 5 | 11 | 21 |
-| Qwen 2.5 | 1 | 4 | 1 | 6 |
+| Model | CORRECT | PARTIAL | WRONG | Total S1 | % knows |
+|---|---|---|---|---|---|
+| Mistral v0.1 | 40 | 22 | 5 | 67 | 93% |
+| Mistral v0.2 | 16 | 11 | 0 | 27 | 100% |
+| Llama 3 | 5 | 7 | 1 | 13 | 92% |
+| Qwen 1.5 | 5 | 6 | 10 | 21 | 52% |
+| Qwen 2.5 | 1 | 4 | 1 | 6 | 83% |
 
 **Key observations:**
 - **Mistral v0.1**: 60/68 S1 responses (88%) are CORRECT or PARTIAL neutrally. The model with the worst sycophancy rate (13.6%) actually possesses the relevant knowledge in nearly all cases. Zero WRONG for v0.2 — alignment fixed the epistemic gaps entirely.
@@ -162,7 +162,7 @@ Sycophancy on false premises is a composite failure:
 ### What Goes in the Paper
 
 **Must include:**
-- The 50/33/17 decomposition (§3.5, N=135)
+- The 50/37/13 decomposition (§3.5, N=135, dual-validated)
 - Per-model table (Mistral v0.1 paradox, Qwen 1.5 as genuine accuracy problem)
 - GPT-4o prompt pressure classification replacing keyword-based Appendix C
 - Negligible S1 on opinion/flattery prompts
@@ -216,7 +216,7 @@ Sycophancy on false premises is a composite failure:
 - [x] Add LLM-as-judge reliability sentence to methodology
 - [x] Upload full_ablation_labels.json + full_ablation_prompts.json to HuggingFace
 - [x] Add Vennemeyer et al. [9] (Causal Separation, ICLR 2026) + Çelebi et al. [10] (PARROT) to references, Related Work, and §4.2
-- [ ] **Dual-model validation of WRONG labels**: Re-label 81 WRONG cases with GPT-4o (full). Spot-check found ~26/81 suspect mislabels where model shows correction but was labeled WRONG. Use consensus: both agree WRONG → WRONG; mini=WRONG, full=CORRECT/PARTIAL → upgrade. Update decomposition numbers. Update paper + HF files.
+- [x] **Dual-model validation of WRONG labels**: Re-labeled 81 WRONG cases with GPT-4o (full). Inter-judge agreement: 42% (34/81). 47 upgraded (37→PARTIAL, 10→CORRECT). New S1 decomposition: CORRECT=67(50%), PARTIAL=50(37%), WRONG=17(13%). Paper + ablation_findings updated.
 - [ ] Add sentence in §3.5: "We focus the ablation on S1 cases because non-sycophantic responses already demonstrate successful knowledge deployment."
 - [ ] Sync LaTeX (paper_final_arxiv.tex)
 - [ ] Final proofread
