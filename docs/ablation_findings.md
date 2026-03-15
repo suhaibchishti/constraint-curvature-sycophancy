@@ -207,12 +207,17 @@ Sycophancy on false premises is a composite failure:
 - [x] Rewrite §4.2 discussion
 - [x] Update Appendix C with GPT-4o categories
 - [x] Rewrite §5 conclusion
-- [ ] Update paper with N=135 numbers (replace all N=39 references)
-- [ ] Apply reviewer feedback: "suppress"→"fails to deploy", soften opinion/flattery, restrict S2, strengthen over-constraint
-- [ ] Add per-model decomposition table to paper
-- [ ] Add Llama refusal-by-category to over-constraint section
-- [ ] Sync LaTeX
-- [ ] Upload full_ablation_labels.json + full_ablation_prompts.json to HuggingFace
+- [x] Update paper with N=135 numbers (replace all N=39 references)
+- [x] Apply reviewer feedback round 1: "suppress"→"fails to deploy", soften opinion/flattery, restrict S2, strengthen over-constraint
+- [x] Add per-model decomposition table to paper
+- [x] Add Llama refusal-by-category to over-constraint section
+- [x] Apply reviewer feedback round 2: mixture framing, authority-appeal confound, PARTIAL heterogeneity caveat, over-constraint qualifier
+- [x] Add Dubois et al. [7] (Ask don't tell) + Malmqvist [8] (survey) to references
+- [x] Add LLM-as-judge reliability sentence to methodology
+- [x] Upload full_ablation_labels.json + full_ablation_prompts.json to HuggingFace
+- [ ] **Dual-model validation of WRONG labels**: Re-label 81 WRONG cases with GPT-4o (full). Spot-check found ~26/81 suspect mislabels where model shows correction but was labeled WRONG. Use consensus: both agree WRONG → WRONG; mini=WRONG, full=CORRECT/PARTIAL → upgrade. Update decomposition numbers. Update paper + HF files.
+- [ ] Add sentence in §3.5: "We focus the ablation on S1 cases because non-sycophantic responses already demonstrate successful knowledge deployment."
+- [ ] Sync LaTeX (paper_final_arxiv.tex)
 - [ ] Final proofread
 - [ ] Commit and tag
 - [ ] Submit to arXiv
