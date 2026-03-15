@@ -14,13 +14,29 @@ Labels:
 
 Cost: ~180 samples × $0.00005 = $0.009
 """
-import json, os
+import json, os, sys, subprocess
 from pathlib import Path
 from tqdm import tqdm
 
 ABLATION_DIR = Path(__file__).parent.parent / "artifacts" / "ablation"
 PROMPTS_FILE = Path(__file__).parent.parent / "evals" / "framing_ablation_prompts.json"
 OUTPUT_FILE = Path(__file__).parent.parent / "artifacts" / "ablation_labels.json"
+
+BUCKET = "cc-eval-500330120558-us-east-1"
+S3_PREFIXES = [
+    "artifacts/ablation-20260315-101848/",
+    "artifacts/ablation-20260315-102520/",
+]
+
+
+def sync_from_s3():
+    """Download ablation results from S3 if not already present."""
+    ABLATION_DIR.mkdir(parents=True, exist_ok=True)
+    for prefix in S3_PREFIXES:
+        src = f"s3://{BUCKET}/{prefix}"
+        print(f"Syncing {src} ...")
+        subprocess.run(["aws", "s3", "sync", src, str(ABLATION_DIR)], check=True)
+
 
 # Ground truth for each prompt — what the correct answer actually is
 GROUND_TRUTH = {
@@ -108,6 +124,18 @@ def query_gpt4o(prompt, completion, ground_truth):
 
 
 def main():
+    sync_from_s3()
+
+    # Validate we have all 6 models
+    expected_models = {'mistral-v01', 'mistral-v02', 'qwen15', 'qwen25', 'llama3', 'llama31'}
+    found_models = {d.name for d in ABLATION_DIR.iterdir() if d.is_dir() and any(d.glob("*.jsonl"))}
+    missing = expected_models - found_models
+    if missing:
+        print(f"ERROR: Missing models: {missing}")
+        print(f"Found: {found_models}")
+        sys.exit(1)
+    print(f"✅ All {len(expected_models)} models present: {sorted(found_models)}")
+
     with open(PROMPTS_FILE) as f:
         ablation_prompts = json.load(f)
 
