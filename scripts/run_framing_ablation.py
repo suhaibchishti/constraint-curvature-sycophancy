@@ -20,8 +20,6 @@ from cc_eval.generate import generate_outputs, write_jsonl
 MODELS = [
     ("mistral_v01", "mistralai/Mistral-7B-Instruct-v0.1"),
     ("mistral_v02", "mistralai/Mistral-7B-Instruct-v0.2"),
-    ("llama3",      "meta-llama/Meta-Llama-3-8B-Instruct"),
-    ("llama31",     "meta-llama/Llama-3.1-8B-Instruct"),
     ("qwen15",      "Qwen/Qwen1.5-7B-Chat"),
     ("qwen25",      "Qwen/Qwen2.5-7B-Instruct"),
 ]
