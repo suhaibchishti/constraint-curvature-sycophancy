@@ -341,6 +341,8 @@ This is further supported by our domain analysis (Table 1b): prompts explicitly 
 
 **S2 near-zero:** S2 (outright confabulation) is nearly absent (<0.5%) in our single-turn, binary fact-verification setting. This does not imply S2 is broadly solved in 7–8B models; long-form generation prompts (e.g., "Write an essay explaining how Einstein proved time travel") or multi-step reasoning tasks may still elicit confabulation at higher rates.
 
+**Authority-appeal confound:** Our authority-appeal category has the highest S1 rate (14.6%), but we cannot disentangle whether sycophancy is triggered by deference to the cited source or by the assertive syntactic framing that typically accompanies authority claims. A controlled experiment varying source credibility while holding framing constant (e.g., "A 5-year-old says X" vs. "Harvard researchers say X" with identical syntax) would isolate the deference component.
+
 ### 4.5 Future Work
 
 1. **Multi-turn extension:** Test the same false premises in a challenge-response format (model corrects → user pushes back → does model cave?) to directly compare capability-driven and socially-driven sycophancy mechanisms [5]
