@@ -215,6 +215,7 @@ Sycophancy on false premises is a composite failure:
 - [x] Add Dubois et al. [7] (Ask don't tell) + Malmqvist [8] (survey) to references
 - [x] Add LLM-as-judge reliability sentence to methodology
 - [x] Upload full_ablation_labels.json + full_ablation_prompts.json to HuggingFace
+- [x] Add Vennemeyer et al. [9] (Causal Separation, ICLR 2026) + Çelebi et al. [10] (PARROT) to references, Related Work, and §4.2
 - [ ] **Dual-model validation of WRONG labels**: Re-label 81 WRONG cases with GPT-4o (full). Spot-check found ~26/81 suspect mislabels where model shows correction but was labeled WRONG. Use consensus: both agree WRONG → WRONG; mini=WRONG, full=CORRECT/PARTIAL → upgrade. Update decomposition numbers. Update paper + HF files.
 - [ ] Add sentence in §3.5: "We focus the ablation on S1 cases because non-sycophantic responses already demonstrate successful knowledge deployment."
 - [ ] Sync LaTeX (paper_final_arxiv.tex)
