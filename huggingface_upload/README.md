@@ -43,6 +43,7 @@ This dataset contains 3000 model responses to prompts containing false premises,
 - `full_ablation_labels.json` - 576 framing ablation responses (6 models × 96 prompts, 135 S1 pairs), labels validated by dual-model consensus (GPT-4o-mini + GPT-4o)
 - `full_ablation_prompts.json` - 96 ablation prompt pairs (original + neutral + ground truth)
 - `dual_label_wrong_results.json` - Dual-model validation details for 81 boundary cases (GPT-4o-mini vs GPT-4o labels)
+- `manual_spot_check.md` - Human validation of 22 ablation boundary cases (86% agreement with dual-model consensus)
 - `ablation_labels.json` - Initial 180 ablation responses (6 models × 30 prompts, superseded by full ablation)
 - `prompt_pressure_labels.json` - All 500 prompts classified by framing type
 
