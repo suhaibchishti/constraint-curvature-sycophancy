@@ -8,7 +8,7 @@
 
 ## Abstract
 
-We evaluate sycophancy across three model families (Mistral, Llama, Qwen) using GPT-4o-mini labels on 3,000 samples with a validated S1/S2/C/H/R taxonomy. We identify two distinct alignment outcomes: (1) **Effective alignment** reduces sycophancy while maintaining helpfulness (Mistral v0.1→v0.2: 13.6%→5.4% premise affirmation, Δ=−8.2 percentage points, p<0.001; Qwen 1.5→2.5: 4.2%→1.2%, p=0.005), and (2) **Over-constraint** eliminates sycophancy through excessive refusal (Llama 3→3.1: 2.6%→0.0%, p<0.001, but refusal increases from 25.6%→36.4%, p<0.001). To decompose the mechanisms driving sycophancy, we conduct a framing ablation: 30 prompts that elicited sycophancy under confirmatory framing ("Research indicates X. Is this correct?") are re-tested as neutral factual questions ("Is X true?"). We find that sycophancy on false premises is a composite failure: only 28% of sycophantic responses reflect genuine epistemic gaps where models lack the knowledge even when asked neutrally, while 51% occur when models possess the correct knowledge but suppress it under confirmatory framing, and 21% involve partial knowledge that framing tips toward agreement. Independent GPT-4o-mini classification of all 500 prompts confirms that opinion-framed (N=23) and flattery-based (N=37) prompts produce zero sycophancy, while leading questions with confirmatory framing produce the highest rates (6.7%). We provide the complete labeled dataset and ablation results as open-source resources.
+We evaluate sycophancy across three model families (Mistral, Llama, Qwen) using GPT-4o-mini labels on 3,000 samples with a validated S1/S2/C/H/R taxonomy. We identify two distinct alignment outcomes: (1) **Effective alignment** reduces sycophancy while maintaining helpfulness (Mistral v0.1→v0.2: 13.6%→5.4% premise affirmation, Δ=−8.2 percentage points, p<0.001; Qwen 1.5→2.5: 4.2%→1.2%, p=0.005), and (2) **Over-constraint** eliminates sycophancy through excessive refusal (Llama 3→3.1: 2.6%→0.0%, p<0.001, but refusal increases from 25.6%→36.4%, p<0.001). To decompose the mechanisms driving sycophancy, we conduct a framing ablation: all 89 prompts that elicited sycophancy under confirmatory framing ("Research indicates X. Is this correct?") are re-tested as neutral factual questions ("Is X true?") across all six models. We find that only 17% of sycophantic responses (N=135 prompt-model pairs) reflect genuine epistemic gaps where models lack the knowledge even when asked neutrally; in 83% of cases, models possess full (50%) or partial (33%) knowledge of the correct answer but fail to deploy it under confirmatory framing. Per-model decomposition reveals that the compliance-vs-capability debate is a false dichotomy: Mistral v0.1's sycophancy is almost entirely a framing failure (88% CORRECT or PARTIAL neutrally), while Qwen 1.5's sycophancy is predominantly a capability failure (52% WRONG neutrally). Independent GPT-4o-mini classification of all 500 prompts confirms that opinion-framed and flattery-based prompts produce negligible sycophancy, while leading questions with confirmatory framing produce the highest rates (6.7%). We provide the complete labeled dataset and ablation results as open-source resources.
 
 **Dataset:** https://huggingface.co/datasets/schis02/sycophancy-false-premises
 
@@ -41,9 +41,9 @@ We investigate whether these tradeoffs are inevitable or whether some alignment 
 
 1. **Validated taxonomy** (S1/S2/C/H/R) for sycophancy evaluation with human-validated GPT-4o-mini labels (κ=0.752)
 2. **Two alignment outcomes** identified across three model families (N=3000 samples)
-3. **Sycophancy decomposition:** A framing ablation on 30 prompts reveals that only 28% of sycophantic responses reflect genuine epistemic gaps; 51% occur when models possess the correct knowledge but suppress it under confirmatory framing
-4. **Evidence for over-constraint:** Llama 3.1 eliminates sycophancy but increases refusal by 42%
-5. **Open-source dataset** including 3,000 labeled samples, 180 ablation responses, and 500 prompt pressure classifications
+3. **Sycophancy decomposition:** A framing ablation on all 89 S1-producing prompts (N=135 prompt-model pairs) reveals that only 17% of sycophantic responses reflect genuine epistemic gaps; 83% occur when models possess full or partial knowledge but fail to deploy it under confirmatory framing. Per-model analysis shows this ratio varies dramatically: from near-total framing failure (Mistral v0.1, 88% knows the answer) to predominantly capability failure (Qwen 1.5, 52% genuinely wrong)
+4. **Evidence for over-constraint:** Llama 3.1 eliminates sycophancy but increases refusal by 42%, with category-level analysis showing refusal rates of 90% on user-preference prompts (up from 38%)
+5. **Open-source dataset** including 3,000 labeled samples, 576 ablation responses, and 500 prompt pressure classifications
 
 ### 1.4 Related Work
 
@@ -55,7 +55,7 @@ We investigate whether these tradeoffs are inevitable or whether some alignment 
 
 **Refusal evaluation:** SORRY-Bench [2] systematically evaluates safety refusals on harmful content. Our R category captures refusal behavior but focuses on false premises rather than harmful content, revealing over-refusal patterns (Llama 3.1: 36.4% refusal on factually false but benign prompts).
 
-**Sycophancy mechanisms:** Sharma et al. [5] identify preference model bias as an upstream driver of sycophancy, showing that models abandon correct answers under multi-turn social pressure even when they initially respond accurately. Wang et al. [6] show that sycophancy can arise from late-layer override of learned knowledge in response to user opinions, suggesting that even single-turn sycophancy may involve suppression of existing knowledge rather than its absence. Our work examines the downstream manifestation in single-turn, factual false-premise settings. We distinguish between socially-driven sycophancy—where a model abandons a correct answer under user pressure—and capability-driven sycophancy, where a model fails to detect a factual false premise. Our prompts embed false premises as factual claims rather than user opinions, distinguishing our trigger from the opinion-based settings studied in [5] and [6]. Independent GPT-4o-mini classification of our 500 prompts confirms that opinion-framed and flattery-based prompts produce zero sycophancy, while leading questions with confirmatory framing produce the highest rates — suggesting a distinct mechanism from the opinion-override pathway identified in [6].
+**Sycophancy mechanisms:** Sharma et al. [5] identify preference model bias as an upstream driver of sycophancy, showing that models abandon correct answers under multi-turn social pressure even when they initially respond accurately. Wang et al. [6] show that sycophancy can arise from late-layer override of learned knowledge in response to user opinions, suggesting that even single-turn sycophancy may involve failure to deploy existing knowledge rather than its absence. Our work examines the downstream manifestation in single-turn, factual false-premise settings. We distinguish between socially-driven sycophancy—where a model abandons a correct answer under user pressure—and capability-driven sycophancy, where a model fails to detect a factual false premise. Our prompts embed false premises as factual claims rather than user opinions, distinguishing our trigger from the opinion-based settings studied in [5] and [6]. Independent GPT-4o-mini classification of our 500 prompts confirms that opinion-framed and flattery-based prompts produce negligible sycophancy, while leading questions with confirmatory framing produce the highest rates — suggesting a distinct mechanism from the opinion-override pathway identified in [6].
 
 ---
 
@@ -106,7 +106,7 @@ This design allows us to observe alignment outcomes without controlling training
 
 ### 2.4 Framing Ablation
 
-To decompose whether sycophancy reflects epistemic gaps or framing effects, we selected the 30 prompts from our dataset that produced S1 responses under confirmatory framing (e.g., "Data indicates that the Sahara Desert is the largest desert in the world. Is this classification correct?") and created neutral versions that ask the same factual question without embedding the false premise (e.g., "Is the Sahara Desert the largest desert in the world?"). We ran all 6 models on the 30 neutral prompts using identical generation parameters (temperature=0.7, max_tokens=512, system_prompt="You are a helpful assistant.") and labeled responses with GPT-4o-mini using a CORRECT/WRONG/PARTIAL taxonomy against established ground truth for each question. CORRECT indicates the model provides the factually accurate answer; WRONG indicates the model states the false claim with no awareness of the correct answer; PARTIAL indicates the model agrees with the surface-level answer but demonstrates awareness of the correct nuance (e.g., calling the Sahara "the largest hot desert").
+To decompose whether sycophancy reflects epistemic gaps or framing effects, we selected all 89 prompts from our dataset that produced at least one S1 response under confirmatory framing (e.g., "Data indicates that the Sahara Desert is the largest desert in the world. Is this classification correct?") and created neutral versions that ask the same factual question without embedding the false premise (e.g., "Is the Sahara Desert the largest desert in the world?"). Neutral versions and ground truth answers were generated by GPT-4o-mini and manually verified. We ran all 6 models on the 89 neutral prompts (plus 7 additional prompts for coverage, 96 total) using identical generation parameters (temperature=0.7, max_tokens=512, system_prompt="You are a helpful assistant.") and labeled all 576 responses with GPT-4o-mini using a CORRECT/WRONG/PARTIAL taxonomy against established ground truth for each question. CORRECT indicates the model provides the factually accurate answer; WRONG indicates the model states the false claim with no awareness of the correct answer; PARTIAL indicates the model agrees with the surface-level answer but demonstrates awareness of the correct nuance (e.g., calling the Sahara "the largest hot desert"). The decomposition analysis focuses on the 135 (prompt, model) pairs that produced S1 under original framing.
 
 ### 2.5 Prompt Pressure Classification
 
@@ -130,7 +130,7 @@ Table 1 summarizes sycophancy and refusal rates across all models:
 | Qwen 2.5 | 1.2% | 0.0% | 1.2% | 10.4% | 85.0% | 3.4% |
 
 **Key observations:**
-- S2 (confabulation) is nearly absent across all models (<0.5%), suggesting that this particular failure mode has been largely addressed in current 7–8B models. The remaining sycophancy challenge is S1 (premise affirmation), a subtler failure.
+- S2 (confabulation) is nearly absent across all models (<0.5%) in our single-turn, binary fact-verification setting. This does not imply S2 is broadly solved; long-form generation prompts (e.g., "Write an essay explaining how Einstein proved time travel") may still elicit confabulation. The remaining sycophancy challenge is S1 (premise affirmation), a subtler failure.
 - S1 (premise affirmation) varies widely (0.0% to 13.6%), indicating significant differences in epistemic calibration across model families
 - Refusal rates vary dramatically (8.0% to 36.4%), revealing different safety-utility tradeoffs
 - Most responses correct the false premise (58.8% to 85.0%)
@@ -226,19 +226,33 @@ Table 2 compares the two patterns:
 
 ### 3.5 The Sycophancy Decomposition
 
-To determine whether sycophantic responses reflect genuine knowledge gaps or framing-induced suppression of correct knowledge, we re-tested the 30 hardest prompts (those producing S1 under confirmatory framing) as neutral factual questions. Of the 39 (prompt, model) pairs that produced S1 under original framing:
+To determine whether sycophantic responses reflect genuine knowledge gaps or framing-induced failure to deploy correct knowledge, we re-tested all 89 prompts that produced S1 under confirmatory framing as neutral factual questions across all six models (576 total responses). Of the 135 (prompt, model) pairs that produced S1 under original framing:
 
 | Neutral result | Count | % | Interpretation |
 |---|---|---|---|
-| S1 → CORRECT | 20 | 51% | Model knew the answer; confirmatory framing suppressed correction |
-| S1 → PARTIAL | 8 | 21% | Model had partial knowledge; framing tipped it toward agreement |
-| S1 → WRONG | 11 | 28% | Genuine epistemic gap; model lacks the knowledge even when asked neutrally |
+| S1 → CORRECT | 68 | 50% | Model knew the answer; confirmatory framing overrode correction |
+| S1 → PARTIAL | 44 | 33% | Model had partial knowledge; framing tipped it toward agreement |
+| S1 → WRONG | 23 | 17% | Genuine epistemic gap; model lacks the knowledge even when asked neutrally |
 
-**The majority of sycophancy involves knowledge the model already has.** When the same factual claims are posed as neutral questions without confirmatory framing, 72% of previously sycophantic responses become correct or partially correct.
+**Only 17% of sycophancy reflects genuine epistemic gaps.** In 83% of cases, models possess full or partial knowledge of the correct answer but fail to deploy it under confirmatory framing.
 
-**The Mistral v0.1 paradox:** Mistral v0.1 has the highest sycophancy rate in our dataset (13.6%), yet when asked neutrally, it answers correctly on 10 of 13 previously sycophantic prompts. The model with the worst sycophancy actually possesses the relevant knowledge in most cases — the confirmatory framing suppresses its ability to deploy that knowledge.
+**The compliance-capability dichotomy:** Per-model decomposition reveals that the balance between framing failure and capability failure varies dramatically across models:
 
-**Prompt type matters:** The decomposition varies by content domain. For pseudoscientific claims (numerology, Reiki), models fabricate incorrect supporting mechanisms even when asked neutrally — consistent with genuine epistemic gaps. For common misconceptions (hair/nails growing after death, Sahara as largest desert), all or most S1 models answer correctly when asked neutrally — consistent with framing-induced suppression. For example, all four models that affirmed "hair and nails continue growing after death" under confirmatory framing correctly identified this as a myth when asked neutrally.
+| Model | CORRECT | PARTIAL | WRONG | Total S1 | % knows answer |
+|---|---|---|---|---|---|
+| Mistral v0.1 | 40 | 20 | 8 | 68 | 88% |
+| Mistral v0.2 | 17 | 10 | 0 | 27 | 100% |
+| Llama 3 | 5 | 5 | 3 | 13 | 77% |
+| Qwen 1.5 | 5 | 5 | 11 | 21 | 48% |
+| Qwen 2.5 | 1 | 4 | 1 | 6 | 83% |
+
+Mistral v0.1 has the highest sycophancy rate in our dataset (13.6%), yet answers correctly or partially on 60 of 68 previously sycophantic prompts when asked neutrally (88%). Its sycophancy is almost entirely a framing compliance failure — the model possesses the knowledge but fails to deploy it when the prompt frames the false premise as established fact. Mistral v0.2 has zero WRONG responses, indicating that alignment eliminated the remaining epistemic gaps entirely.
+
+Qwen 1.5 presents the opposite pattern: 11 of 21 S1 responses (52%) remain WRONG when asked neutrally. For this model, sycophancy genuinely is a capability problem. Qwen 2.5 reduces this to 1/6 (17%), suggesting that alignment improved factual grounding alongside framing robustness.
+
+**The literature is divided** on whether sycophancy is primarily a compliance problem [5] or a capability problem [4]. Our per-model decomposition reveals that both mechanisms are active, but their dominance varies by model family and alignment maturity. This suggests that effective interventions must address both: factual grounding for models like Qwen 1.5, and framing robustness for models like Mistral v0.1.
+
+**Prompt type matters:** The decomposition varies by content domain. Authority-appeal prompts (43 S1 pairs) are predominantly framing failures (25 CORRECT), while false-history prompts (39 S1 pairs) have the highest epistemic gap rate (11 WRONG, 28%). For common misconceptions (hair/nails growing after death, Sahara as largest desert), all or most S1 models answer correctly when asked neutrally. For example, all four models that affirmed "hair and nails continue growing after death" under confirmatory framing correctly identified this as a myth when asked neutrally.
 
 ### 3.6 Prompt Pressure Analysis
 
@@ -252,7 +266,7 @@ Independent GPT-4o-mini classification of all 500 prompts reveals that sycophanc
 | NEUTRAL | 119 | **5.0%** | False premise, no confirmatory language |
 | LEADING | 225 | **6.7%** | "Right?", "Correct?", "Can you verify?" |
 
-The 60 prompts classified as OPINION or FLATTERY — the categories closest to the social pressure mechanisms identified by Sharma et al. [5] and Wang et al. [6] — produce zero sycophancy across all models. Sycophancy instead concentrates on LEADING prompts, where a false premise is stated as fact with a polite request for confirmation. This suggests that in single-turn settings, sycophancy is triggered by confirmatory framing rather than social compliance.
+The 60 prompts classified as OPINION or FLATTERY — the categories closest to the social pressure mechanisms identified by Sharma et al. [5] and Wang et al. [6] — produce negligible sycophancy across all models (0/360 responses). While the sample sizes are modest (N=23 opinion, N=37 flattery), the zero rate across all six models is directionally strong. Sycophancy instead concentrates on LEADING prompts, where a false premise is stated as fact with a polite request for confirmation. This suggests that in single-turn settings, sycophancy is triggered by confirmatory framing rather than social compliance.
 
 ---
 
@@ -274,6 +288,8 @@ Our results reveal two distinct approaches to reducing sycophancy:
 - Likely achieved through aggressive safety training or conservative reward models
 - **Outcome:** Zero sycophancy + reduced helpfulness
 
+Category-level analysis reveals where over-constraint is most acute: Llama 3.1 refuses 90% of user-preference-pressure prompts (up from 38% in Llama 3) and 30% of social-pressure prompts (up from 8%). These are categories where the correct behavior is to engage and correct the user's false premise, not refuse entirely. By contrast, increased refusal on health misinformation (22%→64%) and conspiracy theories (26%→48%) is more defensible from a safety perspective. The blunt instrument of constraint-based alignment cannot distinguish between prompts that warrant refusal and prompts that warrant correction.
+
 **Three underlying mechanisms (hypothesis):** We hypothesize that modern LLM safety architectures rely on three distinct mechanisms, each producing a characteristic response pattern: (1) *epistemic calibration* — the base model understands the premise is false and corrects it (→ C; evidenced by Qwen 2.5's simultaneous reduction in S1 and R), (2) *alignment preference learning* — the reward model teaches diplomatic correction while validating the user's perspective (→ H; evidenced by Mistral v0.2's rising H rate, +3.2%), and (3) *constraint-based safety layers* — a safety classifier detects risky content and triggers refusal (→ R; evidenced by Llama 3.1's zero S1 coupled with 36.4% refusal). These mechanisms are not mutually exclusive, but different model families appear to weight them differently.
 
 **Alignment map:** These mechanisms produce a two-dimensional space (Figure 1). The x-axis measures constraint strength (refusal rate) and the y-axis measures sycophancy (S1 rate). Model updates trace distinct trajectories: Mistral and Qwen move toward the lower-left (less sycophancy, low refusal), while Llama moves toward the lower-right (less sycophancy, high refusal). The ideal alignment outcome is the lower-left quadrant: low sycophancy AND low refusal.
@@ -283,11 +299,13 @@ Our results reveal two distinct approaches to reducing sycophancy:
 
 ### 4.2 Is Sycophancy an Accuracy Problem?
 
-Our framing ablation provides a direct answer: **partially.** Only 28% of sycophantic responses on the hardest prompts reflect genuine epistemic gaps. The majority (51%) occur when models possess the correct knowledge but suppress it under confirmatory framing, and 21% involve partial knowledge that framing tips toward agreement.
+Our framing ablation provides a direct answer: **partially.** Only 17% of sycophantic responses (N=135) reflect genuine epistemic gaps. In 83% of cases, models possess full (50%) or partial (33%) knowledge of the correct answer but fail to deploy it under confirmatory framing.
 
-This finding reconciles two perspectives in the literature. Sharma et al. [5] and Wang et al. [6] identify social and reward-shaped mechanisms where models override known facts. Our data confirms this occurs in single-turn settings — but only for certain prompt types. This is further supported by our domain analysis (Table 1b): prompts explicitly designed to exert social pressure or user preference yield near-zero sycophancy (0.0%–1.5%), while appeals to fabricated authority yield the highest failure rates (14.6%). For pseudoscientific claims (numerology, Reiki), models fabricate incorrect mechanisms with no indication of knowing the premise is false, consistent with genuine epistemic gaps that no amount of framing change would fix. For common misconceptions (hair/nails, Sahara), the knowledge is present but the confirmatory framing ("Can you verify this?", "Is this correct?") suppresses correction.
+This finding reconciles two perspectives in the literature. Sharma et al. [5] and Wang et al. [6] identify social and reward-shaped mechanisms where models override known facts. Lin et al. [4] frame sycophancy as a truthfulness failure. Our per-model decomposition reveals that both mechanisms are active: Mistral v0.1's sycophancy is almost entirely a compliance failure (88% knows the answer neutrally), while Qwen 1.5's sycophancy is predominantly a capability failure (52% wrong neutrally). The compliance-vs-capability debate is a false dichotomy — the dominant mechanism depends on the model's alignment maturity and factual grounding.
 
-**The practical recommendation still converges:** Regardless of whether sycophancy stems from epistemic gaps or framing-induced suppression, calibration-based alignment (Mistral, Qwen) outperforms constraint-based alignment (Llama) for reducing sycophancy without sacrificing helpfulness. Calibration-based approaches may work precisely because they improve both the model's factual knowledge (addressing the 28%) and its ability to prioritize that knowledge over agreement conditioning (addressing the 51%).
+This is further supported by our domain analysis (Table 1b): prompts explicitly designed to exert social pressure or user preference yield near-zero sycophancy (0.0%–1.5%), while appeals to fabricated authority yield the highest failure rates (14.6%). For common misconceptions (hair/nails, Sahara), the knowledge is present but the confirmatory framing ("Can you verify this?", "Is this correct?") overrides correction. For false-history claims, models have the highest genuine epistemic gap rate (28% WRONG), indicating real knowledge limitations.
+
+**The practical recommendation still converges:** Regardless of whether sycophancy stems from epistemic gaps or framing-induced failure, calibration-based alignment (Mistral, Qwen) outperforms constraint-based alignment (Llama) for reducing sycophancy without sacrificing helpfulness. Calibration-based approaches may work precisely because they improve both the model's factual knowledge (addressing the 17% epistemic gaps) and its ability to prioritize that knowledge over agreement conditioning (addressing the 50% framing failures).
 
 **The role of hedging:** Mistral v0.2's increased H rate (+3.2%) may reflect a transitional state in which the model has gained epistemic grounding but retains sufficient agreement conditioning to soften corrections rather than directly contradict the user. This is consistent with the PARTIAL category in our ablation: models that have the knowledge but negotiate between accuracy and agreeableness.
 
@@ -319,9 +337,9 @@ This finding reconciles two perspectives in the literature. Sharma et al. [5] an
 
 **Prompt distribution:** Our evaluation set focuses on factual false premises. Results may not generalize to other types of sycophancy (opinion agreement, flattery, etc.).
 
-**Capability vs. reward-shaping:** Our framing ablation quantifies the relative contribution of epistemic gaps (28%) and framing-induced suppression (51% + 21%) on the 30 hardest prompts (N=39 S1 pairs). This decomposition is based on a targeted subset, not the full dataset; the ratio may differ for the remaining S1 responses on prompts not included in the ablation. Because our taxonomy classifies behavioral outputs rather than internal activations, we cannot determine the precise mechanism by which confirmatory framing suppresses correct knowledge — it may involve preference model biases [5], late-layer knowledge override [6], or decoding dynamics. Mechanistic investigation would require probing model internals.
+**Capability vs. reward-shaping:** Our framing ablation quantifies the relative contribution of epistemic gaps (17%) and framing-induced failure to deploy correct knowledge (50% + 33%) across all 89 S1-producing prompts (N=135 prompt-model pairs). Because our taxonomy classifies behavioral outputs rather than internal activations, we cannot determine the precise mechanism by which confirmatory framing overrides correct knowledge — it may involve preference model biases [5], late-layer knowledge override [6], or decoding dynamics. "Fails to deploy" describes the observed behavioral outcome; mechanistic investigation would require probing model internals.
 
-**S2 near-zero:** S2 (outright confabulation) is nearly absent (<0.5%) in our dataset, suggesting this particular failure mode has been largely addressed in current 7–8B models. However, our dataset may not stress this failure mode; prompts specifically designed to elicit confabulation might produce different results.
+**S2 near-zero:** S2 (outright confabulation) is nearly absent (<0.5%) in our single-turn, binary fact-verification setting. This does not imply S2 is broadly solved in 7–8B models; long-form generation prompts (e.g., "Write an essay explaining how Einstein proved time travel") or multi-step reasoning tasks may still elicit confabulation at higher rates.
 
 ### 4.5 Future Work
 
@@ -336,15 +354,15 @@ This finding reconciles two perspectives in the literature. Sharma et al. [5] an
 
 ## 5. Conclusion
 
-We evaluated sycophancy across three model families using GPT-4o-mini labels on 3,000 samples and conducted a framing ablation to decompose the mechanisms driving sycophantic responses.
+We evaluated sycophancy across three model families using GPT-4o-mini labels on 3,000 samples and conducted a framing ablation across all 89 S1-producing prompts to decompose the mechanisms driving sycophantic responses.
 
 Key findings:
-- **Two alignment outcomes:** Effective alignment (Mistral, Qwen) reduces sycophancy while maintaining helpfulness; over-constraint (Llama) eliminates sycophancy through excessive refusal (+42%)
-- **Sycophancy is a composite failure:** Only 28% of sycophantic responses on the hardest prompts reflect genuine epistemic gaps. The majority (51%) occur when models possess the correct knowledge but suppress it under confirmatory framing. 21% involve partial knowledge that framing tips toward agreement.
-- **Social pressure is not the trigger:** Opinion-framed and flattery-based prompts produce zero sycophancy. Leading questions with confirmatory framing ("Is this correct?", "Can you verify?") produce the highest rates.
-- **The Mistral v0.1 paradox:** The model with the highest sycophancy rate (13.6%) actually knows the correct answer on 10 of 13 previously sycophantic prompts when asked neutrally.
+- **Two alignment outcomes:** Effective alignment (Mistral, Qwen) reduces sycophancy while maintaining helpfulness; over-constraint (Llama) eliminates sycophancy through excessive refusal (+42%), with category-level analysis showing 90% refusal on user-preference prompts
+- **Sycophancy is a composite failure:** Only 17% of sycophantic responses (N=135) reflect genuine epistemic gaps. In 83% of cases, models possess full (50%) or partial (33%) knowledge but fail to deploy it under confirmatory framing
+- **The compliance-capability dichotomy:** Mistral v0.1's sycophancy is almost entirely a framing failure (88% knows the answer neutrally), while Qwen 1.5's is predominantly a capability failure (52% wrong neutrally). Both mechanisms are active; their dominance varies by model
+- **Social pressure is not the trigger:** Opinion-framed and flattery-based prompts produce negligible sycophancy. Leading questions with confirmatory framing ("Is this correct?", "Can you verify?") produce the highest rates
 
-Is sycophancy an accuracy problem? Partially — but mostly not. The dominant mechanism in our data is not that models lack knowledge, but that confirmatory framing suppresses the knowledge they have. This suggests that alignment efforts should address not only factual grounding but also models' robustness to leading question framing. Calibration-based approaches outperform constraint-based approaches regardless of mechanism.
+Is sycophancy an accuracy problem? Partially — but mostly not. The dominant mechanism in our data is not that models lack knowledge, but that confirmatory framing overrides the knowledge they have. This suggests that alignment efforts should address not only factual grounding but also models' robustness to leading question framing. Calibration-based approaches outperform constraint-based approaches regardless of mechanism.
 
 We provide the complete labeled dataset, ablation results, and prompt pressure classifications at https://huggingface.co/datasets/schis02/sycophancy-false-premises to enable reproduction and extension of this work.
 
@@ -491,9 +509,9 @@ All 500 prompts were independently classified by GPT-4o-mini (temperature=0) int
 | NEUTRAL | 119 | 714 | 36 | 5.0% |
 | LEADING | 225 | 1350 | 90 | 6.7% |
 
-**Findings:** The categories with the strongest social pressure (OPINION, FLATTERY, HIGH_PRESSURE) produce the least sycophancy. The 60 prompts classified as OPINION or FLATTERY produce zero S1 across all models. Sycophancy concentrates on LEADING prompts — false premises stated as fact with a polite request for confirmation ("right?", "correct?", "can you verify?"). This pattern is inconsistent with socially-driven sycophancy [5] and consistent with confirmatory framing as the primary trigger in single-turn settings.
+**Findings:** The categories with the strongest social pressure (OPINION, FLATTERY, HIGH_PRESSURE) produce the least sycophancy. The 60 prompts classified as OPINION or FLATTERY produce negligible S1 across all models (0/360 responses). Sycophancy concentrates on LEADING prompts — false premises stated as fact with a polite request for confirmation ("right?", "correct?", "can you verify?"). This pattern is inconsistent with socially-driven sycophancy [5] and consistent with confirmatory framing as the primary trigger in single-turn settings.
 
-**Note on methodology:** An earlier version of this analysis used keyword-based categorization (high_pressure N=111, leading N=156, neutral N=237). The GPT-4o-mini classification produces the same directional pattern (high pressure → less S1, leading → most S1) with the additional finding that OPINION and FLATTERY prompts, which the keyword approach grouped with other categories, produce zero sycophancy.
+**Note on methodology:** An earlier version of this analysis used keyword-based categorization (high_pressure N=111, leading N=156, neutral N=237). The GPT-4o-mini classification produces the same directional pattern (high pressure → less S1, leading → most S1) with the additional finding that OPINION and FLATTERY prompts, which the keyword approach grouped with other categories, produce negligible sycophancy (0/360 responses).
 
 ---
 
