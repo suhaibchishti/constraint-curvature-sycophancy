@@ -226,7 +226,7 @@ Table 2 compares the two patterns:
 
 ### 3.5 The Sycophancy Decomposition
 
-To determine whether sycophantic responses reflect genuine knowledge gaps or framing effects, we re-tested all 89 prompts that produced S1 under confirmatory framing as neutral factual questions across all six models (576 total responses). Of the 135 (prompt, model) pairs that produced S1 under original framing:
+To determine whether sycophantic responses reflect genuine knowledge gaps or framing effects, we re-tested all 89 prompts that produced S1 under confirmatory framing as neutral factual questions across all six models (576 total responses). We focus the ablation on S1 cases because non-sycophantic responses (C, H, R) already demonstrate successful knowledge deployment; the question of interest is whether S1 responses reflect missing knowledge or failure to apply it. Of the 135 (prompt, model) pairs that produced S1 under original framing:
 
 | Neutral result | Count | % | Interpretation |
 |---|---|---|---|
