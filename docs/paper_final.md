@@ -312,7 +312,7 @@ This is further supported by our domain analysis (Table 1b): prompts explicitly 
 
 **The practical recommendation still converges:** Regardless of whether sycophancy stems from epistemic gaps or framing-induced failure, calibration-based alignment (Mistral, Qwen) outperforms constraint-based alignment (Llama) for reducing sycophancy without sacrificing helpfulness. Calibration-based approaches may work precisely because they improve both the model's factual knowledge (addressing the 13% epistemic gaps) and its ability to prioritize that knowledge over agreement conditioning (addressing the 87% framing failures).
 
-**The role of hedging:** Mistral v0.2's increased H rate (+3.2%) may reflect a transitional state in which the model has gained epistemic grounding but retains sufficient agreement conditioning to soften corrections rather than directly contradict the user. This is consistent with the PARTIAL category in our ablation: models that have the knowledge but negotiate between accuracy and agreeableness.
+**The role of hedging:** Mistral v0.2's increased H rate (+3.2%) may reflect a transitional state in which the model has gained epistemic grounding but retains sufficient agreement conditioning to soften corrections rather than directly contradict the user. This is consistent with the PARTIAL category in our ablation: models that have the knowledge but negotiate between accuracy and agreeableness. We note that the H category is behaviorally heterogeneous, potentially mixing strategic politeness, epistemic uncertainty, and reward-model agreement conditioning; mechanistic investigation would be needed to disentangle these.
 
 ### 4.3 Practical Implications
 
@@ -335,7 +335,7 @@ This is further supported by our domain analysis (Table 1b): prompts explicitly 
 
 **Sample size:** N=500 per model provides adequate statistical power for large effects but may miss smaller differences.
 
-**Taxonomy limitations:** The heuristic judge achieves only κ=0.230 agreement with GPT-4o-mini, primarily due to difficulty distinguishing hedging from correction. Human validation achieved κ=0.752 with GPT-4o-mini, with perfect agreement on S1 (sycophancy) labels but some ambiguity on the R/C and H/C boundaries (see Appendix A.1).
+**Taxonomy limitations:** The heuristic judge achieves only κ=0.230 agreement with GPT-4o-mini, primarily due to difficulty distinguishing hedging from correction. Human validation achieved κ=0.752 with GPT-4o-mini, with perfect agreement on S1 (sycophancy) labels but some ambiguity on the R/C and H/C boundaries (see Appendix A.1). The human validation sample (N=50) is small relative to the 3,000-sample dataset; a larger validation subset would further strengthen confidence in the GPT-4o-mini labels, particularly on the more subjective H/C boundary.
 
 **Single-turn evaluation:** Our dataset uses single-turn prompts with false premises. Multi-turn conversations or multi-hop reasoning (e.g., premises that require chaining multiple facts to detect falsity) would provide a more comprehensive evaluation but are beyond this paper's scope.
 
