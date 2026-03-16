@@ -476,18 +476,9 @@ prompt category (Table 1b), revealing that sycophancy concentrates on
 prompts with authoritative or confirmatory framing rather than social
 pressure.
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\begin{longtable}[]{@{}ll>{\raggedright\arraybackslash}p{0.5\textwidth}@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Prompt Category
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-S1 Rate
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Description
-\end{minipage} \\
+Prompt Category & S1 Rate & Description \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -523,7 +514,7 @@ interesting avenue for future research.
 \subsection{3.2 Pattern 1: Effective Alignment (Mistral,
 Qwen)}\label{pattern-1-effective-alignment-mistral-qwen}
 
-\subsubsection{Mistral v0.1 $\rightarrow$ v0.2}\label{mistral-v0.1-v0.2}
+\subsubsection{Mistral v0.1 \texorpdfstring{$\rightarrow$}{to} v0.2}\label{mistral-v0.1-v0.2}
 
 \textbf{S1 Sycophancy:}\\
 v0.1: 68/500 (13.6\%) \\ v0.2: 27/500 (5.4\%) \\
@@ -540,7 +531,7 @@ represents effective alignment: improved accuracy without sacrificing
 helpfulness. The effect size (h=0.286) is small-to-medium, indicating a
 meaningful practical difference.
 
-\subsubsection{Qwen 1.5 $\rightarrow$ 2.5}\label{qwen-1.5-2.5}
+\subsubsection{Qwen 1.5 \texorpdfstring{$\rightarrow$}{to} 2.5}\label{qwen-1.5-2.5}
 
 \textbf{S1 Sycophancy:}\\
 1.5: 21/500 (4.2\%) \\ 2.5: 6/500 (1.2\%) \\
@@ -566,7 +557,7 @@ while maintaining or improving helpfulness.
 \subsection{3.3 Pattern 2: Over-Constraint
 (Llama)}\label{pattern-2-over-constraint-llama}
 
-\subsubsection{Llama 3 $\rightarrow$ 3.1}\label{llama-3-3.1}
+\subsubsection{Llama 3 \texorpdfstring{$\rightarrow$}{to} 3.1}\label{llama-3-3.1}
 
 \textbf{S1 Elimination:}\\
 3: 13/500 (2.6\%) \\ 3.1: 0/500 (0.0\%) \\
@@ -602,33 +593,20 @@ Outcomes}\label{comparison-of-alignment-outcomes}
 
 Table 2 compares the two patterns:
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1698}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1509}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2642}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2075}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2075}}@{}}
+\begingroup\small
+\begin{longtable}[]{@{}lp{2.5cm}p{2.5cm}p{2.5cm}l@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Pattern
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Models
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Sycophancy $\Delta$
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Refusal $\Delta$
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mechanism
-\end{minipage} \\
+Pattern & Models & Sycoph.\ $\Delta$ & Refusal $\Delta$ & Mechanism \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\textbf{Effective Alignment} & Mistral v0.2, Qwen 2.5 & -8.2\%, -3.0\% &
-+2.6\%, -10.6\% & Calibration \\
-\textbf{Over-Constraint} & Llama 3.1 & -2.6\% (to 0\%) & +10.8\% &
+\textbf{Effective} & Mistral v0.2, Qwen 2.5 & $-$8.2\%, $-$3.0\% &
++2.6\%, $-$10.6\% & Calibration \\
+\textbf{Over-Constraint} & Llama 3.1 & $-$2.6\% (to 0\%) & +10.8\% &
 Constraint \\
 \end{longtable}
+\endgroup
 
 \textbf{Key insight:} Effective alignment reduces sycophancy through
 better calibration (improved instruction following, better training
@@ -647,21 +625,9 @@ knowledge deployment; the question of interest is whether S1 responses
 reflect missing knowledge or failure to apply it. Of the 135 (prompt,
 model) pairs that produced S1 under original framing:
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\begin{longtable}[]{@{}lcc>{\raggedright\arraybackslash}p{0.45\textwidth}@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Neutral result
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Count
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-\%
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Interpretation
-\end{minipage} \\
+Neutral result & Count & \% & Interpretation \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -684,9 +650,9 @@ the correct answer but fail to deploy it under confirmatory framing.
 reveals that the balance between framing failure and capability failure
 varies dramatically across models:
 
-\begin{longtable}[]{@{}llllll@{}}
+\begin{longtable}[]{@{}lccccc@{}}
 \toprule\noalign{}
-Model & CORRECT & PARTIAL & WRONG & Total S1 & \% knows answer \\
+Model & CORRECT & PARTIAL & WRONG & Total S1 & \% Knows \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -741,9 +707,9 @@ Independent GPT-4o-mini classification of all 500 prompts reveals that
 sycophancy concentrates on leading questions, not on prompts with social
 pressure:
 
-\begin{longtable}[]{@{}llll@{}}
+\begin{longtable}[]{@{}llc>{\raggedright\arraybackslash}p{0.35\textwidth}@{}}
 \toprule\noalign{}
-Category & N prompts & S1 rate & Description \\
+Category & N prompts & S1 & Description \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
