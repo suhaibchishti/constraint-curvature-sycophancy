@@ -446,7 +446,7 @@ pressure).
 
 \subsection{3.1 Overview}\label{overview}
 
-Table 1 summarizes sycophancy and refusal rates across all models:
+Table 1 and Figure~\ref{fig:outcomes} summarize sycophancy and refusal rates across all models:
 
 \begin{longtable}[]{@{}lllllll@{}}
 \toprule\noalign{}
@@ -470,6 +470,13 @@ Qwen 2.5 & 1.2\% & 0.0\% & 1.2\% & 10.4\% & 85.0\% & 3.4\% \\
 \item Refusal rates vary dramatically (8.0\% to 36.4\%), revealing different safety-utility tradeoffs
 \item Most responses correct the false premise (58.8\% to 85.0\%)
 \end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/alignment_outcomes.png}
+\caption{Response distribution across model updates. Effective alignment (Mistral, Qwen) reduces sycophancy (red) while maintaining or increasing correction (green). Over-constraint (Llama) eliminates sycophancy but dramatically increases refusal (grey), indicating blunt constraint strengthening rather than improved calibration.}
+\label{fig:outcomes}
+\end{figure}
 
 \textbf{Sycophancy by prompt domain:} S1 rates vary substantially by
 prompt category (Table 1b), revealing that sycophancy concentrates on
@@ -623,7 +630,7 @@ models (576 total responses). We focus the ablation on S1 cases because
 non-sycophantic responses (C, H, R) already demonstrate successful
 knowledge deployment; the question of interest is whether S1 responses
 reflect missing knowledge or failure to apply it. Of the 135 (prompt,
-model) pairs that produced S1 under original framing:
+model) pairs that produced S1 under original framing (Figure~\ref{fig:decomposition}):
 
 \begin{longtable}[]{@{}lcc>{\raggedright\arraybackslash}p{0.45\textwidth}@{}}
 \toprule\noalign{}
@@ -639,6 +646,13 @@ it toward agreement \\
 S1 $\rightarrow$ WRONG & 17 & 13\% & Genuine epistemic gap; model lacks the
 knowledge even when asked neutrally \\
 \end{longtable}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/sycophancy_decomposition.png}
+\caption{Sycophancy decomposition by model. Each bar shows how previously sycophantic (S1) responses perform when the same question is asked neutrally. Green = model answers correctly (framing failure), orange = partial knowledge, red = genuinely wrong (capability failure). Mistral v0.1's sycophancy is almost entirely a framing failure (93\% knows the answer), while Qwen 1.5's is predominantly a capability failure (48\% wrong).}
+\label{fig:decomposition}
+\end{figure}
 
 \textbf{Only 13\% of sycophancy reflects genuine epistemic gaps.} At
 least 51\% of sycophantic responses involve models that answer correctly
@@ -783,19 +797,19 @@ exclusive, but different model families appear to weight them
 differently.
 
 \textbf{Alignment map:} These mechanisms produce a two-dimensional space
-(Figure 1). The x-axis measures constraint strength (refusal rate) and
+(Figure~\ref{fig:alignment_map}). The x-axis measures constraint strength (refusal rate) and
 the y-axis measures sycophancy (S1 rate). Model updates trace distinct
 trajectories: Mistral and Qwen move toward the lower-left (less
 sycophancy, low refusal), while Llama moves toward the lower-right (less
 sycophancy, high refusal). The ideal alignment outcome is the lower-left
 quadrant: low sycophancy AND low refusal.
 
-\includegraphics{figures/alignment_map.png} \emph{Figure 1: Alignment
-trajectories across three model families. Circles represent older
-versions, squares represent newer versions. Arrows show the direction of
-model updates. Mistral and Qwen move toward the ideal lower-left
-quadrant (low sycophancy, low refusal), while Llama moves toward the
-lower-right (zero sycophancy but high refusal).}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/alignment_map.png}
+\caption{Alignment trajectories across three model families. Circles represent older versions, squares represent newer versions. Arrows show the direction of model updates. Mistral and Qwen move toward the ideal lower-left quadrant (low sycophancy, low refusal), while Llama moves toward the lower-right (zero sycophancy but high refusal).}
+\label{fig:alignment_map}
+\end{figure}
 
 \subsection{4.2 Is Sycophancy an Accuracy
 Problem?}\label{is-sycophancy-an-accuracy-problem}

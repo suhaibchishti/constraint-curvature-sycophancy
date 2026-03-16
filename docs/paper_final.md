@@ -117,7 +117,7 @@ To characterize the framing distribution of our dataset, all 500 prompts were in
 
 ### 3.1 Overview
 
-Table 1 summarizes sycophancy and refusal rates across all models:
+Table 1 and Figure 3 summarize sycophancy and refusal rates across all models:
 
 | Model | S1 | S2 | Total Syc | Refusal | Correction | Hedge |
 |-------|----|----|-----------|---------|------------|-------|
@@ -133,6 +133,9 @@ Table 1 summarizes sycophancy and refusal rates across all models:
 - S1 (premise affirmation) varies widely (0.0% to 13.6%), indicating significant differences in epistemic calibration across model families
 - Refusal rates vary dramatically (8.0% to 36.4%), revealing different safety-utility tradeoffs
 - Most responses correct the false premise (58.8% to 85.0%)
+
+![Alignment Outcomes](figures/alignment_outcomes.png)
+*Figure 3: Response distribution across model updates. Effective alignment (Mistral, Qwen) reduces sycophancy (red) while maintaining or increasing correction (green). Over-constraint (Llama) eliminates sycophancy but dramatically increases refusal (grey), indicating blunt constraint strengthening rather than improved calibration.*
 
 **Sycophancy by prompt domain:** S1 rates vary substantially by prompt category (Table 1b), revealing that sycophancy concentrates on prompts with authoritative or confirmatory framing rather than social pressure.
 
@@ -225,7 +228,7 @@ Table 2 compares the two patterns:
 
 ### 3.5 The Sycophancy Decomposition
 
-To determine whether sycophantic responses reflect genuine knowledge gaps or framing effects, we re-tested all 89 prompts that produced S1 under confirmatory framing as neutral factual questions across all six models (576 total responses). We focus the ablation on S1 cases because non-sycophantic responses (C, H, R) already demonstrate successful knowledge deployment; the question of interest is whether S1 responses reflect missing knowledge or failure to apply it. Of the 135 (prompt, model) pairs that produced S1 under original framing:
+To determine whether sycophantic responses reflect genuine knowledge gaps or framing effects, we re-tested all 89 prompts that produced S1 under confirmatory framing as neutral factual questions across all six models (576 total responses). We focus the ablation on S1 cases because non-sycophantic responses (C, H, R) already demonstrate successful knowledge deployment; the question of interest is whether S1 responses reflect missing knowledge or failure to apply it. Of the 135 (prompt, model) pairs that produced S1 under original framing (Figure 2):
 
 | Neutral result | Count | % | Interpretation |
 |---|---|---|---|
@@ -234,6 +237,9 @@ To determine whether sycophantic responses reflect genuine knowledge gaps or fra
 | S1 → WRONG | 17 | 13% | Genuine epistemic gap; model lacks the knowledge even when asked neutrally |
 
 **Only 13% of sycophancy reflects genuine epistemic gaps.** At least 51% of sycophantic responses involve models that answer correctly when asked neutrally, and another 36% show partial knowledge. In total, 87% of cases involve models that possess full or partial knowledge of the correct answer but fail to deploy it under confirmatory framing.
+
+![Sycophancy Decomposition](figures/sycophancy_decomposition.png)
+*Figure 2: Sycophancy decomposition by model. Each bar shows how previously sycophantic (S1) responses perform when the same question is asked neutrally. Green = model answers correctly (framing failure), orange = partial knowledge, red = genuinely wrong (capability failure). Mistral v0.1's sycophancy is almost entirely a framing failure (93% knows the answer), while Qwen 1.5's is predominantly a capability failure (48% wrong).*
 
 **The compliance-capability dichotomy:** Per-model decomposition reveals that the balance between framing failure and capability failure varies dramatically across models:
 
