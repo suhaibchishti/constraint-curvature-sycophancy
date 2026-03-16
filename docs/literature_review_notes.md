@@ -629,8 +629,11 @@ on Sahara ("largest hot desert and one of the largest" but still agrees).
 - [x] 7. Add future work note (multi-turn extension)
 - [x] 8. Terminology pass (clean — no "lie" language found)
 - [x] 9. Sync paper_final_arxiv.tex with all changes
-- [ ] 10. Add Wang et al. [6] to paper (references, §4.4, future work)
-- [ ] 11. Nuance §4.2: acknowledge framing effects alongside epistemic gap
-- [ ] 12. Sync LaTeX with Wang additions
-- [ ] 13. Final proofread
-- [ ] 14. Commit and tag
+- [x] 10. Add Wang et al. [6] to paper (references, §4.4, future work)
+- [x] 11. Nuance §4.2: acknowledge framing effects alongside epistemic gap
+- [x] 12. Sync LaTeX with Wang additions
+- [x] 13. Add Shapira et al. [11] to references, §1.4, §4.4
+- [x] 14. Add prompt-rewriting mitigation to §4.3 (validates Dubois [7])
+- [x] 15. Sync paper_final_arxiv.tex with all changes
+- [ ] 16. Final proofread
+- [ ] 17. Commit and tag

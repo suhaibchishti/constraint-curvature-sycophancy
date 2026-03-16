@@ -217,8 +217,11 @@ Sycophancy on false premises is a composite failure:
 - [x] Upload full_ablation_labels.json + full_ablation_prompts.json to HuggingFace
 - [x] Add Vennemeyer et al. [9] (Causal Separation, ICLR 2026) + Çelebi et al. [10] (PARROT) to references, Related Work, and §4.2
 - [x] **Dual-model validation of WRONG labels**: Re-labeled 81 WRONG cases with GPT-4o (full). Inter-judge agreement: 42% (34/81). 47 upgraded (37→PARTIAL, 10→CORRECT). New S1 decomposition: CORRECT=67(50%), PARTIAL=50(37%), WRONG=17(13%). Paper + ablation_findings updated.
-- [ ] Add sentence in §3.5: "We focus the ablation on S1 cases because non-sycophantic responses already demonstrate successful knowledge deployment."
-- [ ] Sync LaTeX (paper_final_arxiv.tex)
+- [x] Add sentence in §3.5: "We focus the ablation on S1 cases because non-sycophantic responses already demonstrate successful knowledge deployment."
+- [x] Sync LaTeX (paper_final_arxiv.tex)
+- [x] Add Shapira et al. [11] (How RLHF Amplifies Sycophancy) to references, §1.4 Related Work, and §4.4 Limitations
+- [x] Add prompt-rewriting mitigation point to §4.3 (validates Dubois et al. [7])
+- [x] Fix duplicate authority-appeal confound paragraph in §3.1
 - [ ] Final proofread
 - [ ] Commit and tag
 - [ ] Submit to arXiv
