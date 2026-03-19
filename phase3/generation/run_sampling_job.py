@@ -50,10 +50,10 @@ def launch_job(model_name):
         instance_count=INSTANCE_COUNT,
         base_job_name="p3-dist",
         volume_size_in_gb=30,
-        max_runtime_in_seconds=43200,  # 12 hours
+        max_runtime_in_seconds=50400,  # 14 hours
         env={
             "MODEL_PATH": model_name,
-            "USE_QUANTIZATION": "true",
+            "USE_QUANTIZATION": "false",
             "HF_TOKEN": hf_token
         }
     )
