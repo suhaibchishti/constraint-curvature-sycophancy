@@ -4,6 +4,7 @@ Launch SageMaker Processing Job for Phase 3 Behavioral Distributions.
 Runs 10 samples at 3 temperatures across 6 models.
 """
 import argparse
+import json
 import boto3
 from sagemaker.processing import ScriptProcessor, ProcessingInput, ProcessingOutput
 from datetime import datetime
@@ -27,7 +28,8 @@ def get_secret():
     client = boto3.client('secretsmanager', region_name='us-east-1')
     try:
         response = client.get_secret_value(SecretId='cc-eval-hf-token')
-        return response['SecretString']
+        secret = json.loads(response['SecretString'])
+        return secret['HF_TOKEN']
     except Exception as e:
         print(f"Failed to fetch HF token from Secrets Manager: {e}")
         return "YOUR_HF_TOKEN"
