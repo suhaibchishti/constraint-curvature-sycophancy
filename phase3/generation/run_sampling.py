@@ -42,6 +42,15 @@ from cc_eval.generate import generate_outputs
 def setup_hf_auth():
     """Authenticate with HuggingFace using env var or Secrets Manager."""
     token = os.environ.get("HF_TOKEN")
+    if not token or token == "YOUR_HF_TOKEN":
+        try:
+            import boto3
+            sm = boto3.client("secretsmanager")
+            secret = json.loads(sm.get_secret_value(SecretId="cc-eval-hf-token")["SecretString"])
+            token = secret["HF_TOKEN"]
+            print("Loaded HF token from Secrets Manager.")
+        except Exception:
+            pass
     if token and token != "YOUR_HF_TOKEN":
         try:
             from huggingface_hub import login
