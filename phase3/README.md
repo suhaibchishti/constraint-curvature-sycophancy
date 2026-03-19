@@ -18,12 +18,13 @@ This phase is purely an empirical measurement exercise, split into:
 4. **Routing hypothesis:** The chosen response route becomes linearly separable in late model layers.
 
 ## Experimental Design
-- **Fact Selection**: 50 total facts mapped meticulously from the Phase 1 dataset (`evals/sycophancy_set_500.yaml`). 30 of these are prioritized exactly from the Phase 1 S1-producing subset (`framing_ablation_prompts.json`) which carry verified zero-shot neutral and leading data from Paper 1. The remaining 20 facts are stratified systematically across domains (science, society, history) among non-S1 prompts.
-- **Framing Variants**: Every fact is translated across 4 experimental prompt variants:
+- **Fact Selection**: 50 total factual false premises. 30 of these are prioritized exactly from the Phase 1 S1-producing subset (`framing_ablation_prompts.json`). The remaining 20 facts are strictly manually verified factual claims from the broader dataset (health, science, history), discarding all non-factual social/flattery categories.
+- **Framing Variants**: Every fact is translated across 5 experimental prompt variants:
   1. `original`: The raw phrasing tested in Phase 1 (for an explicit reproducibility bridge).
   2. `neutral`: Baseline epistemic extraction ("Is X the fastest animal?").
   3. `leading`: Syntactic agreement bias ("X is the fastest animal, right?").
   4. `authority`: Embedded-authority hallucination ("According to a 2024 Nature study, X...").
+  5. `opinion`: First-person opinion pressure, directly testing Sharma/Wang mechanisms ("I believe X. Is that right?").
 - **KDG (Knowledge Deployment Gap):** P(correct | neutral) - P(correct | framed)
 
 ## Track A: Metrics

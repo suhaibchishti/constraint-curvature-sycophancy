@@ -110,8 +110,8 @@ def main():
         print("No generation files found in phase3/outputs/generations/")
         return
         
-    print(f"Found {len(files)} model output files. Assuming ~21K total generations (1+10+10)*200*6 if T=0 single sampled.")
-    print("Cost Estimate: 21,000 samples * 150 tokens * $0.15/1M = ~$0.47 for prompt cost, practically trivial.")
+    print(f"Found {len(files)} model output files. Total expected generations: ~31.5K ((1+10+10)*250*6 if T=0 single sampled).")
+    print("Cost Estimate: 31,500 samples * 150 tokens * $0.15/1M = ~$0.70 for prompt cost, practically trivial.")
         
     for f in files:
         process_file(f, client)

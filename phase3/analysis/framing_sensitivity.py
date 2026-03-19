@@ -33,7 +33,7 @@ def main():
     results_r = collections.defaultdict(dict)
     
     for m in stats:
-        for f_mode in ["neutral", "leading", "authority", "social"]:
+        for f_mode in ["neutral", "leading", "authority", "opinion", "original"]:
             results_s1[m][f_mode] = stats[m][f_mode, "S1"] / max(total_samples[m][f_mode], 1)
             results_r[m][f_mode] = stats[m][f_mode, "R"] / max(total_samples[m][f_mode], 1)
             
