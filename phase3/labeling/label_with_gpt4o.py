@@ -100,7 +100,17 @@ def main():
         
     api_key = os.environ.get('OPENAI_API_KEY')
     if not api_key:
-        print("OPENAI_API_KEY not found. Please set it to label the outputs.")
+        # Fallback: read from AWS Secrets Manager (SageMaker environment)
+        try:
+            import boto3
+            sm = boto3.client("secretsmanager")
+            secret = json.loads(sm.get_secret_value(SecretId="cc-eval-openai-key")["SecretString"])
+            api_key = secret["OPENAI_API_KEY"]
+            print("Loaded OpenAI key from Secrets Manager.")
+        except Exception:
+            pass
+    if not api_key:
+        print("OPENAI_API_KEY not found in env or Secrets Manager.")
         return
         
     client = OpenAI(api_key=api_key)
