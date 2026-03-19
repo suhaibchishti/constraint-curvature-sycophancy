@@ -1,9 +1,58 @@
-import json
-import os
-import copy
-from src.cc_eval.generate import generate_outputs
-from src.cc_eval.load_model import load_model
+#!/usr/bin/env python3
+"""
+Phase 3 SageMaker Processing Job: Behavioral Distribution Sampling.
+Generates multiple samples per prompt at varying temperatures.
 
+Runs inside SageMaker or locally.
+"""
+import os
+import sys
+import subprocess
+import json
+import copy
+
+# ---------- SageMaker bootstrap ----------
+REPO_DIR = "/opt/ml/processing/input/repo"
+OUT_DIR  = "/opt/ml/processing/output"
+IS_SAGEMAKER = os.path.exists(REPO_DIR)
+
+if IS_SAGEMAKER:
+    print("Installing dependencies...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
+        "transformers>=4.36.0",
+        "accelerate>=0.25.0",
+        "bitsandbytes>=0.41.0",
+        "pyyaml>=6.0",
+        "boto3>=1.28.0",
+        "tqdm>=4.60.0"
+    ])
+    print("Dependencies installed.")
+    # Add repo src to path (matches processing_job.py pattern)
+    sys.path.insert(0, os.path.join(REPO_DIR, "src"))
+else:
+    # Local fallback
+    REPO_DIR = "."
+    OUT_DIR  = "./phase3/outputs/generations"
+    sys.path.insert(0, os.path.join(REPO_DIR, "src"))
+
+from cc_eval.load_model import load_hf_model
+from cc_eval.generate import generate_outputs
+
+# ---------- HF auth ----------
+def setup_hf_auth():
+    """Authenticate with HuggingFace using env var or Secrets Manager."""
+    token = os.environ.get("HF_TOKEN")
+    if token and token != "YOUR_HF_TOKEN":
+        try:
+            from huggingface_hub import login
+            login(token=token, add_to_git_credential=False)
+            print("HuggingFace auth successful.")
+        except Exception as e:
+            print(f"HF auth warning: {e}")
+    else:
+        print("No HF_TOKEN found, assuming public models.")
+
+# ---------- helpers ----------
 def load_jsonl(path):
     rows = []
     with open(path, "r", encoding="utf-8") as f:
@@ -18,68 +67,62 @@ def write_jsonl(path, rows):
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
+# ---------- main ----------
 def main():
-    repo_dir = "/opt/ml/processing/input/repo"
-    out_dir = "/opt/ml/processing/output"
+    setup_hf_auth()
     
-    # If testing locally, fallback paths
-    if not os.path.exists(repo_dir):
-        repo_dir = "."
-        out_dir = "./phase3/outputs/generations"
-        
-    prompt_file = os.path.join(repo_dir, "phase3", "data", "prompt_variants.jsonl")
-    
+    prompt_file = os.path.join(REPO_DIR, "phase3", "data", "prompt_variants.jsonl")
+
     print(f"Loading prompts from {prompt_file}...")
     base_prompts = load_jsonl(prompt_file)
     print(f"Loaded {len(base_prompts)} prompts.")
-    
+
     model_name = os.environ.get("MODEL_PATH", "meta-llama/Meta-Llama-3-8B-Instruct")
-    print(f"Loading model: {model_name}")
-    
     use_quant = os.environ.get("USE_QUANTIZATION", "true").lower() == "true"
-    
-    model, tokenizer = load_model(model_name, use_quant=use_quant)
-    
+    print(f"Loading model: {model_name} (quantized={use_quant})")
+
+    tokenizer, model = load_hf_model(model_name, use_quantization=use_quant)
+
     temperatures = [0.0, 0.3, 0.7]
-    
-    # Flatten the jobs
+
+    # Build job list — 1 sample at T=0 (deterministic), 10 at T>0
     jobs = []
-    
     for temp in temperatures:
-        samples_per_prompt = 1 if temp == 0.0 else 10
-        for sample_idx in range(samples_per_prompt):
+        n_samples = 1 if temp == 0.0 else 10
+        for sample_idx in range(n_samples):
             for p in base_prompts:
                 p_copy = copy.deepcopy(p)
                 p_copy["temperature"] = temp
                 p_copy["sample_idx"] = sample_idx
                 jobs.append(p_copy)
-                
-    print(f"Generated {len(jobs)} evaluation jobs.")
-    
-    grouped_by_temp = {t: [] for t in temperatures}
+
+    print(f"Total evaluation jobs: {len(jobs)}")
+
+    # Group by temperature for batched generation
+    grouped = {t: [] for t in temperatures}
     for j in jobs:
-        grouped_by_temp[j["temperature"]].append(j)
+        grouped[j["temperature"]].append(j)
 
     results = []
-    
     for temp in temperatures:
-        print(f"Generating for temperature={temp}")
-        group = grouped_by_temp[temp]
-        out_temp = generate_outputs(
+        group = grouped[temp]
+        print(f"Generating {len(group)} completions at temperature={temp}...")
+        out = generate_outputs(
             tokenizer=tokenizer,
             model=model,
             prompts=group,
             max_new_tokens=150,
             temperature=temp,
             top_p=0.9,
-            seed=42 + int(temp*100),
+            seed=42 + int(temp * 100),
             system_prompt="You are a helpful assistant."
         )
-        for r in out_temp:
+        for r in out:
             r["model"] = model_name
-        results.extend(out_temp)
-        
-    out_file = os.path.join(out_dir, f"{model_name.split('/')[-1]}_distributions.jsonl")
+        results.extend(out)
+
+    clean_name = model_name.split("/")[-1]
+    out_file = os.path.join(OUT_DIR, f"{clean_name}_distributions.jsonl")
     print(f"Saving {len(results)} outputs to {out_file}...")
     write_jsonl(out_file, results)
     print("Done.")
