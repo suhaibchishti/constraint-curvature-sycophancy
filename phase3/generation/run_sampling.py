@@ -117,13 +117,19 @@ def generate_one(tokenizer, model, prompt_text, temperature, seed, system_prompt
             text = f"{system_prompt}\n\nUser: {text}\nAssistant:"
     inputs = tokenizer(text, return_tensors="pt", padding=True)
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
+    input_len = inputs["input_ids"].shape[1]
+    
     with torch.no_grad():
         gen = model.generate(
             **inputs, max_new_tokens=150, do_sample=(temperature > 0),
             temperature=temperature, top_p=0.9, pad_token_id=tokenizer.eos_token_id,
         )
-    out = tokenizer.decode(gen[0], skip_special_tokens=True)
-    return out[len(text):].strip() if out.startswith(text) else out.strip()
+    
+    # Strictly slice off the input prompt to prevent chat template special tokens
+    # from ruining the `startswith()` string check.
+    new_tokens = gen[0][input_len:]
+    completion = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+    return completion
 
 def main():
     setup_hf_auth()
