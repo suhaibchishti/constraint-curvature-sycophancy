@@ -172,15 +172,18 @@ def collect(client):
                         if not str(item.get("gpt4o_label", "")).startswith("ERROR"):
                             existing[key] = item["gpt4o_label"]
 
+        # Create O(1) reverse mapping lookup table
+        reverse_map = {
+            (m["basename"], m["id"], m["temperature"], m["sample_idx"]): cid
+            for cid, m in meta["mapping"].items()
+        }
+
         for item in items:
             key = (item["id"], item.get("temperature", 0), item.get("sample_idx", 0))
             
-            # Find matching custom_id via meta mapping
-            cid = None
-            for map_cid, marker in meta["mapping"].items():
-                if marker["basename"] == basename and marker["id"] == key[0] and marker["temperature"] == key[1] and marker["sample_idx"] == key[2]:
-                    cid = map_cid
-                    break
+            # Find matching custom_id via O(1) lookup
+            target_key = (basename, key[0], key[1], key[2])
+            cid = reverse_map.get(target_key)
 
             if key in existing:
                 item["gpt4o_label"] = existing[key]
