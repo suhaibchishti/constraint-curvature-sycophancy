@@ -102,10 +102,11 @@ def submit(client):
     if not requests:
         print("Nothing to label."); return
 
-    # Split into chunks of 10K to stay under 2M enqueued token limit
+    # Submit sequentially — 2M enqueued token limit is shared across all batches
     CHUNK_SIZE = 10000
     chunks = [requests[i:i+CHUNK_SIZE] for i in range(0, len(requests), CHUNK_SIZE)]
     print(f"Total: {len(requests)} requests → {len(chunks)} batch(es) of ≤{CHUNK_SIZE}")
+    print("Submitting sequentially (waiting for each to complete before next)...")
 
     batch_ids = []
     all_mapping = {}
@@ -120,6 +121,19 @@ def submit(client):
         batch = client.batches.create(input_file_id=uploaded.id, endpoint="/v1/chat/completions", completion_window="24h")
         batch_ids.append(batch.id)
         print(f"  Batch {ci+1}/{len(chunks)}: {batch.id} ({len(chunk)} requests)")
+
+        # Wait for completion before submitting next
+        if ci < len(chunks) - 1:
+            while True:
+                b = client.batches.retrieve(batch.id)
+                if b.status == "completed":
+                    print(f"    ✓ Completed ({b.request_counts.completed}/{b.request_counts.total})")
+                    break
+                elif b.status in ["failed", "cancelled", "expired"]:
+                    print(f"    ✗ Terminated with status '{b.status}': {getattr(b, 'errors', 'No errors listed')}")
+                    break
+                print(f"    ... {b.status} ({b.request_counts.completed}/{b.request_counts.total})          ", end="\r", flush=True)
+                time.sleep(30)
 
     meta = {"batch_ids": batch_ids, "count": len(requests), "mapping": all_mapping}
     with open(BATCH_META, "w") as f:
