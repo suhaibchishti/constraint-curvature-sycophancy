@@ -115,7 +115,7 @@ def main():
         
     client = OpenAI(api_key=api_key)
     
-    files = glob.glob("phase3/outputs/generations/*.jsonl")
+    files = glob.glob("phase3/outputs/generations/**/*.jsonl", recursive=True)
     if not files:
         print("No generation files found in phase3/outputs/generations/")
         return
