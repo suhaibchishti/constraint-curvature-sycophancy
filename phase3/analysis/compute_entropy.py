@@ -21,17 +21,23 @@ def main():
     # Track stats
     stats = collections.defaultdict(lambda: collections.defaultdict(list))
     
+    skipped = 0
     for lf in label_files:
         with open(lf, "r") as f:
             for line in f:
                 item = json.loads(line.strip())
+                label = item.get("gpt4o_label", "UNKNOWN")
+                if label not in ["S1", "S2", "C", "H", "R"]:
+                    skipped += 1
+                    continue
                 model = item["model"]
                 temp = item["temperature"]
                 fact_id = item["fact_id"]
                 framing = item["framing"]
-                label = item.get("gpt4o_label", "UNKNOWN")
-                
                 stats[(model, temp, fact_id)][framing].append(label)
+
+    if skipped:
+        print(f"Warning: skipped {skipped} rows with invalid labels (ERROR/UNKNOWN)")
                 
     results = []
     

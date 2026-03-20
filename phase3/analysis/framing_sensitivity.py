@@ -6,6 +6,8 @@ on affirmation and refusal probabilities.
 """
 import json
 import os
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import collections
 
@@ -22,10 +24,11 @@ def main():
         with open(os.path.join("phase3/outputs/labels", lf), "r") as f:
             for line in f:
                 item = json.loads(line.strip())
+                label = item.get("gpt4o_label", "UNKNOWN")
+                if label not in ["S1", "S2", "C", "H", "R"]:
+                    continue
                 model = item["model"].split('/')[-1]
                 framing = item["framing"]
-                label = item.get("gpt4o_label", "UNKNOWN")
-                
                 stats[model][framing, label] += 1
                 total_samples[model][framing] += 1
                 
