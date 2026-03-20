@@ -102,54 +102,67 @@ def submit(client):
     if not requests:
         print("Nothing to label."); return
 
-    print(f"Preparing batch: {len(requests)} requests")
-    
-    # Store the mapping natively inside BATCH_META instead
-    mapping = {}
-    with open(BATCH_INPUT, "w") as f:
-        for r, marker in requests:
-            mapping[r["custom_id"]] = marker
-            f.write(json.dumps(r) + "\n")
+    # Split into chunks of 10K to stay under 2M enqueued token limit
+    CHUNK_SIZE = 10000
+    chunks = [requests[i:i+CHUNK_SIZE] for i in range(0, len(requests), CHUNK_SIZE)]
+    print(f"Total: {len(requests)} requests → {len(chunks)} batch(es) of ≤{CHUNK_SIZE}")
 
-    uploaded = client.files.create(file=open(BATCH_INPUT, "rb"), purpose="batch")
-    batch = client.batches.create(input_file_id=uploaded.id, endpoint="/v1/chat/completions", completion_window="24h")
-    meta = {"batch_id": batch.id, "file_id": uploaded.id, "count": len(requests), "mapping": mapping}
+    batch_ids = []
+    all_mapping = {}
+    for ci, chunk in enumerate(chunks):
+        chunk_input = BATCH_INPUT.replace(".jsonl", f"_{ci}.jsonl")
+        with open(chunk_input, "w") as f:
+            for r, marker in chunk:
+                all_mapping[r["custom_id"]] = marker
+                f.write(json.dumps(r) + "\n")
+
+        uploaded = client.files.create(file=open(chunk_input, "rb"), purpose="batch")
+        batch = client.batches.create(input_file_id=uploaded.id, endpoint="/v1/chat/completions", completion_window="24h")
+        batch_ids.append(batch.id)
+        print(f"  Batch {ci+1}/{len(chunks)}: {batch.id} ({len(chunk)} requests)")
+
+    meta = {"batch_ids": batch_ids, "count": len(requests), "mapping": all_mapping}
     with open(BATCH_META, "w") as f:
         json.dump(meta, f, indent=2)
-    print(f"Batch submitted: {batch.id} ({len(requests)} requests)")
+    print(f"All batches submitted. Metadata saved to {BATCH_META}")
 
 
 def status(client):
     if not os.path.exists(BATCH_META):
         sys.exit("No batch found. Run --submit first.")
     meta = json.load(open(BATCH_META))
-    batch = client.batches.retrieve(meta["batch_id"])
-    total = batch.request_counts.total
-    done = batch.request_counts.completed
-    failed = batch.request_counts.failed
-    print(f"Status: {batch.status} | {done}/{total} completed, {failed} failed")
+    batch_ids = meta.get("batch_ids", [meta.get("batch_id")])
+    for bid in batch_ids:
+        batch = client.batches.retrieve(bid)
+        rc = batch.request_counts
+        print(f"  {bid}: {batch.status} | {rc.completed}/{rc.total} completed, {rc.failed} failed")
 
 
 def collect(client):
     if not os.path.exists(BATCH_META):
         sys.exit("No batch found. Run --submit first.")
     meta = json.load(open(BATCH_META))
-    batch = client.batches.retrieve(meta["batch_id"])
-    if batch.status != "completed":
-        print(f"Batch not done yet: {batch.status}"); return
+    batch_ids = meta.get("batch_ids", [meta.get("batch_id")])
 
-    content = client.files.content(batch.output_file_id)
+    # Check all batches are done
     results = {}
-    for line in content.text.strip().split("\n"):
-        r = json.loads(line)
-        cid = r["custom_id"]
-        label = "ERROR"
-        if r["response"]["status_code"] == 200:
-            raw = r["response"]["body"]["choices"][0]["message"]["content"].strip()
-            for v in ['S1', 'S2', 'C', 'H', 'R']:
-                if v in raw:
-                    label = v; break
-        results[cid] = label
+    for bid in batch_ids:
+        batch = client.batches.retrieve(bid)
+        if batch.status != "completed":
+            print(f"Batch {bid} not done yet: {batch.status}")
+            return
+        content = client.files.content(batch.output_file_id)
+        for line in content.text.strip().split("\n"):
+            if not line.strip(): continue
+            r = json.loads(line)
+            cid = r["custom_id"]
+            label = "ERROR"
+            if r["response"]["status_code"] == 200:
+                raw = r["response"]["body"]["choices"][0]["message"]["content"].strip()
+                for v in ['S1', 'S2', 'C', 'H', 'R']:
+                    if v in raw:
+                        label = v; break
+            results[cid] = label
 
     # Merge into labeled files
     label_dir = "phase3/outputs/labels"
