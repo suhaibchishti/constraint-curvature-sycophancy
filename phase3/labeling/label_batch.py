@@ -103,7 +103,7 @@ def submit(client):
         print("Nothing to label."); return
 
     # Submit sequentially — 2M enqueued token limit is shared across all batches
-    CHUNK_SIZE = 10000
+    CHUNK_SIZE = 35000
     chunks = [requests[i:i+CHUNK_SIZE] for i in range(0, len(requests), CHUNK_SIZE)]
     print(f"Total: {len(requests)} requests → {len(chunks)} batch(es) of ≤{CHUNK_SIZE}")
     print("Submitting sequentially (waiting for each to complete before next)...")

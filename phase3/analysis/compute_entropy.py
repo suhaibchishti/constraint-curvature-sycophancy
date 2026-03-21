@@ -10,7 +10,7 @@ import collections
 import math
 
 def main():
-    label_files = glob.glob("phase3/outputs/labels/*.jsonl")
+    label_files = glob.glob("phase3/outputs/labels/*_labeled.jsonl")
     if not label_files:
         print("No labeled files in phase3/outputs/labels/")
         return
