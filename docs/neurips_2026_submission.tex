@@ -85,7 +85,7 @@ We show that these accounts are not competing---they describe a \emph{mixture}, 
 
 \paragraph{Sycophancy evaluation.} \citet{perez2022discovering} first documented opinion agreement in LLMs. \citet{celebi2025parrot} introduced the PARROT benchmark using neutral-versus-framed MMLU comparisons, and \citet{dubois2024length} identified input framing as a causal driver of evaluation artifacts. Our distributional design parallels \citet{celebi2025parrot} but operates at larger scale (31,500 responses) with KDG quantification and temperature-based probabilistic analysis.
 
-\paragraph{Truthfulness and calibration.} \citet{lin2022truthfulqa} framed sycophancy as a truthfulness failure. \citet{malmqvist2024sycophancy} surveyed causes and mitigations. Our ablation directly tests whether sycophancy reflects truthfulness gaps (capability) or deployment failures (compliance), finding the latter dominates at 86\%.
+\paragraph{Truthfulness and calibration.} \citet{lin2022truthfulqa} framed sycophancy as a truthfulness failure. \citet{malmqvist2024sycophancy} surveyed causes and mitigations. \citet{kadavath2022language} showed that models can accurately assess whether they possess the knowledge to answer a question (P(IK)), with calibration improving with scale. Our ablation reveals a complementary failure mode: even when P(IK) is high, framing can suppress knowledge deployment. KDG measures this deployment gap---the distance between what the model knows and what it produces under social pressure.
 
 \paragraph{Our position.} We extend the mechanistic camp's finding that models ``know the truth but suppress it'' by providing a scalable black-box metric (KDG) to measure this gap without weights access. We extend \citet{sharma2024towards} by showing their opinion-framing prediction is model-specific, not universal. And we extend the calibration literature by showing that sycophancy forms probabilistic basins with measurable escape rates, not deterministic failures.
 
@@ -352,7 +352,7 @@ The distributional analysis establishes \emph{which} framing conditions suppress
 
 \subsection{Temperature as Basin Escape}
 
-We identify the 184 (model, fact, framing) combinations that produce deterministic S1 at $T$=0 and track their outcomes at higher temperatures (Table~\ref{tab:basin_escape}).
+We identify the 184 (model, fact, framing) combinations that produce deterministic S1 at $T$=0 and track their outcomes at higher temperatures (Table~\ref{tab:basin_escape}). Following \citet{holtzman2020curious}, who showed that the model's confidence region over the vocabulary shifts dynamically with sampling temperature, we use temperature as a probe of basin depth: shallow basins (where the sycophantic token has only a narrow probability advantage) should yield escape at modest temperatures.
 
 \begin{table}[htbp]
 \centering
@@ -525,6 +525,16 @@ Celebi, E., et~al.
 Dubois, Y., et~al.
 \newblock Length-controlled AlpacaEval: A simple way to debias automatic evaluators.
 \newblock \emph{arXiv preprint arXiv:2404.04475}, 2024.
+
+\bibitem[Holtzman et~al.(2020)]{holtzman2020curious}
+Holtzman, A., Buys, J., Du, L., Forbes, M., and Choi, Y.
+\newblock The curious case of neural text degeneration.
+\newblock In \emph{Proceedings of ICLR}, 2020.
+
+\bibitem[Kadavath et~al.(2022)]{kadavath2022language}
+Kadavath, S., et~al.
+\newblock Language models (mostly) know what they know.
+\newblock \emph{arXiv preprint arXiv:2207.05221}, 2022.
 
 \bibitem[Lin et~al.(2022)]{lin2022truthfulqa}
 Lin, S., Hilton, J., and Evans, O.
