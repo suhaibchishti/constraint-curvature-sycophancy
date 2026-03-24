@@ -8,7 +8,7 @@
 
 ## Abstract
 
-We present a behavioral analysis of sycophancy in large language models, demonstrating that false-premise agreement is primarily a framing-induced probabilistic failure rather than an epistemic gap. Using a validated S1/S2/C/H/R taxonomy across 35,076 labeled responses from six models spanning three families (Mistral, Llama, Qwen), we first establish that 86% of sycophantic responses in our evaluation occur when models possess the correct knowledge but fail to deploy it under confirmatory framing (N=135 ablation pairs, fp16, dual-judge validated). We then scale this analysis to 31,500 sampled responses across 5 framing conditions and 3 temperatures, introducing the *Knowledge Deployment Gap* (KDG) metric to quantify framing-induced knowledge suppression. KDG reveals dramatic heterogeneity: Mistral v0.1 exhibits KDG=0.61 under authority framing (driven by sycophancy) while Llama 3.1 shows KDG=0.31 under authority driven entirely by refusal—same metric, mechanistically different failures. Contrary to prior work suggesting opinion framing universally increases sycophancy, we find this is a boundary condition: opinion framing increases sycophancy in older instruction-tuned models (Mistral +5–10pp) but decreases it in RLHF-aligned models (Llama, Qwen 2.5: −1 to −3pp). Temperature analysis reveals sycophancy as a probabilistic basin: 37% of responses that are deterministically sycophantic at T=0 escape to correct or hedge responses at T=0.7, with the Hedge state—which doubles from 14% to 23–27% under framing—serving as the transition state between sycophancy and correction. We release the complete dataset and analysis code.
+We present a behavioral analysis of sycophancy in large language models, demonstrating that false-premise agreement is primarily a framing-induced probabilistic failure rather than an epistemic gap. Using a validated S1/S2/C/H/R taxonomy across 35,076 labeled responses from six models spanning three families (Mistral, Llama, Qwen), we first establish that 86% of sycophantic responses in our false-premise evaluation occur when models possess the correct knowledge but fail to deploy it under confirmatory framing (N=135 ablation pairs, fp16, dual-judge validated). We then scale this analysis to 31,500 sampled responses across 5 framing conditions and 3 temperatures, introducing the *Knowledge Deployment Gap* (KDG) metric to quantify framing-induced knowledge suppression. KDG reveals dramatic heterogeneity: Mistral v0.1 exhibits KDG=0.61 under authority framing (driven by sycophancy) while Llama 3.1 shows KDG=0.31 under authority driven entirely by refusal—same metric, mechanistically different failures. Contrary to prior work suggesting opinion framing universally increases sycophancy, we find this is a boundary condition: opinion framing increases sycophancy in older instruction-tuned models (Mistral +5–10pp) but decreases it in RLHF-aligned models (Llama, Qwen 2.5: −1 to −3pp). Temperature analysis reveals sycophancy as a probabilistic basin: 37% of responses that are deterministically sycophantic at T=0 escape to correct or hedge responses at T=0.7, with the Hedge state—which doubles from 14% to 23–27% under framing—serving as the transition state between sycophancy and correction. We release the complete dataset and analysis code.
 
 **Dataset:** https://huggingface.co/datasets/schis02/sycophancy-false-premises
 
@@ -88,16 +88,16 @@ Labeling is performed by GPT-4o-mini with a structured prompt providing definiti
 
 | Model | S1% | S2% | C% | H% | R% |
 |-------|-----|-----|-----|-----|-----|
-| Mistral v0.1 | 13.6 | 0.2 | 72.4 | 3.6 | 10.2 |
-| Mistral v0.2 | 5.4 | 0.0 | 76.0 | 6.8 | 11.4 |
-| Llama 3 | 2.6 | 0.0 | 70.0 | 1.8 | 25.6 |
+| Mistral v0.1 | 13.6 | 0.2 | 73.2 | 5.0 | 8.0 |
+| Mistral v0.2 | 5.4 | 0.0 | 75.8 | 8.2 | 10.6 |
+| Llama 3 | 2.6 | 0.4 | 70.2 | 1.2 | 25.6 |
 | Llama 3.1 | 0.0 | 0.0 | 58.8 | 4.8 | 36.4 |
 | Qwen 1.5 | 4.2 | 0.0 | 74.0 | 0.8 | 21.0 |
-| Qwen 2.5 | 1.2 | 0.0 | 78.0 | 10.4 | 10.4 |
+| Qwen 2.5 | 1.2 | 0.0 | 85.0 | 3.4 | 10.4 |
 
 **Effective alignment** (Mistral, Qwen): Newer versions reduce sycophancy while maintaining or improving helpfulness. Mistral v0.1→v0.2: S1 drops from 13.6% to 5.4% (Δ=−8.2pp, p<0.001, χ²=18.61, Cohen's h=0.286) with stable refusal. Qwen 1.5→2.5: S1 drops from 4.2% to 1.2% (Δ=−3.0pp, p=0.005, Cohen's h=0.193) with refusal halved.
 
-**Over-constraint** (Llama): Llama 3→3.1 eliminates sycophancy entirely (S1: 2.6%→0.0%, p<0.001) but at the cost of a 42% increase in refusal (25.6%→36.4%, χ²=13.13, p<0.001, Cohen's h=0.234), reducing the correct response rate from 70.0% to 58.8%. Category-level analysis reveals where over-constraint is most acute: Llama 3.1 refuses 90% of user-preference prompts (up from 38% in Llama 3) and 30% of social-pressure prompts (up from 8%). These are categories where the correct behavior is to engage and correct the false premise, not refuse entirely.
+**Over-constraint** (Llama): Llama 3→3.1 eliminates sycophancy entirely (S1: 2.6%→0.0%, p<0.001) but at the cost of a 42% increase in refusal (25.6%→36.4%, χ²=13.13, p<0.001, Cohen's h=0.234), reducing the correct response rate from 70.2% to 58.8%. Category-level analysis reveals where over-constraint is most acute: Llama 3.1 refuses 90% of user-preference prompts (up from 38% in Llama 3) and 30% of social-pressure prompts (up from 8%). These are categories where the correct behavior is to engage and correct the false premise, not refuse entirely.
 
 These trajectories are visible in Figure 2: Mistral and Qwen move toward the ideal lower-left quadrant (low sycophancy, low refusal), while Llama moves toward the lower-right (zero sycophancy but high refusal).
 
@@ -329,7 +329,7 @@ Most prior work conflates these layers. TruthfulQA [4] measures the capability l
 
 ### 6.2 Practical Implications
 
-**Usable correctness rate.** We define the Usable Correctness Rate as UCR = (C+H)/Total, measuring the fraction of responses that are either correct or hedge-then-correct—i.e., usable to the end user. UCR separates alignment quality from raw sycophancy rates: Mistral v0.2 achieves UCR=82.8% (low S1, low R), while Llama 3.1 achieves only UCR=63.6% despite zero sycophancy (high R suppresses usable output). Qwen 2.5 leads at UCR=88.4%. UCR penalizes both sycophancy and over-refusal, making it a practical deployment metric.
+**Usable correctness rate.** We define the Usable Correctness Rate as UCR = (C+H)/Total, measuring the fraction of responses that are either correct or hedge-then-correct—i.e., usable to the end user. UCR separates alignment quality from raw sycophancy rates: Mistral v0.2 achieves UCR=84.0% (low S1, low R), while Llama 3.1 achieves only UCR=63.6% despite zero sycophancy (high R suppresses usable output). Qwen 2.5 leads at UCR=88.4%. UCR penalizes both sycophancy and over-refusal, making it a practical deployment metric.
 
 **Authority framing is the highest-risk deployment condition.** It uniquely drives sycophancy, confabulation, and refusal simultaneously. Systems that present information with authority cues (e.g., "According to our records...") should be evaluated specifically for this triple failure mode.
 
