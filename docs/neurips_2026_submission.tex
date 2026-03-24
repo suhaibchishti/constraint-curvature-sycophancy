@@ -97,7 +97,7 @@ We show that these accounts are not competing---they describe a \emph{mixture}, 
 
 \subsection{Dataset Construction}
 
-We construct a dataset of 500 false-premise prompts spanning four domains: health/medicine, science/technology, history/geography, and general knowledge. Each prompt embeds a factual error within a natural question format (e.g., ``Since the Great Wall of China is visible from space, how do astronauts typically photograph it?''). We generate responses from six instruction-tuned models at 7--8B scale across three families:
+We construct a dataset of 500 false-premise prompts spanning four domains: health/medicine, science/technology, history/geography, and general knowledge. Each prompt embeds a factual error within a natural question format---for example: ``Since the Great Wall of China is visible from space, how do astronauts typically photograph it?'' We generate responses from six instruction-tuned models at 7--8B scale across three families:
 
 \begin{itemize}
     \item \textbf{Mistral}: Mistral-7B-Instruct-v0.1, Mistral-7B-Instruct-v0.2
@@ -126,7 +126,7 @@ Labeling is performed by GPT-4o-mini with a structured prompt providing definiti
 
 Table~\ref{tab:s1_rates} presents per-model response distributions. Three distinct alignment patterns emerge:
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Response distribution by model (N=500 per model, T=0.7, fp16). S1=sycophantic agreement, R=refusal, C=correct, H=hedge.}
 \label{tab:s1_rates}
@@ -151,7 +151,7 @@ Qwen 2.5 & 1.2 & 0.0 & 85.0 & 3.4 & 10.4 \\
 
 These trajectories are visible in Figure~\ref{fig:alignment_map}: Mistral and Qwen move toward the ideal lower-left quadrant (low sycophancy, low refusal), while Llama moves toward the lower-right (zero sycophancy but high refusal).
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.65\textwidth]{figures/alignment_map.png}
     \caption{Alignment trajectories. Circles = older versions, squares = newer. Mistral and Qwen move toward low sycophancy + low refusal (calibration). Llama moves toward zero sycophancy + high refusal (constraint).}
@@ -169,7 +169,7 @@ The alignment outcomes raise a critical question: when models produce sycophanti
 
 We test this by identifying the 89 prompts that produced at least one S1 response and re-presenting them as neutral factual questions (e.g., ``Is the Great Wall of China visible from space?''). This yields $N$=135 model-prompt pairs where the original framing produced S1. We then classify the neutral response as CORRECT (model deploys the knowledge), PARTIAL (model shows partial knowledge), or WRONG (genuine epistemic gap). Neutral responses are generated at $T$=0 for determinism.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Framing ablation results (N=135 S1 pairs, fp16, dual-judge validated). CORRECT and PARTIAL indicate the model possesses relevant knowledge that framing suppressed.}
 \label{tab:ablation}
@@ -189,13 +189,13 @@ WRONG & 19 & 14\% & Genuine epistemic gap \\
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/sycophancy_decomposition.png}
-    \caption{Sycophancy decomposition by model. Each bar shows how previously sycophantic (S1) responses perform when the same question is asked neutrally. Green = correct (framing failure), orange = partial knowledge, red = genuinely wrong (capability failure).}
+    \caption{Sycophancy decomposition by model. Each bar shows how previously sycophantic (S1) responses perform when the same question is asked neutrally. Green = correct (framing failure), orange = partial knowledge, red = genuinely wrong (capability failure). Llama~3.1 is omitted (0 S1 pairs in ablation).}
     \label{fig:decomposition}
 \end{figure}
 
 Per-model decomposition reveals heterogeneity in this ratio (Table~\ref{tab:ablation_permodel}, Figure~\ref{fig:decomposition}). Mistral v0.1 ``knows'' the answer 88\% of the time (CORRECT+PARTIAL), while Qwen~1.5 knows only 57\%---its sycophancy is partially capability-driven.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Per-model ablation decomposition. \% Knows = (CORRECT+PARTIAL)/Total.}
 \label{tab:ablation_permodel}
@@ -261,16 +261,16 @@ such that $\text{KDG} \approx \text{KDG}_{S1} + \text{KDG}_{R} + \epsilon$. This
 \subsection{KDG Results}
 \label{sec:kdg_results}
 
-Figure~\ref{fig:kdg_heatmap} presents the KDG heatmap across all model-framing combinations. Table~\ref{tab:kdg_decomp} reports the decomposition for the highest-KDG conditions.
+Figure~\ref{fig:kdg_heatmap} decomposes the KDG into its sycophancy and refusal components across all model-framing combinations. Table~\ref{tab:kdg_decomp} reports the full decomposition for the highest-KDG conditions.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.75\textwidth]{figures/kdg_heatmap.png}
-    \caption{Knowledge Deployment Gap by model and framing condition. Positive values (red) indicate framing suppresses correct knowledge. Mistral v0.1 under authority framing shows the largest KDG (0.61).}
+    \includegraphics[width=0.95\textwidth]{figures/kdg_heatmap.png}
+    \caption{Knowledge Deployment Gap decomposed into sycophancy shift (KDG$_{S1}$, left) and refusal shift (KDG$_R$, right). Values show $\Delta$rate (framed $-$ neutral). Mistral v0.1 authority is sycophancy-driven (KDG$_{S1}$=+0.44), while Llama 3.1 authority is refusal-driven (KDG$_R$=+0.48, KDG$_{S1}$=$-$0.08). Same headline KDG, opposite mechanisms. Note: $\Delta$rate values differ slightly from Table~\ref{tab:kdg_decomp}'s KDG values because KDG is defined over correctness probability (C+H), while these panels show S1 and R rate shifts directly.}
     \label{fig:kdg_heatmap}
 \end{figure}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{KDG decomposition for high-KDG conditions. KDG$_{S1}$ measures sycophancy-driven suppression; KDG$_R$ measures refusal-driven suppression.}
 \label{tab:kdg_decomp}
@@ -302,7 +302,7 @@ Three findings emerge:
 
 Table~\ref{tab:s1_by_framing} presents S1 rates by model and framing condition.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{S1 rate (\%) by model and framing condition. Bold indicates the highest S1 rate per model.}
 \label{tab:s1_by_framing}
@@ -330,7 +330,7 @@ Each model exhibits a distinct framing sensitivity profile. Mistral v0.1 is maxi
 
 \citet{sharma2024towards} found that ``I believe'' opinion framing increases sycophancy. We test this prediction across all six models (Figure~\ref{fig:sharma}).
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/sharma_opinion_effect.png}
     \caption{Opinion framing effect on S1 rate. Sharma et al.'s prediction (opinion increases sycophancy) holds for Mistral but reverses for Llama and Qwen~2.5.}
@@ -354,7 +354,7 @@ The distributional analysis establishes \emph{which} framing conditions suppress
 
 We identify the 184 (model, fact, framing) combinations that produce deterministic S1 at $T$=0 and track their outcomes at higher temperatures (Table~\ref{tab:basin_escape}).
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Basin escape: outcomes at $T$=0.3 and $T$=0.7 for the 184 combinations that are deterministically S1 at $T$=0 (10 samples per combination at each temperature).}
 \label{tab:basin_escape}
@@ -372,14 +372,14 @@ $T$=0.7 & 63.1\% & 18.6\% & 14.4\% & \textbf{37\%} \\
 
 \textbf{37\% of deterministically sycophantic responses escape the basin at $T$=0.7.} The model's latent knowledge---established by the ablation in \S\ref{sec:ablation}---competes with the agreement attractor shaped by fine-tuning. Temperature provides the stochastic energy for this latent knowledge to surface.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/basin_escape.png}
     \caption{Basin escape by model. Mistral v0.1 has the highest escape rate (55\%) despite the most S1 at $T$=0, indicating a wide but shallow basin. Qwen~1.5 has the lowest escape rate (20\%), consistent with its capability-driven sycophancy.}
     \label{fig:basin_escape}
 \end{figure}
 
-Per-model escape rates (Figure~\ref{fig:basin_escape}) reveal distinct basin structures. Mistral v0.1 has the highest escape rate (55\%)---its basin is wide (many prompts trigger S1) but shallow (temperature easily dislodges it), consistent with its high ``knows'' rate (88\%) from the ablation. Qwen~1.5 has the lowest escape rate (20\%), consistent with its capability-driven sycophancy (57\% knows). Llama~3.1 escapes only to H, never to C---even when temperature dislodges it from sycophancy, safety training prevents confident correction.
+Per-model escape rates (Figure~\ref{fig:basin_escape}) reveal distinct basin structures. Mistral v0.1 has the highest escape rate (55\%)---its basin is wide (many prompts trigger S1) but shallow (temperature easily dislodges it), consistent with its high ``knows'' rate (88\%) from the ablation. Qwen~1.5 has the lowest escape rate (20\%), consistent with its capability-driven sycophancy (57\% knows). Llama~3.1 escapes only to H or R, never to C---even when temperature dislodges it from sycophancy, safety training prevents confident correction, redirecting to hedging or refusal.
 
 We observe a non-monotonic relationship between temperature and overall S1 rate: S1 peaks at $T$=0.3 (13.5\%) and drops at $T$=0.7 (10.3\%). This is consistent with the hypothesis that modest stochasticity amplifies sycophantic attractors while higher stochasticity disrupts them, supported by the entropy data below.
 
@@ -387,7 +387,7 @@ We observe a non-monotonic relationship between temperature and overall S1 rate:
 
 The Hedge (H) category---responses that partially acknowledge the error without fully correcting it---exhibits a distinctive pattern under framing:
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Hedge (H) rate by framing condition (all models, all temperatures).}
 \label{tab:hedge}
@@ -410,7 +410,7 @@ H nearly doubles from neutral (14\%) to framed conditions (23--27\%). Combined w
 
 We compute the Shannon entropy of the label distribution across the 10 samples for each (model, fact, framing, temperature) combination, measuring behavioral variability.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Mean entropy by model and temperature. Higher entropy indicates more variable behavior across samples.}
 \label{tab:entropy}
@@ -432,9 +432,9 @@ Llama~3 shows the highest entropy at $T$=0.3 (0.141)---the most behaviorally var
 
 \subsection{Basin Depth as Alignment Signature}
 
-Combining KDG (knowledge suppression) and entropy (behavioral variability) yields a two-dimensional alignment signature per model (Figure~\ref{fig:entropy_kdg}).
+Combining KDG (knowledge suppression) and entropy (behavioral variability) yields a two-dimensional alignment signature per model (Figure~\ref{fig:entropy_kdg}). Mean KDG aggregates across all framing conditions; authority-specific KDG values are reported in Table~\ref{tab:kdg_decomp}.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/entropy_kdg_scatter.png}
     \caption{Entropy $\times$ KDG alignment signatures. Each point represents a model's mean KDG and mean entropy at $T$=0.7. Four quadrants characterize distinct alignment outcomes.}

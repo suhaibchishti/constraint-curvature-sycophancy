@@ -125,7 +125,7 @@ We test this by identifying the 89 prompts that produced at least one S1 respons
 **86% of sycophantic responses involve knowledge the model already has.** This finding reframes sycophancy from a capability problem to a deployment problem: the bottleneck is not what models know, but when they deploy that knowledge.
 
 ![Figure 3: Sycophancy Decomposition](figures/sycophancy_decomposition.png)
-*Figure 3: Sycophancy decomposition by model. Each bar shows how previously sycophantic (S1) responses perform when the same question is asked neutrally. Green = correct (framing failure), orange = partial knowledge, red = genuinely wrong (capability failure).*
+*Figure 3: Sycophancy decomposition by model. Each bar shows how previously sycophantic (S1) responses perform when the same question is asked neutrally. Green = correct (framing failure), orange = partial knowledge, red = genuinely wrong (capability failure). Llama 3.1 is omitted (0 S1 pairs in ablation).*
 
 Per-model decomposition reveals heterogeneity in this ratio (Table 3, Figure 3). Mistral v0.1 "knows" the answer 88% of the time (CORRECT+PARTIAL), while Qwen 1.5 knows only 57%—its sycophancy is partially capability-driven.
 
@@ -182,7 +182,7 @@ such that KDG ≈ KDG_S1 + KDG_R + ε. This decomposition is essential: as we sh
 ### 4.3 KDG Results
 
 ![Figure 3: KDG Heatmap](figures/kdg_heatmap.png)
-*Figure 3: Knowledge Deployment Gap by model and framing condition. Positive values (red) indicate framing suppresses correct knowledge. Mistral v0.1 under authority framing shows the largest KDG (0.61).*
+*Figure 3: Knowledge Deployment Gap decomposed into sycophancy shift (KDG_S1, left) and refusal shift (KDG_R, right). Values show Δrate (framed − neutral). Mistral v0.1 authority is sycophancy-driven (KDG_S1=+0.44), while Llama 3.1 authority is refusal-driven (KDG_R=+0.48, KDG_S1=−0.08). Same headline KDG, opposite mechanisms. Note: Δrate values differ slightly from Table 4's KDG values because KDG is defined over correctness probability (C+H), while these panels show S1 and R rate shifts directly.*
 
 *Table 4: KDG decomposition for high-KDG conditions.*
 
@@ -255,7 +255,7 @@ We identify the 184 (model, fact, framing) combinations that produce determinist
 ![Figure 5: Basin Escape](figures/basin_escape.png)
 *Figure 5: Basin escape by model. Mistral v0.1 has the highest escape rate (55%) despite the most S1 at T=0, indicating a wide but shallow basin. Qwen 1.5 has the lowest escape rate (20%), consistent with its capability-driven sycophancy.*
 
-Per-model escape rates reveal distinct basin structures. Mistral v0.1 has the highest escape rate (55%)—its basin is wide (many prompts trigger S1) but shallow (temperature easily dislodges it), consistent with its high "knows" rate (88%) from the ablation. Qwen 1.5 has the lowest escape rate (20%), consistent with its capability-driven sycophancy (57% knows). Llama 3.1 escapes only to H, never to C—even when temperature dislodges it from sycophancy, safety training prevents confident correction.
+Per-model escape rates reveal distinct basin structures. Mistral v0.1 has the highest escape rate (55%)—its basin is wide (many prompts trigger S1) but shallow (temperature easily dislodges it), consistent with its high "knows" rate (88%) from the ablation. Qwen 1.5 has the lowest escape rate (20%), consistent with its capability-driven sycophancy (57% knows). Llama 3.1 escapes only to H or R, never to C—even when temperature dislodges it from sycophancy, safety training prevents confident correction, redirecting to hedging or refusal.
 
 We observe a non-monotonic relationship between temperature and overall S1 rate: S1 peaks at T=0.3 (13.5%) and drops at T=0.7 (10.3%). This is consistent with the hypothesis that modest stochasticity amplifies sycophantic attractors while higher stochasticity disrupts them, supported by the entropy data below.
 
@@ -294,7 +294,7 @@ Llama 3 shows the highest entropy at T=0.3 (0.141)—the most behaviorally varia
 
 ### 5.4 Basin Depth as Alignment Signature
 
-Combining KDG (knowledge suppression) and entropy (behavioral variability) yields a two-dimensional alignment signature per model.
+Combining KDG (knowledge suppression) and entropy (behavioral variability) yields a two-dimensional alignment signature per model. Mean KDG aggregates across all framing conditions; authority-specific KDG values are reported in Table 4.
 
 ![Figure 6: Entropy × KDG](figures/entropy_kdg_scatter.png)
 *Figure 6: Entropy × KDG alignment signatures. Each point represents a model's mean KDG and mean entropy at T=0.7. Four quadrants characterize distinct alignment outcomes.*
