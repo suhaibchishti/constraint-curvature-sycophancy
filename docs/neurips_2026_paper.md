@@ -8,7 +8,7 @@
 
 ## Abstract
 
-We present a behavioral analysis of sycophancy in large language models, demonstrating that false-premise agreement is primarily a framing-induced probabilistic failure rather than an epistemic gap. Using a validated S1/S2/C/H/R taxonomy across 35,076 labeled responses from six models spanning three families (Mistral, Llama, Qwen), we first establish that 86% of sycophantic responses occur when models possess the correct knowledge but fail to deploy it under confirmatory framing (N=135 ablation pairs, fp16, dual-judge validated). We then scale this analysis to 31,500 sampled responses across 5 framing conditions and 3 temperatures, introducing the *Knowledge Deployment Gap* (KDG) metric to quantify framing-induced knowledge suppression. KDG reveals dramatic heterogeneity: Mistral v0.1 exhibits KDG=0.61 under authority framing (driven by sycophancy) while Llama 3.1 shows KDG=0.31 under authority driven entirely by refusal—same metric, mechanistically different failures. Contrary to prior work suggesting opinion framing universally increases sycophancy, we find this is a boundary condition: opinion framing increases sycophancy in older instruction-tuned models (Mistral +5–10pp) but decreases it in RLHF-aligned models (Llama, Qwen 2.5: −1 to −3pp). Temperature analysis reveals sycophancy as a probabilistic basin: 37% of responses that are deterministically sycophantic at T=0 escape to correct or hedge responses at T=0.7, with the Hedge state—which doubles from 14% to 23–27% under framing—serving as the transition state between sycophancy and correction. We release the complete dataset and analysis code.
+We present a behavioral analysis of sycophancy in large language models, demonstrating that false-premise agreement is primarily a framing-induced probabilistic failure rather than an epistemic gap. Using a validated S1/S2/C/H/R taxonomy across 35,076 labeled responses from six models spanning three families (Mistral, Llama, Qwen), we first establish that 86% of sycophantic responses in our evaluation occur when models possess the correct knowledge but fail to deploy it under confirmatory framing (N=135 ablation pairs, fp16, dual-judge validated). We then scale this analysis to 31,500 sampled responses across 5 framing conditions and 3 temperatures, introducing the *Knowledge Deployment Gap* (KDG) metric to quantify framing-induced knowledge suppression. KDG reveals dramatic heterogeneity: Mistral v0.1 exhibits KDG=0.61 under authority framing (driven by sycophancy) while Llama 3.1 shows KDG=0.31 under authority driven entirely by refusal—same metric, mechanistically different failures. Contrary to prior work suggesting opinion framing universally increases sycophancy, we find this is a boundary condition: opinion framing increases sycophancy in older instruction-tuned models (Mistral +5–10pp) but decreases it in RLHF-aligned models (Llama, Qwen 2.5: −1 to −3pp). Temperature analysis reveals sycophancy as a probabilistic basin: 37% of responses that are deterministically sycophantic at T=0 escape to correct or hedge responses at T=0.7, with the Hedge state—which doubles from 14% to 23–27% under framing—serving as the transition state between sycophancy and correction. We release the complete dataset and analysis code.
 
 **Dataset:** https://huggingface.co/datasets/schis02/sycophancy-false-premises
 
@@ -48,7 +48,7 @@ We show that these accounts are not competing—they describe a *mixture*, and t
 
 ## 2. Related Work
 
-**Sycophancy mechanisms.** Sharma et al. [5] demonstrated that preference model bias causally drives sycophancy, with "I believe" opinion framing increasing agreement rates. Shapira et al. [11] showed RLHF causally amplifies sycophancy via reward covariance. At the representation level, Wang et al. [6] found late-layer knowledge override in sycophantic responses, and Vennemeyer et al. [9] identified distinct linear directions for agreement versus praise sycophancy. Our work bridges these mechanistic findings with scalable behavioral measurement: the KDG metric quantifies the knowledge suppression these studies identify without requiring access to model internals.
+**Sycophancy mechanisms.** Sharma et al. [5] demonstrated that preference model bias causally drives sycophancy, with "I believe" opinion framing increasing agreement rates. Shapira et al. [11] showed RLHF causally amplifies sycophancy via reward covariance. At the representation level, Wang et al. [6] found late-layer knowledge override in sycophantic responses, and Vennemeyer et al. [9] identified distinct linear directions for agreement versus praise sycophancy. Chen et al. [12] documented overalignment in frontier models, finding that sycophancy and over-refusal co-occur as complementary failure modes—consistent with our Llama 3.1 refusal basin finding at 7–8B scale. Our work bridges these mechanistic findings with scalable behavioral measurement: the KDG metric quantifies the knowledge suppression these studies identify without requiring access to model internals.
 
 **Sycophancy evaluation.** Perez et al. [1] first documented opinion agreement in LLMs. Çelebi et al. [10] introduced the PARROT benchmark using neutral-versus-framed MMLU comparisons, and Dubois et al. [7] identified input framing as a causal driver of evaluation artifacts. Our distributional design parallels Çelebi et al. but operates at larger scale (31,500 responses) with KDG quantification and temperature-based probabilistic analysis.
 
@@ -170,7 +170,7 @@ We define the *Knowledge Deployment Gap* as:
 
 > KDG(m, f) = P(correct | neutral, m) − P(correct | f, m)
 
-where m is a model, f is a framing condition, and correct ∈ {C, H}. Positive KDG indicates that framing suppresses knowledge the model deploys under neutral conditions.
+where m is a model, f is a framing condition, and correct ∈ {C, H}. We count H (hedge) as knowledge at least partially deployed: the model demonstrates awareness of the correct answer even if it does not fully commit to the correction. Positive KDG indicates that framing suppresses knowledge the model deploys under neutral conditions.
 
 Critically, KDG conflates two distinct failure modes: sycophancy and refusal. We decompose:
 
@@ -355,11 +355,11 @@ Most prior work conflates these layers. TruthfulQA [4] measures the capability l
 
 ## 7. Conclusion
 
-Sycophancy in large language models is not primarily an accuracy problem—it is a framing-induced probabilistic failure. Across 35,076 labeled responses from six models spanning three families, we show that 86% of sycophantic responses involve models that possess the correct knowledge but fail to deploy it under confirmatory framing. This failure is not uniform: it varies by model family, framing condition, and temperature, forming characteristic probabilistic basins that we quantify with the Knowledge Deployment Gap metric.
+Sycophancy in large language models is not primarily an accuracy problem—it is a framing-induced probabilistic failure. Across 35,076 labeled responses from six models spanning three families, we show that 86% of sycophantic responses in our evaluation involve models that possess the correct knowledge but fail to deploy it under confirmatory framing. This failure is not uniform: it varies by model family, framing condition, and temperature, forming characteristic probabilistic basins that we quantify with the Knowledge Deployment Gap metric.
 
 Authority framing is the dominant trigger, opinion framing is model-specific (a boundary condition on Sharma et al. [5]), and alignment updates reshape the basin landscape rather than simply lowering sycophancy rates. Calibration-based alignment produces shallow, recoverable basins; constraint-based alignment eliminates sycophancy basins but creates refusal basins. The Hedge state—which doubles under framing—serves as the transition state between sycophancy and correction, revealing an intermediate behavioral regime that binary taxonomies miss.
 
-These findings suggest that effective sycophancy mitigation requires not just reducing agreement rates but ensuring robust knowledge deployment across framing conditions—a goal that KDG and its decomposition can directly measure.
+These findings suggest that effective sycophancy mitigation requires not just reducing agreement rates but ensuring robust knowledge deployment across framing conditions—a goal that KDG and its decomposition can directly measure. These behavioral signatures should be re-tested at larger model scales and in multi-turn settings, where sustained social pressure may erode the latent-knowledge advantage we observe here.
 
 ---
 
@@ -376,6 +376,7 @@ These findings suggest that effective sycophancy mitigation requires not just re
 9. Vennemeyer, D., et al. (2025). Sycophancy Is Not One Thing: Causal Separation of Sycophantic Behaviors in LLMs. *ICLR 2026*.
 10. Çelebi, Y., et al. (2025). PARROT: A Sycophancy Robustness Benchmark for LLMs. *arXiv:2511.17220*.
 11. Shapira, N., et al. (2025). How RLHF Amplifies Sycophancy. *ICLR 2025*.
+12. Chen, Y., et al. (2025). Overalignment in Frontier LLMs: An Empirical Study of Sycophantic Behavior and Over-Refusal. *arXiv:2601.18334*.
 
 ---
 
