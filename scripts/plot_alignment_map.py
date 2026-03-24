@@ -110,7 +110,7 @@ legend_elements = [
     Line2D([0], [0], marker='s', color='gray', markeredgecolor='white',
            label='Newer version', markersize=7, linestyle='None'),
 ]
-legend = ax.legend(handles=legend_elements, loc='upper right', fontsize=9,
+legend = ax.legend(handles=legend_elements, loc='upper left', fontsize=9,
                    facecolor='#16213e', edgecolor='#444', labelcolor='white')
 
 plt.tight_layout()

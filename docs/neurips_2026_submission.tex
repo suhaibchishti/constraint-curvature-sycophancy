@@ -266,7 +266,7 @@ Figure~\ref{fig:kdg_heatmap} decomposes the KDG into its sycophancy and refusal 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/kdg_heatmap.png}
-    \caption{Knowledge Deployment Gap decomposed into sycophancy shift (KDG$_{S1}$, left) and refusal shift (KDG$_R$, right). Values show $\Delta$rate (framed $-$ neutral). Mistral v0.1 authority is sycophancy-driven (KDG$_{S1}$=+0.44), while Llama 3.1 authority is refusal-driven (KDG$_R$=+0.48, KDG$_{S1}$=$-$0.08). Same headline KDG, opposite mechanisms. Note: $\Delta$rate values differ slightly from Table~\ref{tab:kdg_decomp}'s KDG values because KDG is defined over correctness probability (C+H), while these panels show S1 and R rate shifts directly.}
+    \caption{Knowledge Deployment Gap decomposed into sycophancy shift (KDG$_{S1}$, left) and refusal shift (KDG$_R$, right). Values show $\Delta$rate (framed $-$ neutral). Mistral v0.1 authority is sycophancy-driven (KDG$_{S1}$=+0.39, KDG$_R$=+0.00), while Llama 3.1 authority is refusal-driven (KDG$_R$=+0.39, KDG$_{S1}$=$-$0.06). Same headline KDG, opposite mechanisms. Note: $\Delta$rate values here correspond to direct rate shifts; Table~\ref{tab:kdg_decomp} reports the same decomposition rounded to two decimal places.}
     \label{fig:kdg_heatmap}
 \end{figure}
 
@@ -379,7 +379,7 @@ $T$=0.7 & 63.1\% & 18.6\% & 14.4\% & \textbf{37\%} \\
     \label{fig:basin_escape}
 \end{figure}
 
-Per-model escape rates (Figure~\ref{fig:basin_escape}) reveal distinct basin structures. Mistral v0.1 has the highest escape rate (55\%)---its basin is wide (many prompts trigger S1) but shallow (temperature easily dislodges it), consistent with its high ``knows'' rate (88\%) from the ablation. Qwen~1.5 has the lowest escape rate (20\%), consistent with its capability-driven sycophancy (57\% knows). Llama~3.1 escapes only to H or R, never to C---even when temperature dislodges it from sycophancy, safety training prevents confident correction, redirecting to hedging or refusal.
+Per-model escape rates (Figure~\ref{fig:basin_escape}) reveal distinct basin structures. Mistral v0.1 has the highest escape rate (55\%)---its basin is wide (many prompts trigger S1) but shallow (temperature easily dislodges it), consistent with its high ``knows'' rate (88\%) from the ablation. Qwen~1.5 has the lowest escape rate (20\%), consistent with its capability-driven sycophancy (57\% knows). Llama~3.1 escapes to H or S2, never to C---even when temperature dislodges it from sycophancy, safety training prevents confident correction.
 
 We observe a non-monotonic relationship between temperature and overall S1 rate: S1 peaks at $T$=0.3 (13.5\%) and drops at $T$=0.7 (10.3\%). This is consistent with the hypothesis that modest stochasticity amplifies sycophantic attractors while higher stochasticity disrupts them, supported by the entropy data below.
 

@@ -1,15 +1,13 @@
-"""Generate two-panel KDG heatmap: KDG_S1 (sycophancy) vs KDG_R (refusal)."""
+"""Generate two-panel KDG heatmap using all-temperature aggregation."""
 import json, glob, numpy as np, matplotlib.pyplot as plt
 from collections import defaultdict
 
-# Compute rates per model/framing at T=0.0
 counts = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 for f in sorted(glob.glob('huggingface_upload/phase3_distributional/*_labeled.jsonl')):
     for line in open(f):
         d = json.loads(line)
-        if d['temperature'] == 0.0:
-            model = d['model'].split('/')[-1]
-            counts[model][d['framing']][d['gpt4o_label']] += 1
+        model = d['model'].split('/')[-1]
+        counts[model][d['framing']][d['gpt4o_label']] += 1
 
 model_order = [
     'Mistral-7B-Instruct-v0.1', 'Mistral-7B-Instruct-v0.2',
@@ -24,25 +22,17 @@ def rate(model, framing, label):
     total = sum(c.values())
     return c.get(label, 0) / total if total > 0 else 0
 
-def neutral_rate(model, label):
-    return rate(model, 'neutral', label)
-
-# Build KDG_S1 and KDG_R matrices
 kdg_s1 = np.zeros((len(model_order), len(framings)))
 kdg_r = np.zeros((len(model_order), len(framings)))
 
 for i, m in enumerate(model_order):
-    s1_n = neutral_rate(m, 'S1')
-    r_n = neutral_rate(m, 'R')
+    s1_n = rate(m, 'neutral', 'S1')
+    r_n = rate(m, 'neutral', 'R')
     for j, fr in enumerate(framings):
-        s1_f = rate(m, fr, 'S1')
-        r_f = rate(m, fr, 'R')
-        kdg_s1[i, j] = s1_f - s1_n  # positive = more sycophancy under framing
-        kdg_r[i, j] = r_f - r_n      # positive = more refusal under framing
+        kdg_s1[i, j] = rate(m, fr, 'S1') - s1_n
+        kdg_r[i, j] = rate(m, fr, 'R') - r_n
 
-# Plot
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5), sharey=True)
-
 vmax = max(abs(kdg_s1).max(), abs(kdg_r).max())
 vmin = -vmax
 
@@ -52,7 +42,6 @@ for ax, data, title in [(ax1, kdg_s1, r'KDG$_{S1}$ (Sycophancy Shift)'),
     ax.set_xticks(range(len(framings)))
     ax.set_xticklabels([f.capitalize() for f in framings], fontsize=10)
     ax.set_title(title, fontsize=12, fontweight='bold')
-    # Annotate cells
     for i in range(len(model_order)):
         for j in range(len(framings)):
             val = data[i, j]
@@ -68,3 +57,7 @@ fig.colorbar(im, cax=cbar_ax, label='Δ Rate (framed − neutral)')
 
 plt.savefig('docs/figures/kdg_heatmap.png', dpi=200, bbox_inches='tight')
 print('Saved docs/figures/kdg_heatmap.png')
+
+# Print key values for verification
+print(f"\nMistral v0.1 authority: KDG_S1={kdg_s1[0,1]:+.4f}  KDG_R={kdg_r[0,1]:+.4f}")
+print(f"Llama 3.1 authority:   KDG_S1={kdg_s1[3,1]:+.4f}  KDG_R={kdg_r[3,1]:+.4f}")

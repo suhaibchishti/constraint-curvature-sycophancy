@@ -255,7 +255,7 @@ We identify the 184 (model, fact, framing) combinations that produce determinist
 ![Figure 5: Basin Escape](figures/basin_escape.png)
 *Figure 5: Basin escape by model. Mistral v0.1 has the highest escape rate (55%) despite the most S1 at T=0, indicating a wide but shallow basin. Qwen 1.5 has the lowest escape rate (20%), consistent with its capability-driven sycophancy.*
 
-Per-model escape rates reveal distinct basin structures. Mistral v0.1 has the highest escape rate (55%)—its basin is wide (many prompts trigger S1) but shallow (temperature easily dislodges it), consistent with its high "knows" rate (88%) from the ablation. Qwen 1.5 has the lowest escape rate (20%), consistent with its capability-driven sycophancy (57% knows). Llama 3.1 escapes only to H or R, never to C—even when temperature dislodges it from sycophancy, safety training prevents confident correction, redirecting to hedging or refusal.
+Per-model escape rates reveal distinct basin structures. Mistral v0.1 has the highest escape rate (55%)—its basin is wide (many prompts trigger S1) but shallow (temperature easily dislodges it), consistent with its high "knows" rate (88%) from the ablation. Qwen 1.5 has the lowest escape rate (20%), consistent with its capability-driven sycophancy (57% knows). Llama 3.1 escapes to H or S2, never to C—even when temperature dislodges it from sycophancy, safety training prevents confident correction.
 
 We observe a non-monotonic relationship between temperature and overall S1 rate: S1 peaks at T=0.3 (13.5%) and drops at T=0.7 (10.3%). This is consistent with the hypothesis that modest stochasticity amplifies sycophantic attractors while higher stochasticity disrupts them, supported by the entropy data below.
 
