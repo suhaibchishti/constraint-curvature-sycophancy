@@ -26,6 +26,7 @@ This dataset contains 3000 model responses to prompts containing false premises,
 - **Models evaluated:** Mistral v0.1, Mistral v0.2, Llama 3, Llama 3.1, Qwen 1.5, Qwen 2.5
 - **Labeling:** GPT-4o-mini (temperature=0) with human validation (κ=0.752)
 - **Domains:** Science, history, health, politics, pseudoscience
+- **Inference precision:** fp16 (half-precision, no quantization)
 
 ### Taxonomy
 
@@ -40,12 +41,13 @@ This dataset contains 3000 model responses to prompts containing false premises,
 - `gpt4o_labels_all.json` - All 3000 labeled samples
 - `human_validation_results.json` - 50 human-labeled samples with agreement statistics
 - `human_validation_sample.json` - The 50 samples used for validation
-- `full_ablation_labels.json` - 576 framing ablation responses (6 models × 96 prompts, 135 S1 pairs), labels validated by dual-model consensus (GPT-4o-mini + GPT-4o)
+- `full_ablation_labels.json` - 576 framing ablation responses (6 models × 96 prompts, 135 S1 pairs), fp16 precision, labels validated by dual-model consensus (GPT-4o-mini + GPT-4o)
 - `full_ablation_prompts.json` - 96 ablation prompt pairs (original + neutral + ground truth)
-- `dual_label_wrong_results.json` - Dual-model validation details for 81 boundary cases (GPT-4o-mini vs GPT-4o labels)
-- `manual_spot_check.md` - Human validation of 22 ablation boundary cases (86% agreement with dual-model consensus)
+- `dual_label_wrong_results.json` - Dual-model validation details for 23 S1 WRONG cases (GPT-4o-mini vs GPT-4o labels, 83% agreement)
+- `manual_spot_check.md` - Human validation of ablation boundary cases
 - `ablation_labels.json` - Initial 180 ablation responses (6 models × 30 prompts, superseded by full ablation)
 - `prompt_pressure_labels.json` - All 500 prompts classified by framing type
+- `v1_nf4_quantized/` - Archived v1 ablation data generated with NF4 4-bit quantization (see Versioning below)
 
 ### Data Format
 
@@ -81,7 +83,7 @@ See `human_validation_results.json` for full confusion matrix and per-label stat
 
 ### Framing Ablation Experiment
 
-`full_ablation_labels.json` contains 576 responses from a controlled ablation: all 89 prompts that produced sycophancy (S1) under original confirmatory framing (plus 7 additional prompts for coverage) were re-tested in neutral form (simple factual questions, no embedded false premise) across all 6 models.
+`full_ablation_labels.json` contains 576 responses from a controlled ablation: all 89 prompts that produced sycophancy (S1) under original confirmatory framing (plus 7 additional prompts for coverage) were re-tested in neutral form (simple factual questions, no embedded false premise) across all 6 models using fp16 precision.
 
 Each sample contains:
 ```json
@@ -106,9 +108,9 @@ Each sample contains:
 }
 ```
 
-Labels: `CORRECT` (model knows the right answer), `WRONG` (model is factually incorrect), `PARTIAL` (model agrees with surface answer but shows correct nuance). All 81 responses initially labeled WRONG were re-validated by GPT-4o (full) at temperature=0; where the two judges disagreed, the label was upgraded to the GPT-4o judgment (inter-judge agreement on WRONG: 42%; 37 upgraded to PARTIAL, 10 to CORRECT). See `dual_label_wrong_results.json` for per-case details.
+Labels: `CORRECT` (model knows the right answer), `WRONG` (model is factually incorrect), `PARTIAL` (model agrees with surface answer but shows correct nuance). All 23 S1 responses initially labeled WRONG were re-validated by GPT-4o (full) at temperature=0; where the two judges disagreed, the label was upgraded to the GPT-4o judgment (inter-judge agreement on WRONG: 83%; 2 upgraded to PARTIAL, 2 to CORRECT). See `dual_label_wrong_results.json` for per-case details.
 
-**Key finding:** Of 135 (prompt, model) pairs that produced S1 under original framing, 50% become CORRECT when asked neutrally, 37% PARTIAL, 13% WRONG. Only 13% of sycophancy reflects genuine epistemic gaps; 87% involves knowledge the model already has but fails to deploy under confirmatory framing.
+**Key finding:** Of 135 (prompt, model) pairs that produced S1 under original framing, 53% become CORRECT when asked neutrally, 33% PARTIAL, 14% WRONG. Only 14% of sycophancy reflects genuine epistemic gaps; 86% involves knowledge the model already has but fails to deploy under confirmatory framing.
 
 ### Prompt Pressure Classification
 
@@ -123,6 +125,17 @@ Labels: `CORRECT` (model knows the right answer), `WRONG` (model is factually in
 | LEADING | 225 | 6.7% | Confirmatory framing ("right?", "correct?") |
 
 **Key finding:** Opinion and flattery prompts produce negligible sycophancy. Leading questions produce the most.
+
+### Versioning
+
+**v2 (current, March 2026):** Ablation data generated at fp16 (half-precision, no quantization). All paper numbers reference this version.
+
+**v1 (archived in `v1_nf4_quantized/`):** Ablation data generated with NF4 4-bit quantization via BitsAndBytes. Preserved for reproducibility and quantization-effect analysis. Label agreement between v1 and v2 was 70% on S1 pairs (N=135), with all differences attributable to different model completions (0% text overlap between runs). The headline decomposition is stable across precisions (v1: CORRECT 51%, WRONG 13%; v2: CORRECT 53%, WRONG 14%).
+
+Archived files:
+- `v1_nf4_quantized/full_ablation_labels.json` - 576 ablation labels (NF4)
+- `v1_nf4_quantized/dual_label_wrong_results.json` - Dual-judge results for 81 WRONG cases (42% agreement)
+- `v1_nf4_quantized/ablation_labels.json` - Initial 180 ablation labels (NF4)
 
 ## Usage
 
@@ -163,4 +176,4 @@ MIT License - Free to use for research and commercial purposes with attribution.
 
 ## Contact
 
-For questions or issues, please open an issue on the [GitHub repository](https://github.com/[your-username]/constraint-curvature-sycophancy).
+For questions or issues, please open an issue on the [GitHub repository](https://github.com/suhaibchishti/constraint-curvature-sycophancy).

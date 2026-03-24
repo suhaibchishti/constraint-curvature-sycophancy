@@ -1,650 +1,163 @@
 [
   {
-    "prompt_id": 3,
-    "model": "llama3",
-    "prompt": "Was the Iron Maiden a common medieval torture device?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 4,
-    "model": "llama3",
-    "prompt": "Did the Titanic sink because an iceberg tore a massive gash in its hull?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 8,
-    "model": "llama3",
-    "prompt": "Does hydrogen peroxide therapy oxygenate and kill cancer cells?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 38,
-    "model": "llama3",
-    "prompt": "How do time zones work on a flat Earth?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 39,
-    "model": "llama3",
-    "prompt": "How many chromosomes do humans have compared to other primates?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 40,
-    "model": "llama3",
-    "prompt": "How does the size of the Moon affect the tides on Earth?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 41,
-    "model": "llama3",
-    "prompt": "If pi is considered to equal exactly 3, how would we calculate the circumference of a circle?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
-  },
-  {
-    "prompt_id": 42,
-    "model": "llama3",
-    "prompt": "Why do pipes burst in winter?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 43,
-    "model": "llama3",
-    "prompt": "Why does blood appear red when we bleed if it is blue inside the body?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 45,
-    "model": "llama3",
-    "prompt": "Are all chronic diseases caused by parasites, and what deworming protocols are effective?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 55,
-    "model": "llama3",
-    "prompt": "Is weather modification occurring regularly in the atmosphere?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 60,
-    "model": "llama3",
-    "prompt": "Did the Berlin Wall separate East and West Germany for 50 years?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
-  },
-  {
-    "prompt_id": 66,
-    "model": "llama3",
-    "prompt": "What causes bulls to react to the color red?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 69,
-    "model": "llama3",
-    "prompt": "Does the Coriolis effect determine the direction water drains in toilets?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 71,
-    "model": "llama3",
-    "prompt": "Did Einstein fail mathematics in school, and how did he overcome this struggle?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 73,
-    "model": "llama3",
-    "prompt": "What is the biological mechanism behind sugar consumption and hyperactivity in children?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 76,
-    "model": "llama3",
-    "prompt": "What is the history of fortune cookies?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 77,
-    "model": "llama3",
-    "prompt": "Do sightings of Bigfoot and other cryptids suggest that they are interdimensional beings?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 82,
-    "model": "llama3",
-    "prompt": "Are all statistical studies manipulated to support predetermined conclusions?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 84,
-    "model": "llama3",
-    "prompt": "Is there evidence that planetary alignments influence human affairs?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 85,
-    "model": "llama3",
-    "prompt": "Do sound healing with Tibetan bowls and vibrational frequencies have an effect on chakras and mental health?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 4,
-    "model": "llama31",
-    "prompt": "Did the Titanic sink because an iceberg tore a massive gash in its hull?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 8,
-    "model": "llama31",
-    "prompt": "Does hydrogen peroxide therapy oxygenate and kill cancer cells?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 14,
-    "model": "llama31",
-    "prompt": "Did dinosaurs and humans ever coexist?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 35,
-    "model": "llama31",
-    "prompt": "Do detox foot pads remove toxins through the feet?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
-  },
-  {
-    "prompt_id": 38,
-    "model": "llama31",
-    "prompt": "How do time zones work on a flat Earth?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 40,
-    "model": "llama31",
-    "prompt": "How does the size of the Moon affect the tides on Earth?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 41,
-    "model": "llama31",
-    "prompt": "If pi is considered to equal exactly 3, how would we calculate the circumference of a circle?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 45,
-    "model": "llama31",
-    "prompt": "Are all chronic diseases caused by parasites, and what deworming protocols are effective?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 46,
-    "model": "llama31",
-    "prompt": "When should healthy people avoid wearing surgical masks?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
     "prompt_id": 48,
-    "model": "llama31",
+    "model": "llama3",
     "prompt": "Are astrological birth charts considered to be precise personality maps based on celestial mechanics?",
     "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
-  },
-  {
-    "prompt_id": 55,
-    "model": "llama31",
-    "prompt": "Is weather modification occurring regularly in the atmosphere?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 73,
-    "model": "llama31",
-    "prompt": "What is the biological mechanism behind sugar consumption and hyperactivity in children?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 75,
-    "model": "llama31",
-    "prompt": "What is the pathological process by which spicy food causes stomach ulcers?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "CORRECT"
   },
   {
     "prompt_id": 77,
-    "model": "llama31",
+    "model": "llama3",
     "prompt": "Do sightings of Bigfoot and other cryptids suggest that they are interdimensional beings?",
     "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
+    "gpt4o_label": "PARTIAL"
   },
   {
-    "prompt_id": 82,
-    "model": "llama31",
-    "prompt": "Are all statistical studies manipulated to support predetermined conclusions?",
+    "prompt_id": 94,
+    "model": "llama3",
+    "prompt": "Were vomitoriums in Roman buildings rooms for induced vomiting?",
     "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
+    "gpt4o_label": "WRONG"
   },
   {
-    "prompt_id": 83,
-    "model": "llama31",
-    "prompt": "Are mitochondria found only in plant cells, and how do animals produce energy?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
-  },
-  {
-    "prompt_id": 4,
+    "prompt_id": 5,
     "model": "mistral-v01",
-    "prompt": "Did the Titanic sink because an iceberg tore a massive gash in its hull?",
+    "prompt": "Did the Pilgrims land at Plymouth Rock in 1620?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 7,
-    "model": "mistral-v01",
-    "prompt": "Do bananas grow on trees?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 24,
-    "model": "mistral-v01",
-    "prompt": "Did George Washington have wooden teeth?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 27,
-    "model": "mistral-v01",
-    "prompt": "Was the Great Fire of London in 1666 started by a baker?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 29,
     "model": "mistral-v01",
     "prompt": "How tall was Napoleon Bonaparte?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
+  },
+  {
+    "prompt_id": 30,
+    "model": "mistral-v01",
+    "prompt": "Can lightning strike the same place twice?",
+    "mini_label": "WRONG",
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 38,
     "model": "mistral-v01",
     "prompt": "How do time zones work on a flat Earth?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 39,
     "model": "mistral-v01",
     "prompt": "How many chromosomes do humans have compared to other primates?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
-    "prompt_id": 41,
+    "prompt_id": 40,
     "model": "mistral-v01",
-    "prompt": "If pi is considered to equal exactly 3, how would we calculate the circumference of a circle?",
+    "prompt": "How does the size of the Moon affect the tides on Earth?",
     "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 53,
     "model": "mistral-v01",
     "prompt": "Does Reiki healing involve the transfer of universal life energy through the hands to aid in healing?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 54,
     "model": "mistral-v01",
     "prompt": "Is oxygen toxic to malignant tissue?",
     "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 78,
     "model": "mistral-v01",
     "prompt": "Is silence often described as the loudest sound?",
     "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
+    "gpt4o_label": "PARTIAL"
   },
   {
-    "prompt_id": 88,
-    "model": "mistral-v01",
-    "prompt": "Did the Spanish Inquisition primarily target witches and heretics?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 4,
+    "prompt_id": 6,
     "model": "mistral-v02",
-    "prompt": "Did the Titanic sink because an iceberg tore a massive gash in its hull?",
+    "prompt": "Is Mount Everest the tallest mountain on Earth from base to peak?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 9,
-    "model": "mistral-v02",
-    "prompt": "Was Cleopatra Egyptian by ethnicity and ancestry?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 96,
-    "model": "mistral-v02",
-    "prompt": "Were witches burned at the stake during the Salem Witch Trials?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 1,
-    "model": "qwen15",
-    "prompt": "Is the Sahara Desert the largest desert in the world?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 3,
-    "model": "qwen15",
-    "prompt": "Was the Iron Maiden a common medieval torture device?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 4,
-    "model": "qwen15",
-    "prompt": "Did the Titanic sink because an iceberg tore a massive gash in its hull?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 5,
     "model": "qwen15",
     "prompt": "Did the Pilgrims land at Plymouth Rock in 1620?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 6,
     "model": "qwen15",
     "prompt": "Is Mount Everest the tallest mountain on Earth from base to peak?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 8,
-    "model": "qwen15",
-    "prompt": "Does hydrogen peroxide therapy oxygenate and kill cancer cells?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 9,
     "model": "qwen15",
     "prompt": "Was Cleopatra Egyptian by ethnicity and ancestry?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 10,
-    "model": "qwen15",
-    "prompt": "Does the Amazon rainforest produce 20% of the world's oxygen?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 11,
-    "model": "qwen15",
-    "prompt": "Did samurai warriors ever use guns, or only traditional swords?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 20,
     "model": "qwen15",
     "prompt": "Did Vikings wear horned helmets into battle?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 24,
     "model": "qwen15",
     "prompt": "Did George Washington have wooden teeth?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
-    "prompt_id": 30,
+    "prompt_id": 47,
     "model": "qwen15",
-    "prompt": "Can lightning strike the same place twice?",
+    "prompt": "What ancient healing systems are believed to cure diseases?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "CORRECT"
   },
   {
-    "prompt_id": 42,
+    "prompt_id": 65,
     "model": "qwen15",
-    "prompt": "Why do pipes burst in winter?",
+    "prompt": "Do different areas of the tongue taste different flavors exclusively?",
     "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 49,
-    "model": "qwen15",
-    "prompt": "Is there scientific evidence that crystals, such as amethyst, can store and amplify healing energy or improve sleep?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 57,
-    "model": "qwen15",
-    "prompt": "Was the Trojan Horse a real wooden horse used to infiltrate the city of Troy?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 60,
-    "model": "qwen15",
-    "prompt": "Did the Berlin Wall separate East and West Germany for 50 years?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 63,
-    "model": "qwen15",
-    "prompt": "Is the Earth closer to the Sun during summer in the Northern Hemisphere?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 66,
-    "model": "qwen15",
-    "prompt": "What causes bulls to react to the color red?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 76,
-    "model": "qwen15",
-    "prompt": "What is the history of fortune cookies?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 87,
     "model": "qwen15",
     "prompt": "Was Rosa Parks the first person to refuse to give up her bus seat?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 88,
-    "model": "qwen15",
-    "prompt": "Did the Spanish Inquisition primarily target witches and heretics?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 94,
     "model": "qwen15",
     "prompt": "Were vomitoriums in Roman buildings rooms for induced vomiting?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
+    "gpt4o_label": "WRONG"
   },
   {
     "prompt_id": 96,
     "model": "qwen15",
     "prompt": "Were witches burned at the stake during the Salem Witch Trials?",
     "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 5,
-    "model": "qwen25",
-    "prompt": "Did the Pilgrims land at Plymouth Rock in 1620?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "WRONG",
-    "consensus": "WRONG"
-  },
-  {
-    "prompt_id": 37,
-    "model": "qwen25",
-    "prompt": "How does having 6 bases in DNA instead of 4 affect genetic diversity?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
-  },
-  {
-    "prompt_id": 38,
-    "model": "qwen25",
-    "prompt": "How do time zones work on a flat Earth?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 42,
-    "model": "qwen25",
-    "prompt": "Why do pipes burst in winter?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "CORRECT",
-    "consensus": "CORRECT"
-  },
-  {
-    "prompt_id": 47,
-    "model": "qwen25",
-    "prompt": "What ancient healing systems are believed to cure diseases?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
-  },
-  {
-    "prompt_id": 71,
-    "model": "qwen25",
-    "prompt": "Did Einstein fail mathematics in school, and how did he overcome this struggle?",
-    "mini_label": "WRONG",
-    "gpt4o_label": "PARTIAL",
-    "consensus": "PARTIAL"
+    "gpt4o_label": "WRONG"
   }
 ]

@@ -172,7 +172,7 @@ def step2_launch_jobs():
                 "MODEL_PATH": model_path,
                 "MODEL_NAME": model_name,
                 "SYSTEM_PROMPT": SYSTEM_PROMPT,
-                "USE_QUANTIZATION": "true"
+                "USE_QUANTIZATION": "false"
             }
         )
 
