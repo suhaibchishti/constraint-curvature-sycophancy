@@ -220,6 +220,13 @@ Sycophancy is not primarily an accuracy problem — it is a framing-induced prob
 - A.3: Entropy distributions by model × temperature
 - A.4: Framing sensitivity tables (all 6 models × 5 framings)
 - A.5: Quantization transparency (NF4 vs fp16 comparison)
+  - All ablation results reported use fp16 (half-precision, no quantization)
+  - An earlier run used NF4 4-bit quantization (BitsAndBytes). Label agreement: 70% on S1 pairs (N=135), with 0% text overlap between runs (every completion differs)
+  - Headline stable across precisions: CORRECT 51%→53%, WRONG 13%→14%
+  - Per-model shifts: Mistral v0.1 "knows" 93%→88%, Qwen 2.5 83%→100%
+  - Dual-judge agreement improved: 42% (NF4) → 83% (fp16) — fp16 WRONG labels are more reliable
+  - Implication: inference precision is an underreported variable in sycophancy evaluation. Most benchmarks do not control for quantization; our data shows it produces a 30% label disagreement rate on the same prompts
+  - Full comparison in `docs/fp16_migration_reference.md`
 - A.6: Dataset and code availability
 
 ---
@@ -251,4 +258,5 @@ Sycophancy is not primarily an accuracy problem — it is a framing-induced prob
 | Authority refusal rate | 7.8% (overall) | Framing sensitivity |
 | Authority S2 (confabulation) | 5.1% (overall) | Framing sensitivity |
 | Dual-judge agreement (fp16) | 83% on WRONG | Validation |
+| NF4 vs fp16 label agreement | 70% on S1 pairs (0% text overlap) | Quantization |
 | Human-GPT4o-mini agreement | κ=0.752 | Validation |
