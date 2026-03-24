@@ -186,7 +186,7 @@ WRONG & 19 & 14\% & Genuine epistemic gap \\
 
 \textbf{86\% of sycophantic responses involve knowledge the model already has.} This finding reframes sycophancy from a capability problem to a deployment problem: the bottleneck is not what models know, but when they deploy that knowledge.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/sycophancy_decomposition.png}
     \caption{Sycophancy decomposition by model. Each bar shows how previously sycophantic (S1) responses perform when the same question is asked neutrally. Green = correct (framing failure), orange = partial knowledge, red = genuinely wrong (capability failure). Llama~3.1 is omitted (0 S1 pairs in ablation).}
@@ -582,7 +582,7 @@ Chen, Y., et~al.
 
 All pairwise comparisons use chi-square tests for proportions (large counts) or Fisher's exact test (small counts). Effect sizes are reported as Cohen's $h$. Comparisons are pre-specified (one older$\to$newer per family), so no multiple-comparison correction is applied.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Statistical tests for alignment outcomes (N=500 per model).}
 \small
@@ -607,7 +607,7 @@ We validate GPT-4o-mini labels against human annotations on a stratified sample 
 \section{Full KDG Tables}
 \label{app:kdg_tables}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Complete KDG values by model and framing condition.}
 \small
@@ -633,7 +633,7 @@ Entropy is computed as the Shannon entropy of the label distribution across 10 s
 \section{Framing Sensitivity Tables}
 \label{app:framing}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Complete response distributions by model and framing (all temperatures aggregated).}
 \small
