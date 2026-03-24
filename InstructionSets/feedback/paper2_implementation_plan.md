@@ -1,162 +1,185 @@
-# Phase 3: Repository Strategy & Research Plan
+# Research Implementation Plan
 
-## Goal
+## Status: Phase 3 Complete → Merged Paper in Progress
 
-Set up the infrastructure for Phase 3 research — **behavioral distributions and KDG measurement** — while keeping the Paper 1 repo clean for public scrutiny.
+Updated: 2026-03-23
 
 ---
 
-## Repo Strategy Decision
+## Publication Strategy
 
-> [!IMPORTANT]  
-> **Recommendation: Same repo, new branch — NOT a separate repo.**
+### Decision: Merge Paper 1 + Paper 2 into Single NeurIPS Submission
 
-### Why same repo
+Paper 1 alone = workshop-tier (static snapshot, 500 prompts, single-shot).
+Paper 2 alone = missing foundation (no taxonomy validation, no ablation grounding for KDG).
+Merged = complete scientific arc: observation → ablation → distributional mechanism.
 
-- **Continuity matters.** Phase 3 directly extends Paper 1's dataset, taxonomy, and pipeline. Reviewers and readers who look at your repo will see a coherent research program, not scattered fragments
-- **Reuse is massive.** Your `src/cc_eval/` (generate, judge, config, metrics), `evals/*.yaml` (all 500 prompts), and `scripts/` (launch jobs, labeling, analysis) are directly reusable. Duplicating them into a new repo creates maintenance pain
-- **GitHub visibility.** A clean branch named `phase3/behavioral-distributions` communicates "active research in progress" without muddying [main](file:///Users/suhaibchisti/Downloads/product-evaluation-tool/evaluate.py#401-461)
+### Publication Pipeline
 
-### Branch structure
+| Paper | Target | Status | Timeline |
+|-------|--------|--------|----------|
+| **Merged Paper** (Paper 1 + Phase 3) | NeurIPS 2026 Main | Writing | Submit late May 2026 |
+| arXiv preprint | arXiv cs.CL/cs.AI | After NeurIPS draft | Before submission (priority claim) |
+| **Paper 2: Multi-Turn** | ICLR 2027 | Not started | Experiments Q3 2026 |
+| **Paper 3: Mechanistic** | Future | Not started | After Paper 2 |
+
+---
+
+## Completed Work
+
+### Phase 1: Taxonomy & Single-Shot Evaluation ✅
+
+- 500 false-premise prompts, 6 models, 3,000 responses
+- S1/S2/C/H/R taxonomy with human validation (κ=0.752)
+- Two alignment outcomes identified (effective vs over-constraint)
+- Statistical significance tests (chi-squared, Cohen's h)
+
+### Phase 2: Framing Ablation ✅
+
+- 89 S1-producing prompts re-tested as neutral questions
+- 576 responses (96 prompts × 6 models), fp16 precision
+- N=135 S1 pairs: 53% CORRECT, 33% PARTIAL, 14% WRONG
+- Dual-judge validation: 83% GPT-4o agreement on WRONG
+- Quantization transparency: re-ran NF4→fp16, 70% agreement, stable headline
+- Prompt pressure classification: 500 prompts into 5 framing types
+
+### Phase 3: Distributional Analysis ✅
+
+- 31,500 responses: 50 facts × 5 framings × 6 models × 3 temps × 10 samples
+- fp16 precision, SageMaker ml.g5.xlarge, 14h timeout
+- Labeled via OpenAI Batch API (single batch, zero errors)
+- KDG metric: 3,600 fact-framing combinations computed
+- Entropy analysis: 4,500 prompt contexts computed
+- Framing sensitivity: per-model S1/R rates by framing
+- Figures: KDG and entropy bar charts
+
+### Infrastructure ✅
+
+- SageMaker pipeline (launch, generate, checkpoint, S3 upload)
+- OpenAI labeling pipeline (sync, async, batch modes)
+- HuggingFace dataset (v2 fp16, v1 NF4 archived)
+- All code committed to `setup/eval-harness` and `phase3/behavioral-distributions`
+
+---
+
+## Current: Merged Paper Writing
+
+### Outline
+
+See `docs/merged_paper_outline.md` for full section-by-section outline.
+
+Narrative arc:
+1. **Sec 3** — Taxonomy + ablation: 86% of sycophancy involves latent knowledge
+2. **Sec 4** — KDG + framing sensitivity: knowledge suppression is framing-dependent and model-specific
+3. **Sec 5** — Entropy + temperature: these are probabilistic basins, not deterministic walls
+
+### Key Numbers Reference
+
+See `docs/research_findings_complete.md` for all numbers with tables.
+
+### Track B Decision: First-Token Logits
+
+**Include as behavioral observation only.** Frame as: "first-token distribution predicts final label." Do NOT claim mechanistic interpretability — that invites hostile reviewers asking for activation patching and probing. Save real mechanistic work for Paper 3.
+
+Compute cost: ~$2 (1,500 forward passes, ~1 hour). Decision: include if time permits before deadline, otherwise defer.
+
+### Remaining Tasks
+
+- [ ] Write merged paper (LaTeX, NeurIPS format)
+- [ ] Generate all figures for merged paper
+- [ ] Track B first-token analysis (optional, ~$2 compute)
+- [ ] Internal review pass
+- [ ] arXiv preprint upload (need endorsement for first-time cs.CL/cs.AI)
+- [ ] NeurIPS OpenReview submission
+
+---
+
+## Future: Paper 2 — Multi-Turn Challenge-Response
+
+### Research Question
+
+Of the 86% of sycophantic responses where models possess the correct knowledge (proven by neutral ablation), how many cave when the user pushes back?
+
+### Experimental Design
+
+1. Take all (prompt, model) pairs where model corrected under neutral framing (C or H)
+2. Present the original confirmatory-framed prompt
+3. If model corrects → user pushes back: "Are you sure? I really thought X was true"
+4. Measure cave-in rate: does the model abandon its correct answer?
+
+### Why This is Clean
+
+- We already proved the model has the knowledge (ablation CORRECT/PARTIAL)
+- Any cave-in is 100% undeniably reward-shaped social compliance
+- Directly tests Sharma et al.'s core finding in a controlled setting
+- Single-turn data is the baseline; multi-turn is the intervention
+
+### Variables
+
+- Number of pushback turns (1, 2, 3)
+- Pushback intensity ("Are you sure?" vs "That's wrong, X is true" vs "As an expert, I can tell you X")
+- Same 6 models for continuity
+
+### Compute Estimate
+
+- ~135 S1 pairs × 6 models × 3 pushback intensities × 3 turns = ~7,300 conversations
+- ~2-3 hours SageMaker compute (~$4)
+- Labeling: ~7,300 API calls (~$1)
+
+### Timeline
+
+- Experiments: Q3 2026 (after NeurIPS submission)
+- Writing: Q4 2026
+- Target: ICLR 2027 (deadline typically October)
+
+---
+
+## Future: Paper 3 — Mechanistic Interpretability
+
+### Research Questions
+
+- Where in the model does framing override knowledge? (probing, causal tracing)
+- Can sycophancy be steered via activation editing? (steering vectors)
+- Do first-token logits predict downstream behavior? (routing analysis)
+- Are Vennemeyer et al.'s linear directions for agreement/praise consistent with our KDG profiles?
+
+### Prerequisites
+
+- Merged paper published (establishes behavioral ground truth)
+- Multi-turn paper in progress (establishes social compliance baseline)
+- Familiarity with TransformerLens / nnsight / pyvene
+
+### Timeline
+
+- 2027, after Paper 2
+
+---
+
+## Repository Structure
 
 ```
-main                          ← Paper 1 (frozen, public-facing)
-├── setup/eval-harness        ← Current branch (existing work)
-└── phase3/behavioral-distributions  ← NEW: Phase 3 Track A + B
+main                              ← Public-facing (frozen after merge)
+├── setup/eval-harness            ← Paper 1 code + fp16 ablation
+└── phase3/behavioral-distributions ← Phase 3 code + merged paper
 ```
 
-### What to do before branching
+### Key File Locations
 
-1. Merge any pending changes on `setup/eval-harness` into [main](file:///Users/suhaibchisti/Downloads/product-evaluation-tool/evaluate.py#401-461)
-2. Tag [main](file:///Users/suhaibchisti/Downloads/product-evaluation-tool/evaluate.py#401-461) as `v1.0-paper1` so there's a fixed release artifact
-3. Branch `phase3/behavioral-distributions` from [main](file:///Users/suhaibchisti/Downloads/product-evaluation-tool/evaluate.py#401-461)
+| File | Branch | Description |
+|------|--------|-------------|
+| `docs/merged_paper_outline.md` | phase3 | NeurIPS paper outline |
+| `docs/research_findings_complete.md` | phase3 | All numbers, single source of truth |
+| `docs/fp16_migration_reference.md` | setup/eval-harness | NF4→fp16 comparison |
+| `docs/paper_final.md` | setup/eval-harness | Paper 1 standalone (superseded by merge) |
+| `phase3/outputs/metrics/` | phase3 | KDG and entropy results |
+| `phase3/outputs/labels/` | phase3 | 31,500 labeled responses |
+| `huggingface_upload/` | setup/eval-harness | HuggingFace dataset (v2 fp16) |
+| `artifacts/full_ablation_labels.json` | setup/eval-harness | fp16 ablation labels |
+| `artifacts/fp16_dual_judge_results.json` | setup/eval-harness | Dual-judge results |
 
-### Visibility protection
+### AWS Resources
 
-- [main](file:///Users/suhaibchisti/Downloads/product-evaluation-tool/evaluate.py#401-461) stays frozen.People browsing the repo see the clean Paper 1 codebase
-- Phase 3 branch is visible but clearly labeled as in-progress
-- If you want to hide Phase 3 entirely until ready, you can keep the branch **local only** (don't push until ready) — but this is not strictly necessary
-
----
-
-## Phase 3 Scope (Measurement Only — No Theory)
-
-Per your professor's feedback, Phase 3 is strictly **measurement phase**:
-
-### ✅ In scope
-
-- Multi-response sampling (distributions, not point labels)
-- Knowledge Deployment Gap (KDG) metric
-- Framing sensitivity curves
-- Response entropy / stability profiles
-- First-token routing analysis (lightweight interpretability)
-
-### ❌ Explicitly OUT of scope (deferred to Phase 4+)
-
-- PID / control theory formalization
-- SDI anchor/buoy framework
-- Human motivation parallels
-- Mechanistic circuit-level claims
-
----
-
-## Proposed Changes
-
-### New directory structure (added to existing repo)
-
-```
-phase3/
-├── README.md                         # Phase 3 overview, hypotheses, success criteria
-├── data/
-│   ├── facts_core_50.jsonl           # 50 facts extracted from sycophancy_set_500.yaml
-│   └── prompt_variants.jsonl         # 4 framing variants per fact (200 prompts)
-├── generation/
-│   ├── run_sampling.py               # Multi-response sampling (reuses src/cc_eval/generate.py)
-│   └── run_sampling_job.py           # SageMaker job launcher (adapts scripts/launch_job.py)
-├── labeling/
-│   ├── label_with_gpt4o.py           # Adapts scripts/label_all_with_gpt4o.py
-│   └── heuristic_label.py            # Fast shadow baseline
-├── analysis/
-│   ├── compute_kdg.py                # KDG = P(correct|neutral) − P(correct|framed)
-│   ├── compute_entropy.py            # Response entropy per prompt/model/temp
-│   ├── plot_distributions.py         # Distribution bar charts by model
-│   ├── plot_kdg.py                   # KDG heatmaps and per-model comparison
-│   └── framing_sensitivity.py        # Framing class effect analysis
-├── interpretability/                 # Track B (starts week 3)
-│   ├── extract_first_token_logits.py # First-token routing probabilities
-│   └── plot_routing.py              # First-token distribution plots
-└── outputs/                          # .gitignored except figures
-    ├── generations/
-    ├── labels/
-    ├── metrics/
-    └── figures/
-```
-
-#### [NEW] `phase3/README.md`
-
-Phase 3 overview with hypotheses (H1–H3), metrics, and success criteria. No theory — just measurement goals.
-
-#### [NEW] `phase3/data/facts_core_50.jsonl`
-
-50 facts extracted from your existing [evals/sycophancy_set_500.yaml](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/evals/sycophancy_set_500.yaml), balanced across domains (science, history, health, society). Same facts that produced S1 in Paper 1 are prioritized.
-
-#### [NEW] `phase3/data/prompt_variants.jsonl`
-
-For each fact, 4 prompt framings: neutral, leading, authority, social-pressure. Total: 200 prompts.
-
-#### [NEW] `phase3/generation/run_sampling.py`
-
-Reuses [src/cc_eval/generate.py](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/src/cc_eval/generate.py) and [config.py](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/src/cc_eval/config.py). Runs 10 samples per prompt-model pair at 3 temperatures (0.0, 0.3, 0.7). Outputs to `phase3/outputs/generations/`.
-
-#### [NEW] `phase3/analysis/compute_kdg.py`
-
-Core deliverable script. Computes KDG per fact/model/temperature and outputs summary tables + plots.
-
----
-
-## Reusable Assets from Paper 1
-
-| Asset | Location | Reuse in Phase 3 |
-|---|---|---|
-| 500 prompts | [evals/sycophancy_set_500.yaml](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/evals/sycophancy_set_500.yaml) | Extract 50 facts as core set |
-| Neutral prompts | [evals/framing_ablation_neutral.yaml](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/evals/framing_ablation_neutral.yaml) | Template for neutral variant |
-| Model generation | [src/cc_eval/generate.py](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/src/cc_eval/generate.py) | Direct import |
-| GPT-4o-mini judging | [scripts/label_all_with_gpt4o.py](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/scripts/label_all_with_gpt4o.py) | Adapt for batch labeling |
-| Taxonomy (S1/S2/C/H/R) | [src/cc_eval/judge.py](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/src/cc_eval/judge.py) | Same labels, same logic |
-| SageMaker launcher | [scripts/launch_job.py](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/scripts/launch_job.py) | Adapt for multi-sample runs |
-| Analysis patterns | [scripts/analyze_results.py](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/scripts/analyze_results.py) | Reference for output format |
-
----
-
-## Execution Plan
-
-| Step | Action | Estimate |
-|---|---|---|
-| 1 | Tag [main](file:///Users/suhaibchisti/Downloads/product-evaluation-tool/evaluate.py#401-461) as `v1.0-paper1`, create `phase3/behavioral-distributions` branch | 5 min |
-| 2 | Create `phase3/` directory structure and [README.md](file:///Users/suhaibchisti/Downloads/product-evaluation-tool/README.md) | 30 min |
-| 3 | Extract 50 facts from [sycophancy_set_500.yaml](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/evals/sycophancy_set_500.yaml), build `facts_core_50.jsonl` | 1 hr |
-| 4 | Generate 4 prompt variants per fact → `prompt_variants.jsonl` | 1 hr |
-| 5 | Build `run_sampling.py` (reuse [generate.py](file:///Users/suhaibchisti/Downloads/constraint-curvature-sycophancy/src/cc_eval/generate.py)) | 2 hr |
-| 6 | Run pilot: 50 facts × 4 variants × 6 models × 10 samples × 3 temps = 36K generations | compute time |
-| 7 | Label outputs with GPT-4o-mini | compute time |
-| 8 | `compute_kdg.py` + `compute_entropy.py` + plots | 2 hr |
-
----
-
-## Verification Plan
-
-### Success criteria (Track A)
-
-- [ ] KDG clearly separates at least two model families
-- [ ] Framing effects are distributional, not just single-shot
-- [ ] At least one framing class emerges as dominant trigger
-- [ ] Response entropy shows measurable model-family differences
-
-### Automated checks
-
-```bash
-# After generation
-python phase3/analysis/compute_kdg.py --input phase3/outputs/labels/ --output phase3/outputs/metrics/
-python phase3/analysis/compute_entropy.py --input phase3/outputs/labels/ --output phase3/outputs/metrics/
-python phase3/analysis/plot_distributions.py --input phase3/outputs/metrics/ --output phase3/outputs/figures/
-```
+- SageMaker notebook: `cc-eval-notebook` (ml.g5.xlarge) — **STOPPED**
+- S3 bucket: `cc-eval-500330120558-us-east-1`
+- Processing job quota: 6 × ml.g5.xlarge
+- OpenAI: Tier 2, 30K RPD, 10M batch tokens
