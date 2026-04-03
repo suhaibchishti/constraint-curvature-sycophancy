@@ -64,8 +64,9 @@ for family, i_old, i_new in pairs:
     x0, y0 = models[i_old][2], models[i_old][1]
     x1, y1 = models[i_new][2], models[i_new][1]
     ax.annotate("", xy=(x1, y1), xytext=(x0, y0),
-                arrowprops=dict(arrowstyle="->", color=colors[family],
-                                lw=2, alpha=0.7))
+                arrowprops=dict(arrowstyle="->, head_width=0.4, head_length=0.3",
+                                color=colors[family], lw=2.5, alpha=0.9,
+                                shrinkA=6, shrinkB=10))
 
 # Quadrant shading
 ax.axhline(y=3.0, color='white', linestyle='--', alpha=0.2)
