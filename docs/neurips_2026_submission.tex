@@ -32,7 +32,9 @@
 % ABSTRACT
 % ============================================================================
 \begin{abstract}
-We present a behavioral analysis of sycophancy in large language models, demonstrating that false-premise agreement is primarily a framing-induced probabilistic failure rather than an epistemic gap. Using a validated S1/S2/C/H/R taxonomy across 35,076 labeled responses from six models spanning three families (Mistral, Llama, Qwen), we first establish that 86\% of sycophantic responses in our false-premise evaluation occur when models possess the correct knowledge but fail to deploy it under confirmatory framing ($N$=135 ablation pairs, fp16, dual-judge validated). We then scale this analysis to 31,500 sampled responses across 5 framing conditions and 3 temperatures, introducing the \emph{Knowledge Deployment Gap} (KDG) metric to quantify framing-induced knowledge suppression. KDG reveals dramatic heterogeneity: Mistral v0.1 exhibits KDG=0.61 under authority framing (driven by sycophancy) while Llama~3.1 shows KDG=0.31 under authority driven entirely by refusal---same metric, mechanistically different failures. Contrary to prior work suggesting opinion framing universally increases sycophancy, we find this is a boundary condition: opinion framing increases sycophancy in older instruction-tuned models (Mistral +5--10pp) but decreases it in RLHF-aligned models (Llama, Qwen~2.5: $-$1 to $-$3pp). Temperature analysis reveals sycophancy as a probabilistic basin: 37\% of responses that are deterministically sycophantic at $T$=0 escape to correct or hedge responses at $T$=0.7, with the Hedge state---which doubles from 14\% to 23--27\% under framing---serving as the transition state between sycophancy and correction. We release the complete dataset and analysis code.
+When users present factually incorrect claims to large language models, these models frequently agree---a failure mode known as sycophancy. Prior work attributes this to either lack of knowledge or social compliance, but does not quantify which mechanism dominates or how it varies across models and framing conditions. We show that sycophancy is primarily a \emph{deployment} failure, not a capability gap: across 35,076 labeled responses from six models spanning three families (Mistral, Llama, Qwen), 86\% of sycophantic responses occur when models possess the correct knowledge but fail to deploy it under confirmatory framing ($N$=135 ablation pairs, fp16, dual-judge validated).
+
+To measure this at scale, we introduce the \emph{Knowledge Deployment Gap} (KDG)---the fraction of correct knowledge a model suppresses under framing---and apply it to 31,500 responses across 5 framing conditions and 3 temperatures. KDG reveals dramatic heterogeneity: Mistral v0.1 exhibits KDG=0.61 under authority framing (driven by sycophancy) while Llama~3.1 shows KDG=0.31 under authority driven entirely by refusal---same metric, mechanistically opposite failures. Contrary to prior work suggesting opinion framing universally increases sycophancy, we find a boundary condition: opinion framing increases sycophancy in older instruction-tuned models (Mistral: $+$5 to $+$10\,pp) but decreases it in RLHF-aligned models (Llama, Qwen~2.5: $-$1 to $-$3\,pp). Temperature analysis reveals sycophancy as a probabilistic basin: 37\% of deterministically sycophantic responses escape at $T$=0.7, with the Hedge state---which doubles from 14\% to 23--27\% under framing---serving as the transition state between sycophancy and correction. We release the complete dataset and analysis code.
 \end{abstract}
 
 % ============================================================================
@@ -40,9 +42,9 @@ We present a behavioral analysis of sycophancy in large language models, demonst
 % ============================================================================
 \section{Introduction}
 
-Safety-oriented fine-tuning of large language models (LLMs) creates a well-documented tension: the same training that reduces harmful outputs also induces \emph{sycophancy}---the tendency to agree with user assertions even when they are factually incorrect \citep{perez2022discovering, sharma2024towards}. Understanding whether sycophancy reflects genuine knowledge gaps or deployment failures is critical for building reliable AI systems.
+Safety-oriented fine-tuning of large language models (LLMs) creates a well-documented tension: the same training that reduces harmful outputs also induces \emph{sycophancy}---the tendency to agree with user assertions even when they are factually incorrect. This failure mode is widespread: \citet{perez2022discovering} first documented systematic opinion agreement in LLMs, and \citet{sharma2024towards} traced it to preference model bias. Understanding whether sycophancy reflects genuine knowledge gaps or deployment failures is critical for building reliable AI systems.
 
-\paragraph{Terminology.} We use ``calibration'' to refer to a model's \emph{epistemic grounding}---its ability to distinguish true from false premises and respond with appropriate corrections rather than defaulting to agreement or refusal. This differs from the standard ML usage (predicted probability matching empirical frequency). We contrast ``calibration-based alignment'' (improving factual grounding and framing robustness) with ``constraint-based alignment'' (strengthening refusal mechanisms).
+We demonstrate that sycophancy is primarily a \emph{deployment} failure: across 35,076 labeled responses from six models spanning three families, 86\% of sycophantic responses in our evaluation involve models that possess the correct knowledge but fail to deploy it under confirmatory framing. This failure is not uniform---it varies by model family, framing condition, and sampling temperature, forming characteristic probabilistic basins that we quantify with a new metric.
 
 Two competing explanations dominate the literature. The \emph{capability} account holds that sycophantic models lack the knowledge to correct false premises \citep{lin2022truthfulqa}. The \emph{compliance} account holds that models possess the knowledge but suppress it under social pressure, driven by reward model biases that favor agreement \citep{sharma2024towards, wang2024knowledge}. Recent mechanistic work supports the compliance account: activation patching reveals that models encode correct answers internally even when producing sycophantic outputs \citep{wang2024knowledge}, and distinct linear directions for agreement versus praise sycophancy have been identified \citep{vennemeyer2025syceval}.
 
@@ -50,7 +52,7 @@ We show that these accounts are not competing---they describe a \emph{mixture}, 
 
 \begin{enumerate}
     \item \textbf{Taxonomy and ablation} (\S\ref{sec:taxonomy}): We develop a five-category response taxonomy (S1/S2/C/H/R) and apply it to 3,000 responses from six models. A framing ablation on 135 sycophantic pairs reveals that 86\% involve latent correct knowledge---the model knows the answer but fails to deploy it.
-    \item \textbf{Distributional analysis} (\S\ref{sec:distributional}): We scale to 31,500 responses across 5 controlled framing conditions and introduce the Knowledge Deployment Gap (KDG) metric, which quantifies framing-induced knowledge suppression at the distributional level.
+    \item \textbf{Distributional analysis} (\S\ref{sec:distributional}): We scale to 31,500 responses across 5 controlled framing conditions and introduce the Knowledge Deployment Gap (KDG)---a metric that measures the fraction of correct knowledge a model suppresses under framing---to quantify this suppression at the distributional level.
     \item \textbf{Probabilistic characterization} (\S\ref{sec:temperature}): Temperature and entropy analysis reveals that sycophancy forms probabilistic basins with measurable escape rates, not deterministic walls.
 \end{enumerate}
 
@@ -66,12 +68,9 @@ We show that these accounts are not competing---they describe a \emph{mixture}, 
 \subsection{Contributions}
 
 \begin{enumerate}
-    \item A validated five-category taxonomy (S1/S2/C/H/R) with human validation ($\kappa$=0.752).
-    \item A framing ablation proving 86\% of sycophancy involves latent correct knowledge (fp16, dual-judge validated).
-    \item The KDG metric for quantifying framing-induced knowledge suppression, with an S1/R decomposition that distinguishes sycophancy-driven from refusal-driven suppression.
-    \item Model-specific framing sensitivity profiles across 5 conditions and 3 model families.
-    \item A boundary condition on \citet{sharma2024towards}: opinion framing increases sycophancy only in older instruction-tuned models.
-    \item An open dataset of 35,076 labeled responses with full analysis code.
+    \item \textbf{Behavioral audit.} A validated five-category taxonomy (S1/S2/C/H/R, $\kappa$=0.752) and framing ablation proving 86\% of sycophancy involves latent correct knowledge (fp16, dual-judge validated).
+    \item \textbf{KDG metric.} The Knowledge Deployment Gap with an S1/R decomposition that separates sycophancy-driven from refusal-driven knowledge suppression, applied to 31,500 responses across 5 framing conditions and 3 model families.
+    \item \textbf{Three boundary conditions.} Authority is the dominant sycophancy trigger; opinion framing increases sycophancy only in older instruction-tuned models (a boundary condition on \citet{sharma2024towards}); and sycophancy forms probabilistic basins with 37\% escape rates at $T$=0.7. Full dataset (35,076 labeled responses) and analysis code released.
 \end{enumerate}
 
 
@@ -95,9 +94,28 @@ We show that these accounts are not competing---they describe a \emph{mixture}, 
 \section{Taxonomy, Dataset, and Single-Shot Evaluation}
 \label{sec:taxonomy}
 
+\paragraph{Terminology.} We use ``calibration'' to refer to a model's \emph{epistemic grounding}---its ability to distinguish true from false premises and respond with appropriate corrections rather than defaulting to agreement or refusal. This differs from the standard ML usage (predicted probability matching empirical frequency). We contrast ``calibration-based alignment'' (improving factual grounding and framing robustness) with ``constraint-based alignment'' (strengthening refusal mechanisms).
+
 \subsection{Dataset Construction}
 
-We construct a dataset of 500 false-premise prompts spanning four domains: health/medicine, science/technology, history/geography, and general knowledge. Each prompt embeds a factual error within a natural question format---for example: ``Since the Great Wall of China is visible from space, how do astronauts typically photograph it?'' We generate responses from six instruction-tuned models at 7--8B scale across three families:
+We construct a dataset of 500 false-premise prompts spanning four domains (Table~\ref{tab:dataset_examples}). Each prompt embeds a factual error within a natural question format. We generate responses from six instruction-tuned models at 7--8B scale across three families:
+
+\begin{table}[htbp]
+\centering
+\caption{Dataset examples by domain. Each prompt embeds a false premise in a natural question.}
+\label{tab:dataset_examples}
+\small
+\begin{tabular}{llr}
+\toprule
+Domain & Example False Premise & \# Prompts \\
+\midrule
+Health/Medicine & ``Vaccines cause autism, correct?'' & 125 \\
+Science/Technology & ``Lightning never strikes the same place twice\ldots'' & 125 \\
+History/Geography & ``The Great Wall is visible from space\ldots'' & 125 \\
+General Knowledge & ``Humans use only 10\% of their brain\ldots'' & 125 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{itemize}
     \item \textbf{Mistral}: Mistral-7B-Instruct-v0.1, Mistral-7B-Instruct-v0.2
@@ -109,15 +127,25 @@ All generations use fp16 (half-precision, no quantization) at temperature $T$=0.
 
 \subsection{The S1/S2/C/H/R Taxonomy}
 
-We classify each response into five categories:
+We classify each response into five categories (Table~\ref{tab:taxonomy}):
 
-\begin{itemize}
-    \item \textbf{S1 (Sycophantic Agreement)}: Accepts the false premise and builds on it.
-    \item \textbf{S2 (Sycophantic Confabulation)}: Accepts the false premise and fabricates supporting details.
-    \item \textbf{C (Correct)}: Identifies and corrects the false premise.
-    \item \textbf{H (Hedge)}: Partially acknowledges the error but does not fully correct it.
-    \item \textbf{R (Refusal)}: Declines to engage with the prompt.
-\end{itemize}
+\begin{table}[htbp]
+\centering
+\caption{Response taxonomy. Labels are mutually exclusive and exhaustive.}
+\label{tab:taxonomy}
+\small
+\begin{tabular}{lll}
+\toprule
+Code & Name & Definition \\
+\midrule
+S1 & Sycophantic Agreement & Accepts false premise, builds on it \\
+S2 & Sycophantic Confabulation & Accepts false premise, fabricates details \\
+C & Correct & Identifies and corrects the false premise \\
+H & Hedge & Partially acknowledges error, does not fully correct \\
+R & Refusal & Declines to engage with the prompt \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 Labeling is performed by GPT-4o-mini with a structured prompt providing definitions and examples for each category. We validate against human labels on a stratified sample of 50 responses, achieving Cohen's $\kappa$=0.752 with 100\% recall on S1 and R categories.
 
@@ -145,16 +173,16 @@ Qwen 2.5 & 1.2 & 0.0 & 85.0 & 3.4 & 10.4 \\
 \end{tabular}
 \end{table}
 
-\textbf{Effective alignment} (Mistral, Qwen): Newer versions reduce sycophancy while maintaining or improving helpfulness. Mistral v0.1$\to$v0.2: S1 drops from 13.6\% to 5.4\% ($\Delta$=$-$8.2pp, $p$<0.001, $\chi^2$=18.61, Cohen's $h$=0.286) with stable refusal. Qwen 1.5$\to$2.5: S1 drops from 4.2\% to 1.2\% ($\Delta$=$-$3.0pp, $p$=0.005, Cohen's $h$=0.193) with refusal halved.
+\paragraph{Effective alignment (Mistral, Qwen).} Newer versions reduce sycophancy while maintaining or improving helpfulness. Mistral v0.1$\to$v0.2: S1 drops from 13.6\% to 5.4\% ($\Delta$=$-$8.2\,pp, $p$<0.001, $\chi^2$=18.61, Cohen's $h$=0.286) with stable refusal. Qwen 1.5$\to$2.5: S1 drops from 4.2\% to 1.2\% ($\Delta$=$-$3.0\,pp, $p$=0.005, Cohen's $h$=0.193) with refusal halved.
 
-\textbf{Over-constraint} (Llama): Llama 3$\to$3.1 eliminates sycophancy entirely (S1: 2.6\%$\to$0.0\%, $p$<0.001) but at the cost of a 42\% increase in refusal (25.6\%$\to$36.4\%, $\chi^2$=13.13, $p$<0.001, Cohen's $h$=0.234), reducing the correct response rate from 70.2\% to 58.8\%. Category-level analysis reveals where over-constraint is most acute: Llama~3.1 refuses 90\% of user-preference prompts (up from 38\% in Llama~3) and 30\% of social-pressure prompts (up from 8\%). These are categories where the correct behavior is to engage and correct the false premise, not refuse entirely.
+\paragraph{Over-constraint (Llama).} Llama 3$\to$3.1 eliminates sycophancy entirely (S1: 2.6\%$\to$0.0\%, $p$<0.001) but at the cost of a 42\% increase in refusal (25.6\%$\to$36.4\%, $\chi^2$=13.13, $p$<0.001, Cohen's $h$=0.234), reducing the correct response rate from 70.2\% to 58.8\%. Category-level analysis reveals where over-constraint is most acute: Llama~3.1 refuses 90\% of user-preference prompts (up from 38\% in Llama~3) and 30\% of social-pressure prompts (up from 8\%). These are categories where the correct behavior is to engage and correct the false premise, not refuse entirely.
 
 These trajectories are visible in Figure~\ref{fig:alignment_map}: Mistral and Qwen move toward the ideal lower-left quadrant (low sycophancy, low refusal), while Llama moves toward the lower-right (zero sycophancy but high refusal).
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.65\textwidth]{figures/alignment_map.png}
-    \caption{Alignment trajectories. Circles = older versions, squares = newer. Mistral and Qwen move toward low sycophancy + low refusal (calibration). Llama moves toward zero sycophancy + high refusal (constraint).}
+    \caption{Alignment trajectories in sycophancy--refusal space, showing version-to-version evolution for three model families (7--8B scale). Circles indicate older versions; squares indicate newer versions; arrows show the direction of alignment update. Mistral and Qwen move toward the lower-left quadrant (low sycophancy, low refusal = effective calibration), while Llama moves toward the lower-right (zero sycophancy but high refusal = over-constraint). The ideal model occupies the lower-left corner.}
     \label{fig:alignment_map}
 \end{figure}
 
@@ -189,7 +217,7 @@ WRONG & 19 & 14\% & Genuine epistemic gap \\
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/sycophancy_decomposition.png}
-    \caption{Sycophancy decomposition by model. Each bar shows how previously sycophantic (S1) responses perform when the same question is asked neutrally. Green = correct (framing failure), orange = partial knowledge, red = genuinely wrong (capability failure). Llama~3.1 is omitted (0 S1 pairs in ablation).}
+    \caption{Sycophancy decomposition: what happens to previously sycophantic responses under neutral framing. For each model, bars show the fraction of S1 responses that, when re-asked neutrally, are classified as CORRECT (green, framing failure---model knew the answer), PARTIAL (orange, partial knowledge), or WRONG (red, genuine capability gap). Llama~3.1 is omitted (0 S1 pairs in ablation). The 86\% CORRECT+PARTIAL aggregate confirms that sycophancy is primarily a deployment failure.}
     \label{fig:decomposition}
 \end{figure}
 
@@ -247,9 +275,9 @@ Each of the 6 models generates 10 samples per fact-framing-temperature combinati
 
 We define the \emph{Knowledge Deployment Gap} as:
 \begin{equation}
-    \text{KDG}(m, f) = P(\text{correct} \mid \text{neutral}, m) - P(\text{correct} \mid f, m)
+    \text{KDG}(m, f) = P_m(\text{correct} \mid \text{neutral}) - P_m(\text{correct} \mid f)
 \end{equation}
-where $m$ is a model, $f$ is a framing condition, and correct $\in \{C, H\}$. We count H (hedge) as knowledge at least partially deployed: the model demonstrates awareness of the correct answer even if it does not fully commit to the correction. Positive KDG indicates that framing suppresses knowledge the model deploys under neutral conditions.
+where $m$ is a model, $f$ is a framing condition, and correct denotes a response classified as C (Correct) or H (Hedge) under the taxonomy defined in \S\ref{sec:taxonomy}. We count H as knowledge at least partially deployed: the model demonstrates awareness of the correct answer even if it does not fully commit to the correction. Positive KDG indicates that framing suppresses knowledge the model deploys under neutral conditions.
 
 Critically, KDG conflates two distinct failure modes: sycophancy and refusal. We decompose:
 \begin{align}
@@ -266,7 +294,7 @@ Figure~\ref{fig:kdg_heatmap} decomposes the KDG into its sycophancy and refusal 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/kdg_heatmap.png}
-    \caption{Knowledge Deployment Gap decomposed into sycophancy shift (KDG$_{S1}$, left) and refusal shift (KDG$_R$, right). Values show $\Delta$rate (framed $-$ neutral). Mistral v0.1 authority is sycophancy-driven (KDG$_{S1}$=+0.39, KDG$_R$=+0.00), while Llama 3.1 authority is refusal-driven (KDG$_R$=+0.39, KDG$_{S1}$=$-$0.06). Same headline KDG, opposite mechanisms. Note: $\Delta$rate values here correspond to direct rate shifts; Table~\ref{tab:kdg_decomp} reports the same decomposition rounded to two decimal places.}
+    \caption{Knowledge Deployment Gap decomposed into its two failure-mode components: sycophancy shift (KDG$_{S1}$, left heatmap) and refusal shift (KDG$_R$, right heatmap). Cell values show $\Delta$rate (framed $-$ neutral). Key comparison: Mistral v0.1 under authority framing is sycophancy-driven (KDG$_{S1}$=+0.39, KDG$_R$=+0.00), while Llama 3.1 under authority is refusal-driven (KDG$_R$=+0.39, KDG$_{S1}$=$-$0.06)---same headline KDG magnitude, mechanistically opposite failures. Full decomposition in Table~\ref{tab:kdg_decomp}.}
     \label{fig:kdg_heatmap}
 \end{figure}
 
@@ -333,7 +361,7 @@ Each model exhibits a distinct framing sensitivity profile. Mistral v0.1 is maxi
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/sharma_opinion_effect.png}
-    \caption{Opinion framing effect on S1 rate. Sharma et al.'s prediction (opinion increases sycophancy) holds for Mistral but reverses for Llama and Qwen~2.5.}
+    \caption{Opinion framing effect on S1 rate ($\Delta$S1 = opinion $-$ neutral). Sharma et al.'s prediction (opinion increases sycophancy) holds for both Mistral models (v0.1: +5.4\,pp, v0.2: +9.6\,pp) but \emph{reverses} for Llama~3 ($-$1.7\,pp), Llama~3.1 ($-$2.9\,pp), and Qwen~2.5 ($-$1.4\,pp). This identifies a boundary condition: opinion framing amplifies sycophancy only in models whose alignment prioritized agreeableness.}
     \label{fig:sharma}
 \end{figure}
 
@@ -375,7 +403,7 @@ $T$=0.7 & 63.1\% & 18.6\% & 14.4\% & \textbf{37\%} \\
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/basin_escape.png}
-    \caption{Basin escape by model. Mistral v0.1 has the highest escape rate (55\%) despite the most S1 at $T$=0, indicating a wide but shallow basin. Qwen~1.5 has the lowest escape rate (20\%), consistent with its capability-driven sycophancy.}
+    \caption{Basin escape rates by model at $T$=0.7 for combinations that are deterministically S1 at $T$=0 (10 samples each). Mistral v0.1 shows the highest escape rate (55\%), indicating a wide but shallow sycophancy basin consistent with its high ``knows'' rate from the ablation (88\%). Qwen~1.5 has the lowest escape rate (20\%), consistent with its capability-driven sycophancy (57\% knows). Basin depth inversely correlates with the fraction of sycophancy attributable to deployment failure.}
     \label{fig:basin_escape}
 \end{figure}
 
@@ -385,7 +413,7 @@ We observe a non-monotonic relationship between temperature and overall S1 rate:
 
 \subsection{The Hedge State as Transition State}
 
-The Hedge (H) category---responses that partially acknowledge the error without fully correcting it---exhibits a distinctive pattern under framing:
+Hedge responses (H, defined in \S\ref{sec:taxonomy})---which partially acknowledge the error without fully correcting it---exhibit a distinctive pattern under framing:
 
 \begin{table}[htbp]
 \centering
@@ -437,7 +465,7 @@ Combining KDG (knowledge suppression) and entropy (behavioral variability) yield
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/entropy_kdg_scatter.png}
-    \caption{Entropy $\times$ KDG alignment signatures. Each point represents a model's mean KDG and mean entropy at $T$=0.7. Four quadrants characterize distinct alignment outcomes.}
+    \caption{Entropy $\times$ KDG alignment signatures at $T$=0.7. Each point represents one model; x-axis = mean KDG across all framing conditions, y-axis = mean Shannon entropy of the label distribution. Four quadrants emerge: deep deterministic basin (high KDG, low entropy = reliably sycophantic), noisy basin (moderate KDG, high entropy = variable), noisy but robust (low KDG, high entropy), and flat landscape (low KDG, low entropy = robust and consistent). Alignment trajectories (arrows) show how version updates reshape these signatures.}
     \label{fig:entropy_kdg}
 \end{figure}
 
@@ -458,33 +486,13 @@ Alignment trajectories are visible: Mistral v0.1$\to$v0.2 moves from deep determ
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Reconciling Capability and Compliance}
-
-The capability-versus-compliance debate presents a false dichotomy. Our results show sycophancy decomposes into three layers, each requiring a distinct metric:
-
-\begin{enumerate}
-    \item \textbf{Capability layer} (14\% of sycophantic responses): Genuine epistemic gaps where the model lacks the knowledge. Measured by the ablation WRONG rate.
-    \item \textbf{Deployment layer} (86\%): The model possesses the knowledge but framing suppresses it. Measured by KDG and its S1/R decomposition.
-    \item \textbf{Probabilistic layer}: The suppression is not deterministic---temperature, entropy, and framing condition modulate escape probability. Measured by basin escape rate and entropy.
-\end{enumerate}
-
-Most prior work conflates these layers. TruthfulQA \citep{lin2022truthfulqa} measures the capability layer but cannot distinguish it from the deployment layer. Activation patching \citep{wang2024knowledge} demonstrates the deployment layer exists but does not quantify it at scale. Our contribution is separating these layers with distinct, scalable metrics.
+The capability-versus-compliance debate presents a false dichotomy. Our results show sycophancy decomposes into three layers, each requiring a distinct metric: (1) a \textbf{capability layer} (14\% of sycophantic responses), reflecting genuine epistemic gaps measured by the ablation WRONG rate; (2) a \textbf{deployment layer} (86\%), where the model possesses the knowledge but framing suppresses it, measured by KDG and its S1/R decomposition; and (3) a \textbf{probabilistic layer}, where suppression is modulated by temperature, entropy, and framing condition, measured by basin escape rate. Most prior work conflates these layers: TruthfulQA \citep{lin2022truthfulqa} measures the capability layer but cannot distinguish it from the deployment layer; activation patching \citep{wang2024knowledge} demonstrates the deployment layer exists but does not quantify it at scale. Our contribution is separating these layers with distinct, scalable metrics.
 
 \paragraph{Alignment as basin reshaping.} Alignment does not eliminate incorrect behavior but reshapes the probabilistic landscape in which responses are sampled. Different alignment strategies produce distinct basin structures: compliance-dominant basins (Mistral v0.1: high KDG$_{S1}$, deep sycophancy), constraint-dominant basins (Llama~3.1: high KDG$_R$, refusal replaces sycophancy), or flattened basins (Qwen~2.5: near-zero KDG, robust deployment). KDG and its decomposition provide a behavioral measure of this reshaping without requiring access to model internals.
 
-\paragraph{Three underlying mechanisms.} We hypothesize that modern LLM safety architectures rely on three distinct mechanisms, each producing a characteristic response pattern: (1) \emph{epistemic calibration}---the base model understands the premise is false and corrects it ($\to$ C; evidenced by Qwen~2.5's simultaneous reduction in S1 and R), (2) \emph{alignment preference learning}---the reward model teaches diplomatic correction while validating the user's perspective ($\to$ H; evidenced by Mistral v0.2's rising H rate), and (3) \emph{constraint-based safety layers}---a safety classifier detects risky content and triggers refusal ($\to$ R; evidenced by Llama~3.1's zero S1 coupled with 36.4\% refusal). These mechanisms are not mutually exclusive, but different model families weight them differently.
+\paragraph{Three underlying mechanisms.} We hypothesize that modern LLM safety architectures rely on three distinct mechanisms, each producing a characteristic response pattern: (1) \emph{epistemic calibration}---the base model understands the premise is false and corrects it ($\to$ C; evidenced by Qwen~2.5's simultaneous S1 and R reduction in Table~\ref{tab:s1_rates}), (2) \emph{alignment preference learning}---the reward model teaches diplomatic correction while validating the user's perspective ($\to$ H; evidenced by the doubling of H rates under framing in Table~\ref{tab:hedge}), and (3) \emph{constraint-based safety layers}---a safety classifier detects risky content and triggers refusal ($\to$ R; evidenced by Llama~3.1's refusal-driven KDG in Table~\ref{tab:kdg_decomp}). These mechanisms are not mutually exclusive, but different model families weight them differently.
 
-\subsection{Practical Implications}
-
-\textbf{Usable correctness rate.} We define the Usable Correctness Rate as UCR = (C+H)/Total, measuring the fraction of responses that are either correct or hedge-then-correct---i.e., usable to the end user. UCR separates alignment quality from raw sycophancy rates: Mistral v0.2 achieves UCR=84.0\% (low S1, low R), while Llama~3.1 achieves only UCR=63.6\% despite zero sycophancy (high R suppresses usable output). Qwen~2.5 leads at UCR=88.4\%. UCR penalizes both sycophancy and over-refusal, making it a practical deployment metric.
-
-\textbf{Authority framing is the highest-risk deployment condition.} It uniquely drives sycophancy, confabulation, and refusal simultaneously. Systems that present information with authority cues (e.g., ``According to our records...'') should be evaluated specifically for this triple failure mode.
-
-\textbf{Opinion-framing effects are model-specific.} Practitioners cannot assume that \citet{sharma2024towards}'s finding generalizes: opinion framing \emph{reduces} sycophancy in some model families. Framing sensitivity should be evaluated per-model, not assumed universal.
-
-\textbf{Temperature as diagnostic.} Low entropy combined with high KDG signals a deep sycophancy basin---a model that reliably suppresses knowledge under framing. This combination (exemplified by Mistral v0.1) identifies models most in need of targeted alignment intervention.
-
-\textbf{Calibration over constraint.} The Qwen trajectory (low KDG, low entropy) suggests that calibration-based alignment---training models to deploy knowledge consistently regardless of framing---produces more robust outcomes than constraint-based alignment (Llama trajectory), which eliminates sycophancy basins but creates refusal basins.
+\paragraph{Practical implications.} We define the Usable Correctness Rate as UCR = (C+H)/Total, measuring the fraction of responses usable to the end user. UCR separates alignment quality from raw sycophancy rates: Mistral v0.2 achieves UCR=84.0\% (low S1, low R), while Llama~3.1 achieves only UCR=63.6\% despite zero sycophancy (high R suppresses usable output). Qwen~2.5 leads at UCR=88.4\%. Authority framing uniquely drives sycophancy, confabulation, and refusal simultaneously---the highest-risk deployment condition. Opinion-framing effects are model-specific: practitioners cannot assume that \citet{sharma2024towards}'s finding generalizes. Low entropy combined with high KDG signals a deep sycophancy basin, identifying models most in need of targeted intervention. The Qwen trajectory (low KDG, low entropy) suggests that calibration-based alignment produces more robust outcomes than constraint-based alignment, which eliminates sycophancy basins but creates refusal basins.
 
 \subsection{Limitations}
 
