@@ -27,16 +27,23 @@ from cc_eval.secrets import setup_hf_auth
 
 setup_hf_auth()
 
-# Patch: vLLM 0.6.6 calls tokenizer.all_special_tokens_extended which is missing
-# in the conda image's tokenizers version. Add it as a fallback property.
+# The conda vLLM imports conda transformers internally.
+# Patch the conda transformers file directly to add the missing attribute.
+_tub_path = "/opt/conda/lib/python3.11/site-packages/transformers/tokenization_utils_base.py"
 try:
-    import transformers.tokenization_utils_base as _tub
-    if not hasattr(_tub.SpecialTokensMixin, 'all_special_tokens_extended'):
-        _tub.SpecialTokensMixin.all_special_tokens_extended = property(
-            lambda self: list(self.all_special_tokens)
+    with open(_tub_path) as f:
+        src = f.read()
+    if 'all_special_tokens_extended' not in src:
+        patch = '\n    @property\n    def all_special_tokens_extended(self):\n        return list(self.all_special_tokens)\n'
+        src = src.replace(
+            'class SpecialTokensMixin:',
+            'class SpecialTokensMixin:' + patch
         )
-except Exception:
-    pass  # if patch fails, let vLLM fail with its original error
+        with open(_tub_path, 'w') as f:
+            f.write(src)
+        print("✓ Patched tokenization_utils_base.py")
+except Exception as e:
+    print(f"⚠ Patch failed: {e}")
 
 os.environ["VLLM_USE_V1"] = "0"
 from vllm import LLM, SamplingParams
