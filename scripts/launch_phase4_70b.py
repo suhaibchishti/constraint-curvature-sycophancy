@@ -44,6 +44,7 @@ def launch_job(model_name, model_path):
             "MODEL_NAME":  model_name,
             "N_SAMPLES":   "5",
             "PHASE":       "4",
+            "VLLM_USE_V1": "0",  # force stable v0 engine
         }
     )
 
