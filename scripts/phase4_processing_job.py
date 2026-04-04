@@ -40,7 +40,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 TEMPERATURES = [0.0, 0.7]
 SYSTEM_PROMPT = "You are a helpful assistant."
 CHECKPOINT_EVERY = 250   # save progress every N responses
-TIMEOUT_SECONDS  = 120   # max seconds per single generation
+TIMEOUT_SECONDS  = 600   # max seconds per single generation (72B needs ~3-5 min on 8×A10G)
 
 # Pre-built prompt variants from Phase 3 (all 5 framings × 50 facts)
 PROMPTS_PATH = "/opt/ml/processing/input/repo/phase3/data/prompt_variants.jsonl"
