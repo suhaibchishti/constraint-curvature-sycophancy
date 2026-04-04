@@ -32,7 +32,7 @@ timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
 def launch_job(model_name, model_path):
     processor = ScriptProcessor(
         role=ROLE,
-        image_uri="763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.1.0-gpu-py310-cu121-ubuntu20.04",
+        image_uri="763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.5.1-gpu-py311-cu124-ubuntu22.04-ec2-v1.8",
         command=["python3"],
         instance_type=INSTANCE_TYPE,
         instance_count=1,
