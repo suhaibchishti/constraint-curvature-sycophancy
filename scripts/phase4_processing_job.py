@@ -59,7 +59,7 @@ def load_model():
     tok = AutoTokenizer.from_pretrained(MODEL_PATH, trust_remote_code=True)
     mdl = AutoModelForCausalLM.from_pretrained(
         MODEL_PATH,
-        torch_dtype=torch.float16,
+        dtype=torch.float16,
         device_map="auto",
         trust_remote_code=True,
     )
@@ -75,16 +75,20 @@ def generate(tok, mdl, prompt, temperature, seed):
     ]
     input_ids = tok.apply_chat_template(
         messages, add_generation_prompt=True, return_tensors="pt"
-    ).to(mdl.device)
+    )
+    if hasattr(input_ids, 'input_ids'):
+        input_ids = input_ids.input_ids
+    input_ids = input_ids.to(next(mdl.parameters()).device)
 
     torch.manual_seed(seed)
+    do_sample = temperature > 0
     with torch.no_grad():
         out = mdl.generate(
             input_ids,
             max_new_tokens=512,
-            temperature=max(temperature, 1e-6),
-            do_sample=(temperature > 0),
-            top_p=0.95,
+            do_sample=do_sample,
+            temperature=max(temperature, 1e-6) if do_sample else None,
+            top_p=0.95 if do_sample else None,
             pad_token_id=tok.eos_token_id,
         )
     completion = tok.decode(out[0][input_ids.shape[1]:], skip_special_tokens=True)
