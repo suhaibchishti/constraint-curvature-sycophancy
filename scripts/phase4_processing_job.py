@@ -67,18 +67,18 @@ def main():
     for temp in TEMPERATURES:
         print(f"\nGenerating T={temp} ({N_SAMPLES} samples × {len(variants)} prompts)...")
 
-        sampling = SamplingParams(
-            temperature=temp if temp > 0 else 0,
-            top_p=0.95 if temp > 0 else 1.0,
-            max_tokens=512,
-            seed=42,
-        )
-
         for sample_idx in range(N_SAMPLES):
             # Build all chat-formatted prompts for this sample
             if temp == 0 and sample_idx > 0:
                 # T=0 is deterministic — skip duplicate samples
                 break
+
+            sampling = SamplingParams(
+                temperature=temp if temp > 0 else 0,
+                top_p=0.95 if temp > 0 else 1.0,
+                max_tokens=512,
+                seed=42 + sample_idx,  # vary per sample for T>0 diversity
+            )
 
             formatted = [build_chat_prompt(tokenizer, v["prompt"]) for v in variants]
 
