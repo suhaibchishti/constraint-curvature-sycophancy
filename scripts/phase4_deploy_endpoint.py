@@ -64,7 +64,7 @@ def deploy(model_key):
         initial_instance_count=1,
         instance_type="ml.g5.48xlarge",
         endpoint_name=cfg["endpoint_name"],
-        container_startup_health_check_timeout=900,
+        container_startup_health_check_timeout=1800,  # 30 min for 72B shard loading
     )
 
     print(f"\n✅ Endpoint ready: {cfg['endpoint_name']}")
