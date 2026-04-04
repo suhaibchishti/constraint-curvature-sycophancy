@@ -76,14 +76,15 @@ def main(model_key):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_path = f"{OUTPUT_DIR}/{cfg['model_name']}_completions.jsonl"
 
-    # Resume from checkpoint if exists
+    # Resume: skip completed rows, retry errors
     done_keys = set()
     if os.path.exists(out_path):
         with open(out_path) as f:
             for line in f:
                 d = json.loads(line)
-                done_keys.add((d["fact_id"], d["framing"], d["temperature"], d["sample_idx"]))
-        print(f"Resuming — {len(done_keys)} responses already done")
+                if d.get("completion") not in ("[ERROR]", None):
+                    done_keys.add((d["fact_id"], d["framing"], d["temperature"], d["sample_idx"]))
+        print(f"Resuming — {len(done_keys)} valid responses already done")
 
     variants = [json.loads(l) for l in open(PROMPTS_PATH)]
     client = boto3.client("sagemaker-runtime", region_name=REGION)
@@ -92,7 +93,20 @@ def main(model_key):
     done = 0
     errors = 0
 
-    with open(out_path, "a") as f:
+    # Write mode: 'w' to rewrite (replaces errors), 'a' only if starting fresh
+    write_mode = "w" if done_keys else "a"
+    # Load valid rows to preserve them when rewriting
+    valid_rows = []
+    if done_keys and os.path.exists(out_path):
+        with open(out_path) as f:
+            for line in f:
+                d = json.loads(line)
+                if d.get("completion") not in ("[ERROR]", None):
+                    valid_rows.append(line)
+
+    with open(out_path, write_mode) as f:
+        for line in valid_rows:
+            f.write(line)
         for variant in variants:
             for temp in TEMPERATURES:
                 n = 1 if temp == 0 else N_SAMPLES  # T=0 is deterministic
