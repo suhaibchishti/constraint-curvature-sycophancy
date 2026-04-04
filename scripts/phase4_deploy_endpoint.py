@@ -60,6 +60,14 @@ def deploy(model_key):
     print(f"Deploying {cfg['model_id']} → endpoint: {cfg['endpoint_name']}")
     print("This takes ~10-15 minutes...")
 
+    # Clean up any stale endpoint config from previous failed attempts
+    sm = boto3.client("sagemaker", region_name=REGION)
+    try:
+        sm.delete_endpoint_config(EndpointConfigName=cfg["endpoint_name"])
+        print(f"  Cleaned up stale endpoint config")
+    except sm.exceptions.ClientError:
+        pass  # didn't exist, that's fine
+
     predictor = model.deploy(
         initial_instance_count=1,
         instance_type="ml.g5.48xlarge",
