@@ -12,15 +12,18 @@ Inputs (from env):
 """
 import os, sys, json, subprocess
 
-# Install vLLM (includes transformers, torch)
+# Install vLLM — pin to 0.3.3 (stable v0 engine, avoids v1 multiproc issues)
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
-    "vllm>=0.4.0", "boto3>=1.28.0",
+    "vllm==0.3.3", "boto3>=1.28.0",
 ])
 
 sys.path.insert(0, '/opt/ml/processing/input/repo/src')
 from cc_eval.secrets import setup_hf_auth
 
 setup_hf_auth()
+
+# Force vLLM v0 engine (stable multi-GPU path)
+os.environ["VLLM_USE_V1"] = "0"
 
 from vllm import LLM, SamplingParams
 
