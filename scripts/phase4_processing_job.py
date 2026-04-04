@@ -27,23 +27,20 @@ from cc_eval.secrets import setup_hf_auth
 
 setup_hf_auth()
 
-# The conda vLLM imports conda transformers internally.
-# Patch the conda transformers file directly to add the missing attribute.
-_tub_path = "/opt/conda/lib/python3.11/site-packages/transformers/tokenization_utils_base.py"
+# Patch the ACTUAL call site: vLLM's tokenizer.py calls tokenizer.all_special_tokens_extended
+# which doesn't exist on TokenizersBackend (its __getattr__ raises before property lookup).
+# Fix: replace that call with all_special_tokens in the vLLM source.
+_vllm_tok_path = "/opt/conda/lib/python3.11/site-packages/vllm/transformers_utils/tokenizer.py"
 try:
-    with open(_tub_path) as f:
+    with open(_vllm_tok_path) as f:
         src = f.read()
-    if 'all_special_tokens_extended' not in src:
-        patch = '\n    @property\n    def all_special_tokens_extended(self):\n        return list(self.all_special_tokens)\n'
-        src = src.replace(
-            'class SpecialTokensMixin:',
-            'class SpecialTokensMixin:' + patch
-        )
-        with open(_tub_path, 'w') as f:
+    if 'all_special_tokens_extended' in src:
+        src = src.replace('all_special_tokens_extended', 'all_special_tokens')
+        with open(_vllm_tok_path, 'w') as f:
             f.write(src)
-        print("✓ Patched tokenization_utils_base.py")
+        print("✓ Patched vLLM tokenizer.py: all_special_tokens_extended → all_special_tokens")
 except Exception as e:
-    print(f"⚠ Patch failed: {e}")
+    print(f"⚠ vLLM patch failed: {e}")
 
 os.environ["VLLM_USE_V1"] = "0"
 from vllm import LLM, SamplingParams
