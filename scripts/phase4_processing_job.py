@@ -12,20 +12,23 @@ Inputs (from env):
 """
 import os, sys, json, subprocess
 
-# Install vLLM 0.6.6 + force-reinstall transformers into conda env
-subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
-    "--force-reinstall",
-    "vllm==0.6.6", "transformers>=4.45.0", "boto3>=1.28.0",
-])
+# Install only boto3 — use the pre-installed conda vLLM
+subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "boto3>=1.28.0"])
 
 sys.path.insert(0, '/opt/ml/processing/input/repo/src')
 from cc_eval.secrets import setup_hf_auth
 
 setup_hf_auth()
 
-# Force vLLM v0 engine (stable multi-GPU path)
-os.environ["VLLM_USE_V1"] = "0"
+# Patch vLLM's tokenizer compatibility issue with TokenizersBackend
+# (all_special_tokens_extended missing in older tokenizers library)
+import transformers.tokenization_utils_base as _tub
+if not hasattr(_tub.SpecialTokensMixin, 'all_special_tokens_extended'):
+    _tub.SpecialTokensMixin.all_special_tokens_extended = property(
+        lambda self: list(self.all_special_tokens)
+    )
 
+os.environ["VLLM_USE_V1"] = "0"
 from vllm import LLM, SamplingParams
 
 MODEL_PATH = os.environ["MODEL_PATH"]
