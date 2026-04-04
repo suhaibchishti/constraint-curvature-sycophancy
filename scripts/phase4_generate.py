@@ -49,17 +49,17 @@ def call_endpoint(client, endpoint_name, model_key, prompt, temperature, seed):
     chat_prompt = CHAT_TEMPLATES[model_key].format(
         system=SYSTEM_PROMPT, user=prompt
     )
-    payload = {
-        "inputs": chat_prompt,
-        "parameters": {
-            "max_new_tokens": 512,
-            "temperature": max(temperature, 0.01),
-            "do_sample": temperature > 0,
-            "top_p": 0.95 if temperature > 0 else 1.0,
-            "seed": seed,
-            "return_full_text": False,
-        }
+    do_sample = temperature > 0
+    params = {
+        "max_new_tokens": 512,
+        "temperature": max(temperature, 0.01),
+        "do_sample": do_sample,
+        "seed": seed,
+        "return_full_text": False,
     }
+    if do_sample:
+        params["top_p"] = 0.95
+    payload = {"inputs": chat_prompt, "parameters": params}
     resp = client.invoke_endpoint(
         EndpointName=endpoint_name,
         ContentType="application/json",
