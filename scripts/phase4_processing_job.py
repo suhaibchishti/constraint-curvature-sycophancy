@@ -12,9 +12,13 @@ Inputs (from env):
 """
 import os, sys, json, subprocess
 
-# Install tokenizers upgrade + boto3; use pre-installed conda vLLM and transformers
+# ScriptProcessor doesn't activate conda — pip-install everything explicitly.
+# --no-deps on vLLM prevents it from downgrading the container's torch 2.5.1.
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
-    "tokenizers>=0.20.0", "boto3>=1.28.0",
+    "transformers>=4.45.0", "accelerate>=0.30.0", "boto3>=1.28.0",
+])
+subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
+    "--no-deps", "vllm==0.6.6",
 ])
 
 sys.path.insert(0, '/opt/ml/processing/input/repo/src')
@@ -22,13 +26,16 @@ from cc_eval.secrets import setup_hf_auth
 
 setup_hf_auth()
 
-# Patch: add all_special_tokens_extended to SpecialTokensMixin if missing
-# (vLLM 0.6.6 expects it; older tokenizers library doesn't have it)
-import transformers.tokenization_utils_base as _tub
-if not hasattr(_tub.SpecialTokensMixin, 'all_special_tokens_extended'):
-    _tub.SpecialTokensMixin.all_special_tokens_extended = property(
-        lambda self: list(self.all_special_tokens)
-    )
+# Patch: vLLM 0.6.6 calls tokenizer.all_special_tokens_extended which is missing
+# in the conda image's tokenizers version. Add it as a fallback property.
+try:
+    import transformers.tokenization_utils_base as _tub
+    if not hasattr(_tub.SpecialTokensMixin, 'all_special_tokens_extended'):
+        _tub.SpecialTokensMixin.all_special_tokens_extended = property(
+            lambda self: list(self.all_special_tokens)
+        )
+except Exception:
+    pass  # if patch fails, let vLLM fail with its original error
 
 os.environ["VLLM_USE_V1"] = "0"
 from vllm import LLM, SamplingParams
