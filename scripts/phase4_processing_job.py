@@ -12,9 +12,9 @@ Inputs (from env):
 """
 import os, sys, json, subprocess
 
-# Install vLLM 0.6.6 — supports Llama 3.1/Qwen 2.5 RoPE scaling, stable multi-GPU
+# Install vLLM 0.6.6 + matching transformers (avoids tokenizer attribute mismatch)
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
-    "vllm==0.6.6", "boto3>=1.28.0",
+    "vllm==0.6.6", "transformers>=4.45.0", "boto3>=1.28.0",
 ])
 
 sys.path.insert(0, '/opt/ml/processing/input/repo/src')
