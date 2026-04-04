@@ -12,16 +12,18 @@ Inputs (from env):
 """
 import os, sys, json, subprocess
 
-# Install only boto3 — use the pre-installed conda vLLM
-subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "boto3>=1.28.0"])
+# Install tokenizers upgrade + boto3; use pre-installed conda vLLM and transformers
+subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
+    "tokenizers>=0.20.0", "boto3>=1.28.0",
+])
 
 sys.path.insert(0, '/opt/ml/processing/input/repo/src')
 from cc_eval.secrets import setup_hf_auth
 
 setup_hf_auth()
 
-# Patch vLLM's tokenizer compatibility issue with TokenizersBackend
-# (all_special_tokens_extended missing in older tokenizers library)
+# Patch: add all_special_tokens_extended to SpecialTokensMixin if missing
+# (vLLM 0.6.6 expects it; older tokenizers library doesn't have it)
 import transformers.tokenization_utils_base as _tub
 if not hasattr(_tub.SpecialTokensMixin, 'all_special_tokens_extended'):
     _tub.SpecialTokensMixin.all_special_tokens_extended = property(
