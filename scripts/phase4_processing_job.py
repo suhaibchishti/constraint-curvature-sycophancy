@@ -17,8 +17,9 @@ import os, sys, json, subprocess
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
     "transformers>=4.45.0", "accelerate>=0.30.0", "boto3>=1.28.0",
 ])
+# Install vLLM with its deps but pin torch to prevent downgrade from 2.5.1
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
-    "--no-deps", "vllm==0.6.6",
+    "vllm==0.6.6", "torch==2.5.1",
 ])
 
 sys.path.insert(0, '/opt/ml/processing/input/repo/src')
