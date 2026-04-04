@@ -43,6 +43,7 @@ except Exception as e:
     print(f"⚠ vLLM patch failed: {e}")
 
 os.environ["VLLM_USE_V1"] = "0"
+os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
 from vllm import LLM, SamplingParams
 
 MODEL_PATH = os.environ["MODEL_PATH"]
