@@ -12,8 +12,9 @@ Inputs (from env):
 """
 import os, sys, json, subprocess
 
-# Install vLLM 0.6.6 + matching transformers (avoids tokenizer attribute mismatch)
+# Install vLLM 0.6.6 + force-reinstall transformers into conda env
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
+    "--force-reinstall",
     "vllm==0.6.6", "transformers>=4.45.0", "boto3>=1.28.0",
 ])
 
