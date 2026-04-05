@@ -6,12 +6,12 @@ Usage:
     python scripts/phase4_deploy_endpoint.py --model llama
     python scripts/phase4_deploy_endpoint.py --model qwen
 """
-import argparse, boto3, json, time
+import argparse, boto3, json, os, time
 from sagemaker.huggingface import HuggingFaceModel
 import sagemaker
 
 ROLE   = "arn:aws:iam::500330120558:role/cc-eval-sagemaker-role-us-east-1"
-REGION = "us-east-1"
+REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
 
 MODELS = {
     "llama": {
@@ -25,7 +25,9 @@ MODELS = {
 }
 
 def get_hf_token():
-    client = boto3.client("secretsmanager", region_name=REGION)
+    if os.environ.get("HF_TOKEN"):
+        return os.environ["HF_TOKEN"]
+    client = boto3.client("secretsmanager", region_name="us-east-1")  # secrets always in us-east-1
     secret = json.loads(client.get_secret_value(SecretId="cc-eval-hf-token")["SecretString"])
     return secret["HF_TOKEN"]
 

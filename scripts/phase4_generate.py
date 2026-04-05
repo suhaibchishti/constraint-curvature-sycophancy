@@ -9,7 +9,7 @@ Usage:
 import argparse, boto3, json, os, time
 from pathlib import Path
 
-REGION = "us-east-1"
+REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
 PROMPTS_PATH = "phase3/data/prompt_variants.jsonl"
 OUTPUT_DIR = "phase4/outputs"
 SYSTEM_PROMPT = "You are a helpful assistant."
