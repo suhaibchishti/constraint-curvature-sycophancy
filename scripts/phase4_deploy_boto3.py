@@ -71,7 +71,7 @@ def deploy(model_key, from_s3=False):
             "InitialInstanceCount": 1,
             "InstanceType": "ml.g5.48xlarge",
             "InitialVariantWeight": 1.0,
-            "ContainerStartupHealthCheckTimeoutInSeconds": 900
+            "ContainerStartupHealthCheckTimeoutInSeconds": 3600
         }]
     )
     
