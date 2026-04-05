@@ -10,8 +10,11 @@ Usage:
 import argparse, boto3, json, os
 from pathlib import Path
 
-BUCKET = "cc-eval-500330120558-us-east-1"
-REGION = "us-east-1"
+BUCKET_BY_REGION = {
+    "us-east-1": "cc-eval-500330120558-us-east-1",
+    "us-west-2": "sagemaker-us-west-2-500330120558",
+}
+REGION = "us-east-1"  # always download to us-east-1 first
 
 MODELS = {
     "qwen":  {"model_id": "Qwen/Qwen2.5-72B-Instruct",          "s3_prefix": "models/qwen2.5-72b"},
@@ -27,6 +30,23 @@ def get_hf_token():
     return secret["HF_TOKEN"]
 
 
+def sync_to_region(model_key, target_region):
+    """Copy weights from us-east-1 to another region's bucket via S3-to-S3."""
+    cfg = MODELS[model_key]
+    src_bucket = BUCKET_BY_REGION["us-east-1"]
+    dst_bucket = BUCKET_BY_REGION.get(target_region, f"sagemaker-{target_region}-500330120558")
+    src = f"s3://{src_bucket}/{cfg['s3_prefix']}/"
+    dst = f"s3://{dst_bucket}/{cfg['s3_prefix']}/"
+    print(f"Syncing {src} → {dst}")
+    import subprocess
+    subprocess.run([
+        "aws", "s3", "sync", src, dst,
+        "--source-region", "us-east-1",
+        "--region", target_region,
+    ], check=True)
+    print(f"✅ Sync complete: {dst}")
+
+
 def main(model_key):
     cfg = MODELS[model_key]
     token = get_hf_token()
@@ -36,6 +56,7 @@ def main(model_key):
 
     from huggingface_hub import list_repo_files, hf_hub_download
     s3 = boto3.client("s3", region_name=REGION)
+    bucket = BUCKET_BY_REGION[REGION]
 
     # Get list of files to download
     files = [
@@ -50,7 +71,7 @@ def main(model_key):
 
         # Skip if already uploaded
         try:
-            s3.head_object(Bucket=BUCKET, Key=s3_key)
+            s3.head_object(Bucket=bucket, Key=s3_key)
             print(f"  [{i+1}/{len(files)}] Skipping (already in S3): {filename}")
             continue
         except Exception:
@@ -64,13 +85,13 @@ def main(model_key):
         )
 
         # Upload to S3
-        s3.upload_file(local_file, BUCKET, s3_key)
+        s3.upload_file(local_file, bucket, s3_key)
         print(f"  [{i+1}/{len(files)}] Uploaded: {filename}")
 
         # Delete local copy to free space
         os.remove(local_file)
 
-    s3_uri = f"s3://{BUCKET}/{cfg['s3_prefix']}/"
+    s3_uri = f"s3://{bucket}/{cfg['s3_prefix']}/"
     print(f"\n✅ Done. Model at: {s3_uri}")
     print(f"Deploy with: python scripts/phase4_deploy_endpoint.py --model {model_key} --from-s3")
 
@@ -78,5 +99,12 @@ def main(model_key):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True, choices=["llama", "qwen"])
+    parser.add_argument("--sync-region", help="Optionally sync to another region (e.g. us-west-2)")
     args = parser.parse_args()
+    
+    # Always pull to us-east-1 first (primary region)
     main(args.model)
+    
+    # If requested, sync to the secondary region
+    if args.sync_region:
+        sync_to_region(args.model, args.sync_region)

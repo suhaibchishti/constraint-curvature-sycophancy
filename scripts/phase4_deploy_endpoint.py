@@ -13,16 +13,21 @@ import sagemaker
 ROLE   = "arn:aws:iam::500330120558:role/cc-eval-sagemaker-role-us-east-1"
 REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
 
+BUCKET_BY_REGION = {
+    "us-east-1": "cc-eval-500330120558-us-east-1",
+    "us-west-2": "sagemaker-us-west-2-500330120558",
+}
+
 MODELS = {
     "llama": {
-        "model_id":       "meta-llama/Llama-3.1-70B-Instruct",
-        "endpoint_name":  "phase4-llama-70b",
-        "s3_uri":         f"s3://cc-eval-500330120558-us-east-1/models/llama3.1-70b/",
+        "model_id":      "meta-llama/Llama-3.1-70B-Instruct",
+        "endpoint_name": "phase4-llama-70b",
+        "s3_prefix":     "models/llama3.1-70b",
     },
     "qwen": {
-        "model_id":       "Qwen/Qwen2.5-72B-Instruct",
-        "endpoint_name":  "phase4-qwen-72b",
-        "s3_uri":         f"s3://cc-eval-500330120558-us-east-1/models/qwen2.5-72b/",
+        "model_id":      "Qwen/Qwen2.5-72B-Instruct",
+        "endpoint_name": "phase4-qwen-72b",
+        "s3_prefix":     "models/qwen2.5-72b",
     },
 }
 
@@ -63,8 +68,10 @@ def deploy(model_key, from_s3=False):
     )
 
     if from_s3:
-        model_kwargs["model_data"] = cfg["s3_uri"]
-        print(f"Using S3 weights: {cfg['s3_uri']}")
+        bucket = BUCKET_BY_REGION.get(REGION, f"sagemaker-{REGION}-500330120558")
+        s3_uri = f"s3://{bucket}/{cfg['s3_prefix']}/"
+        model_kwargs["model_data"] = s3_uri
+        print(f"Using S3 weights: {s3_uri}")
     else:
         print(f"Downloading from HuggingFace (slow on fresh instance)")
 
