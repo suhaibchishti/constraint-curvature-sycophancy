@@ -46,6 +46,7 @@ def deploy(model_key):
         "MAX_TOTAL_TOKENS":           "2560",
         "MAX_BATCH_PREFILL_TOKENS":   "4096",
         "HUGGING_FACE_HUB_TOKEN":     token,
+        "TRUST_REMOTE_CODE":          "true",
     }
 
     model = HuggingFaceModel(
@@ -62,13 +63,19 @@ def deploy(model_key):
     print(f"Deploying {cfg['model_id']} → endpoint: {cfg['endpoint_name']}")
     print("This takes ~10-15 minutes...")
 
-    # Clean up any stale endpoint config from previous failed attempts
+    # Clean up any stale endpoint and config from previous failed attempts
     sm = boto3.client("sagemaker", region_name=REGION)
-    try:
-        sm.delete_endpoint_config(EndpointConfigName=cfg["endpoint_name"])
-        print(f"  Cleaned up stale endpoint config")
-    except sm.exceptions.ClientError:
-        pass  # didn't exist, that's fine
+    for delete_fn, name in [
+        (sm.delete_endpoint,        cfg["endpoint_name"]),
+        (sm.delete_endpoint_config, cfg["endpoint_name"]),
+    ]:
+        try:
+            delete_fn(**({
+                "EndpointName" if "endpoint_config" not in delete_fn.__name__ else "EndpointConfigName": name
+            }))
+            print(f"  Cleaned up stale {delete_fn.__name__.replace('delete_', '')}: {name}")
+        except Exception:
+            pass
 
     predictor = model.deploy(
         initial_instance_count=1,
