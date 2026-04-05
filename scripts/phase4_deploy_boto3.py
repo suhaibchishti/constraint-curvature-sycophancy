@@ -16,7 +16,8 @@ MODELS = {
 }
 
 def get_hf_token():
-    client = boto3.client("secretsmanager", region_name=REGION)
+    # Secret is always in us-east-1, regardless of where cluster is deployed
+    client = boto3.client("secretsmanager", region_name="us-east-1")
     return json.loads(client.get_secret_value(SecretId="cc-eval-hf-token")["SecretString"])["HF_TOKEN"]
 
 def deploy(model_key, from_s3=False):
