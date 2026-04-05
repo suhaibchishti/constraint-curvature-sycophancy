@@ -9,7 +9,6 @@ Usage:
 """
 import argparse, boto3, json, os
 from pathlib import Path
-from huggingface_hub import snapshot_download
 
 BUCKET = "cc-eval-500330120558-us-east-1"
 REGION = "us-east-1"
@@ -31,27 +30,45 @@ def get_hf_token():
 def main(model_key):
     cfg = MODELS[model_key]
     token = get_hf_token()
-    local_dir = f"/tmp/{model_key}_weights"
+    # Use SageMaker EBS volume as temp space — process one file at a time
+    local_dir = f"/home/ec2-user/SageMaker/{model_key}_weights"
+    os.makedirs(local_dir, exist_ok=True)
 
-    print(f"Downloading {cfg['model_id']} → {local_dir}")
-    local_path = snapshot_download(
-        cfg["model_id"],
-        local_dir=local_dir,
-        token=token,
-        ignore_patterns=["*.msgpack", "*.h5", "flax_model*", "tf_model*"],
-    )
-    print(f"Download complete: {local_path}")
-
+    from huggingface_hub import list_repo_files, hf_hub_download
     s3 = boto3.client("s3", region_name=REGION)
-    files = list(Path(local_path).rglob("*"))
-    files = [f for f in files if f.is_file()]
-    print(f"Uploading {len(files)} files to s3://{BUCKET}/{cfg['s3_prefix']}/")
 
-    for i, local_file in enumerate(files):
-        s3_key = f"{cfg['s3_prefix']}/{local_file.relative_to(local_path)}"
-        s3.upload_file(str(local_file), BUCKET, s3_key)
-        if (i + 1) % 5 == 0 or (i + 1) == len(files):
-            print(f"  {i+1}/{len(files)} uploaded")
+    # Get list of files to download
+    files = [
+        f for f in list_repo_files(cfg["model_id"], token=token)
+        if not any(f.endswith(ext) for ext in [".msgpack", ".h5"])
+        and not f.startswith("flax_model") and not f.startswith("tf_model")
+    ]
+    print(f"Found {len(files)} files to transfer for {cfg['model_id']}")
+
+    for i, filename in enumerate(files):
+        s3_key = f"{cfg['s3_prefix']}/{filename}"
+
+        # Skip if already uploaded
+        try:
+            s3.head_object(Bucket=BUCKET, Key=s3_key)
+            print(f"  [{i+1}/{len(files)}] Skipping (already in S3): {filename}")
+            continue
+        except Exception:
+            pass
+
+        # Download single file
+        local_file = hf_hub_download(
+            cfg["model_id"], filename,
+            local_dir=local_dir,
+            token=token,
+        )
+
+        # Upload to S3
+        s3.upload_file(local_file, BUCKET, s3_key)
+        print(f"  [{i+1}/{len(files)}] Uploaded: {filename}")
+
+        # Delete local copy to free space
+        os.remove(local_file)
 
     s3_uri = f"s3://{BUCKET}/{cfg['s3_prefix']}/"
     print(f"\n✅ Done. Model at: {s3_uri}")
