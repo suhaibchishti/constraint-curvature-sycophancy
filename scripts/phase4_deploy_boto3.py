@@ -28,9 +28,9 @@ def deploy(model_key, from_s3=False):
         "HF_MODEL_ID": cfg["model_id"],
         "HF_TASK": "text-generation",
         "SM_NUM_GPUS": "8",
-        "MAX_INPUT_LENGTH": "2048",
-        "MAX_TOTAL_TOKENS": "2560",
-        "MAX_BATCH_PREFILL_TOKENS": "4096",
+        "MAX_INPUT_LENGTH": "1024",
+        "MAX_TOTAL_TOKENS": "1536",
+        "MAX_BATCH_PREFILL_TOKENS": "1024",
         "HUGGING_FACE_HUB_TOKEN": get_hf_token(),
     }
     
