@@ -3,7 +3,7 @@ import argparse, boto3, json, os
 
 REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
 ROLE = "arn:aws:iam::500330120558:role/cc-eval-sagemaker-role-us-east-1"
-IMAGE_URI = f"763104351884.dkr.ecr.{REGION}.amazonaws.com/huggingface-pytorch-tgi-inference:2.2.0-tgi2.2.0-gpu-py310-cu122-ubuntu22.04"
+IMAGE_URI = f"763104351884.dkr.ecr.{REGION}.amazonaws.com/huggingface-pytorch-tgi-inference:2.3.0-tgi2.2.0-gpu-py310-cu121-ubuntu22.04-v2.0"
 
 BUCKET_BY_REGION = {
     "us-east-1": "cc-eval-500330120558-us-east-1",
