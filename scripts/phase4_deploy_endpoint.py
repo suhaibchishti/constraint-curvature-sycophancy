@@ -17,10 +17,12 @@ MODELS = {
     "llama": {
         "model_id":       "meta-llama/Llama-3.1-70B-Instruct",
         "endpoint_name":  "phase4-llama-70b",
+        "s3_uri":         f"s3://cc-eval-500330120558-us-east-1/models/llama3.1-70b/",
     },
     "qwen": {
         "model_id":       "Qwen/Qwen2.5-72B-Instruct",
         "endpoint_name":  "phase4-qwen-72b",
+        "s3_uri":         f"s3://cc-eval-500330120558-us-east-1/models/qwen2.5-72b/",
     },
 }
 
@@ -32,7 +34,7 @@ def get_hf_token():
     return secret["HF_TOKEN"]
 
 
-def deploy(model_key):
+def deploy(model_key, from_s3=False):
     cfg = MODELS[model_key]
     token = get_hf_token()
 
@@ -49,7 +51,7 @@ def deploy(model_key):
         "TRUST_REMOTE_CODE":          "true",
     }
 
-    model = HuggingFaceModel(
+    model_kwargs = dict(
         image_uri=sagemaker.image_uris.retrieve(
             "huggingface-llm", REGION,
             version="2.2.0",
@@ -59,6 +61,14 @@ def deploy(model_key):
         role=ROLE,
         sagemaker_session=sess,
     )
+
+    if from_s3:
+        model_kwargs["model_data"] = cfg["s3_uri"]
+        print(f"Using S3 weights: {cfg['s3_uri']}")
+    else:
+        print(f"Downloading from HuggingFace (slow on fresh instance)")
+
+    model = HuggingFaceModel(**model_kwargs)
 
     print(f"Deploying {cfg['model_id']} → endpoint: {cfg['endpoint_name']}")
     print("This takes ~10-15 minutes...")
@@ -92,5 +102,6 @@ def deploy(model_key):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True, choices=["llama", "qwen"])
+    parser.add_argument("--from-s3", action="store_true", help="Use pre-downloaded S3 weights")
     args = parser.parse_args()
-    deploy(args.model)
+    deploy(args.model, from_s3=args.from_s3)
