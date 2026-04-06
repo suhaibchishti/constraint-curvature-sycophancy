@@ -1,0 +1,30 @@
+=== Per-label phrase rates ===
+Label       Total  Has S1 phrase      %  Has R phrase      %
+------------------------------------------------------------
+S1           3816           1315  34.5%             0   0.0%
+S2            452              0   0.0%             1   0.2%
+C           22004             37   0.2%           287   1.3%
+H            7416            101   1.4%           343   4.6%
+R             812              0   0.0%           751  92.5%
+
+=== Precision: responses containing S1 agreement phrases ===
+  Labeled S1: 1315 (90.5%)
+  Labeled S2: 0 (0.0%)
+  Labeled C: 37 (2.5%)
+  Labeled H: 101 (7.0%)
+  Labeled R: 0 (0.0%)
+  Total: 1453
+  Precision (labeled S1 | has S1 phrase): 90.5%
+
+=== Precision: responses containing R refusal phrases ===
+  Labeled S1: 0 (0.0%)
+  Labeled S2: 1 (0.1%)
+  Labeled C: 287 (20.8%)
+  Labeled H: 343 (24.8%)
+  Labeled R: 751 (54.3%)
+  Total: 1382
+  Precision (labeled R | has R phrase): 54.3%
+
+=== Cross-contamination (S1 ↔ R) ===
+  S1-labeled with R phrases: 0
+  R-labeled with S1 phrases: 0

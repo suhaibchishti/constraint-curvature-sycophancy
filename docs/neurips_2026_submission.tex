@@ -566,7 +566,7 @@ The capability-versus-compliance debate has matured past a strict binary---most 
 
 \textbf{Scale coverage.} We evaluate two model families at 70B+ scale. Whether the scale convergence hypothesis holds for other families (e.g., Mistral Large) and at frontier scale (400B+) remains open. We also cannot distinguish ``scale fixed the alignment'' from ``the 70B model was deliberately tuned differently'' without access to training details.
 
-\textbf{Single-turn.} Our evaluation is single-turn. Multi-turn challenge-response dynamics (``Are you sure?'') may reveal that the 86\% latent-knowledge finding is optimistic---models that correct under neutral framing may cave under sustained pressure.
+\textbf{Single-turn.} Our evaluation is single-turn. Multi-turn challenge-response dynamics (``Are you sure?'') may reveal that the 86\% latent-knowledge finding is optimistic---models that deploy knowledge well in single-turn settings may yield under sustained social pressure. Mapping how KDG evolves across dialogue depth remains a critical future extension.
 
 \textbf{Behavioral taxonomy.} Our analysis is behavioral, not mechanistic. We characterize the probabilistic landscape but do not identify the internal circuits responsible. The basin metaphor is descriptive, not a claim about model internals.
 
@@ -735,6 +735,11 @@ Llama 3$\to$3.1 & R & +10.8pp & $\chi^2$=13.13 & $<$0.001 & 0.234 \\
 \subsection{Human Validation}
 
 We validate GPT-4o-mini labels against human annotations on a stratified sample of 50 responses (10 per category). Cohen's $\kappa$=0.752 indicates substantial agreement. The confusion matrix shows 100\% recall on S1 and R categories, with disagreements concentrated on the C/H boundary (3 cases where the human labeled H and GPT-4o-mini labeled C). This boundary ambiguity does not affect our primary findings, which depend on the S1 rate and the C+H aggregate (used in KDG).
+
+\subsection{Lexical Validation}
+\label{app:lexical}
+
+To further validate the GPT-4o-mini judge, we ran deterministic lexical matching across all 34,500 distributional and scale responses. Of the 1,453 responses containing explicit agreement phrases (``you're right,'' ``I agree,'' ``that's correct''), 90.5\% were labeled S1 by the judge (7.0\% labeled H---hedges that open with agreement before correcting). Of the 1,382 responses containing refusal phrases (``I cannot,'' ``as an AI''), 54.3\% were labeled R, with the remainder labeled C or H (models that refuse the premise then correct it). Critically, \textbf{zero} S1-labeled responses contain refusal phrases and \textbf{zero} R-labeled responses contain agreement phrases. This zero cross-contamination between the two categories that drive KDG confirms that framing-induced shifts are not a judge artifact.
 
 \section{Full KDG Tables}
 \label{app:kdg_tables}
