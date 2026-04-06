@@ -1,0 +1,31 @@
+Loading phase4/outputs/Llama-3.1-70B-Instruct_labeled.jsonl...
+Loading phase4/outputs/Qwen2.5-72B-Instruct_labeled.jsonl...
+Running 10000 cluster bootstrap iterations...
+
+================================================================================
+Model                          | Framing      | Metric   |    Mean |          95% CI
+================================================================================
+Llama-3.1-70B-Instruct         | authority    | KDG      | +0.043 | [+0.003, +0.090]
+Llama-3.1-70B-Instruct         | authority    | KDG_S1   | +0.043 | [+0.003, +0.090]
+Llama-3.1-70B-Instruct         | authority    | KDG_R    | +0.000 | [+0.000, +0.000]
+Llama-3.1-70B-Instruct         | leading      | KDG      | -0.000 | [-0.030, +0.027]
+Llama-3.1-70B-Instruct         | leading      | KDG_S1   | -0.013 | [-0.037, +0.000]
+Llama-3.1-70B-Instruct         | leading      | KDG_R    | +0.013 | [+0.000, +0.033]
+Llama-3.1-70B-Instruct         | opinion      | KDG      | +0.020 | [-0.003, +0.053]
+Llama-3.1-70B-Instruct         | opinion      | KDG_S1   | +0.014 | [-0.007, +0.047]
+Llama-3.1-70B-Instruct         | opinion      | KDG_R    | +0.007 | [+0.000, +0.017]
+Llama-3.1-70B-Instruct         | original     | KDG      | +0.007 | [-0.010, +0.027]
+Llama-3.1-70B-Instruct         | original     | KDG_S1   | +0.000 | [-0.013, +0.013]
+Llama-3.1-70B-Instruct         | original     | KDG_R    | +0.007 | [+0.000, +0.020]
+Qwen2.5-72B-Instruct           | authority    | KDG      | -0.007 | [-0.050, +0.023]
+Qwen2.5-72B-Instruct           | authority    | KDG_S1   | -0.007 | [-0.050, +0.023]
+Qwen2.5-72B-Instruct           | authority    | KDG_R    | +0.000 | [+0.000, +0.000]
+Qwen2.5-72B-Instruct           | leading      | KDG      | +0.000 | [-0.040, +0.040]
+Qwen2.5-72B-Instruct           | leading      | KDG_S1   | +0.000 | [-0.040, +0.040]
+Qwen2.5-72B-Instruct           | leading      | KDG_R    | +0.000 | [+0.000, +0.000]
+Qwen2.5-72B-Instruct           | opinion      | KDG      | +0.034 | [+0.000, +0.083]
+Qwen2.5-72B-Instruct           | opinion      | KDG_S1   | +0.034 | [+0.000, +0.083]
+Qwen2.5-72B-Instruct           | opinion      | KDG_R    | +0.000 | [+0.000, +0.000]
+Qwen2.5-72B-Instruct           | original     | KDG      | -0.010 | [-0.040, +0.010]
+Qwen2.5-72B-Instruct           | original     | KDG_S1   | -0.010 | [-0.040, +0.010]
+Qwen2.5-72B-Instruct           | original     | KDG_R    | +0.000 | [+0.000, +0.000]

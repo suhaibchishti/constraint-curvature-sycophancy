@@ -186,7 +186,7 @@ Critically, KDG conflates two distinct failure modes: sycophancy and refusal. We
     \text{KDG}_{S1}(m, f) &= P_m(S1 \mid f) - P_m(S1 \mid \text{neutral}) \\
     \text{KDG}_{R}(m, f) &= P_m(R \mid f) - P_m(R \mid \text{neutral})
 \end{align}
-such that $\text{KDG} \approx \text{KDG}_{S1} + \text{KDG}_{R} + \epsilon$. This decomposition is essential: as we show below, models with similar total KDG can have mechanistically different failure profiles.
+such that $\text{KDG} \approx \text{KDG}_{S1} + \text{KDG}_{R} + \epsilon$. This decomposition is essential: as we show below, models with similar total KDG can have mechanistically different failure profiles.\footnote{All KDG values are estimated from 500 responses per cell (50 facts $\times$ 10 samples). Cluster bootstrap CIs (resampling facts, 10{,}000 iterations) yield SE$<$0.07 for all conditions; the high-KDG conditions in Table~\ref{tab:kdg_decomp} have CIs that exclude zero (e.g., Mistral v0.1 authority: $+$0.61 [$+$0.50, $+$0.71]; Llama~3.1 authority: $+$0.31 [$+$0.17, $+$0.44]).}
 
 % ============================================================================
 % 4. RESULTS I: SINGLE-SHOT EVALUATION
