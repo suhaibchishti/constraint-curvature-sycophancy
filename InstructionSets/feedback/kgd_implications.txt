@@ -1,0 +1,33 @@
+You can't distinguish "scale fixed the over-constraint" from "Meta deliberately tuned the 70B model differently" without 
+access to the training details. This is an honest limitation and worth stating in the paper.
+
+At 70B, the refusal basin has collapsed to a narrow, domain-specific safety response (medical misinformation only), while the
+sycophancy basin persists but is very shallow (mostly T=0.7, authority framing). The 8B model's broad constraint-based 
+alignment has been replaced by something closer to calibration-based alignment with a targeted safety layer for genuinely 
+dangerous content. That's a meaningful qualitative shift, not just a quantitative reduction.
+
+our paper can legitimately say: "small-scale behavioral evaluation with KDG can characterize alignment strategy (calibration
+-based vs constraint-based) without access to weights, which has implications for model auditing and evaluation efficiency."
+
+Both are RLHF, same architecture, different reward model design choices. The behavioral difference you measure with KDG is a 
+direct readout of those training choices baked into the weights.
+
+This is actually worth adding to your Discussion as a forward-looking paragraph — "KDG as a scalable alignment audit tool." 
+It's a concrete practical implication that reviewers will find compelling, and it positions the paper beyond just a behavioral analysis toward a methodology contribution.
+
+For KDG as a metric:
+A single aggregate KDG number masks domain heterogeneity. A model could have KDG=0.05 overall but KDG=0.40 in the health 
+domain and KDG=0.00 in history/geography. Your current paper reports domain-level S1 rates (§3.3) but not domain-level KDG. 
+The Phase 4 data gives you the opportunity to compute domain-specific KDG for the first time — and the Llama 70B result would
+show a striking pattern: near-zero KDG_S1 everywhere, but elevated KDG_R specifically in health.
+
+For the alignment interpretation:
+The 70B model appears to have learned a more nuanced alignment strategy than 8B — it corrects false premises in most domains 
+(calibration-based) but still refuses in health/medical (constraint-based). This is arguably the right behavior: "vaccines 
+cause autism" is genuinely dangerous misinformation, not just a factual error. The 8B model over-applied the constraint 
+mechanism broadly; the 70B model applies it selectively.
+
+For the paper:
+This is a new finding worth adding to the scale section. The headline isn't just "KDG decreases with scale" — it's "alignment
+strategy becomes more domain-appropriate with scale: constraint-based behavior narrows to genuinely high-risk domains while 
+calibration-based behavior expands to cover the rest." That's a more nuanced and interesting claim than a simple scaling law.
