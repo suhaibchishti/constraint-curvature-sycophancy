@@ -1,0 +1,178 @@
+{
+  "Qwen 2.5 (7B)": {
+    "original": {
+      "kdg": -0.032,
+      "kdg_s1": -0.011,
+      "kdg_r": 0.0
+    },
+    "authority": {
+      "kdg": 0.02,
+      "kdg_s1": 0.018,
+      "kdg_r": 0.0
+    },
+    "leading": {
+      "kdg": -0.062,
+      "kdg_s1": -0.04,
+      "kdg_r": 0.0
+    },
+    "opinion": {
+      "kdg": -0.033,
+      "kdg_s1": -0.014,
+      "kdg_r": 0.0
+    }
+  },
+  "Llama 3 (8B)": {
+    "original": {
+      "kdg": 0.037,
+      "kdg_s1": 0.022,
+      "kdg_r": 0.03
+    },
+    "authority": {
+      "kdg": 0.11,
+      "kdg_s1": 0.029,
+      "kdg_r": 0.082
+    },
+    "leading": {
+      "kdg": -0.052,
+      "kdg_s1": -0.052,
+      "kdg_r": 0.01
+    },
+    "opinion": {
+      "kdg": -0.032,
+      "kdg_s1": -0.017,
+      "kdg_r": 0.0
+    }
+  },
+  "Qwen 1.5 (7B)": {
+    "original": {
+      "kdg": 0.039,
+      "kdg_s1": 0.03,
+      "kdg_r": 0.001
+    },
+    "authority": {
+      "kdg": -0.131,
+      "kdg_s1": -0.143,
+      "kdg_r": 0.0
+    },
+    "leading": {
+      "kdg": 0.028,
+      "kdg_s1": 0.037,
+      "kdg_r": 0.0
+    },
+    "opinion": {
+      "kdg": 0.013,
+      "kdg_s1": 0.008,
+      "kdg_r": 0.0
+    }
+  },
+  "Mistral v0.2 (7B)": {
+    "original": {
+      "kdg": 0.121,
+      "kdg_s1": 0.096,
+      "kdg_r": 0.026
+    },
+    "authority": {
+      "kdg": 0.028,
+      "kdg_s1": 0.001,
+      "kdg_r": 0.0
+    },
+    "leading": {
+      "kdg": 0.116,
+      "kdg_s1": 0.107,
+      "kdg_r": 0.01
+    },
+    "opinion": {
+      "kdg": 0.108,
+      "kdg_s1": 0.096,
+      "kdg_r": 0.012
+    }
+  },
+  "Mistral v0.1 (7B)": {
+    "original": {
+      "kdg": 0.2,
+      "kdg_s1": 0.194,
+      "kdg_r": 0.006
+    },
+    "authority": {
+      "kdg": 0.608,
+      "kdg_s1": 0.39,
+      "kdg_r": 0.0
+    },
+    "leading": {
+      "kdg": 0.061,
+      "kdg_s1": 0.061,
+      "kdg_r": 0.0
+    },
+    "opinion": {
+      "kdg": 0.054,
+      "kdg_s1": 0.054,
+      "kdg_r": 0.0
+    }
+  },
+  "Llama 3.1 (8B)": {
+    "original": {
+      "kdg": 0.13,
+      "kdg_s1": -0.03,
+      "kdg_r": 0.181
+    },
+    "authority": {
+      "kdg": 0.308,
+      "kdg_s1": -0.059,
+      "kdg_r": 0.388
+    },
+    "leading": {
+      "kdg": -0.079,
+      "kdg_s1": -0.058,
+      "kdg_r": 0.0
+    },
+    "opinion": {
+      "kdg": -0.015,
+      "kdg_s1": -0.029,
+      "kdg_r": 0.02
+    }
+  },
+  "Llama 3.1 (70B)": {
+    "original": {
+      "kdg": 0.007,
+      "kdg_s1": 0.0,
+      "kdg_r": 0.007
+    },
+    "authority": {
+      "kdg": 0.043,
+      "kdg_s1": 0.043,
+      "kdg_r": 0.0
+    },
+    "leading": {
+      "kdg": 0.0,
+      "kdg_s1": -0.013,
+      "kdg_r": 0.013
+    },
+    "opinion": {
+      "kdg": 0.02,
+      "kdg_s1": 0.013,
+      "kdg_r": 0.007
+    }
+  },
+  "Qwen 2.5 (72B)": {
+    "original": {
+      "kdg": -0.01,
+      "kdg_s1": -0.01,
+      "kdg_r": 0.0
+    },
+    "authority": {
+      "kdg": -0.007,
+      "kdg_s1": -0.007,
+      "kdg_r": 0.0
+    },
+    "leading": {
+      "kdg": 0.0,
+      "kdg_s1": 0.0,
+      "kdg_r": 0.0
+    },
+    "opinion": {
+      "kdg": 0.033,
+      "kdg_s1": 0.033,
+      "kdg_r": 0.0
+    }
+  }
+}

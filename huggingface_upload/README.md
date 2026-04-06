@@ -16,11 +16,11 @@ size_categories:
 - 10K<n<100K
 ---
 
-# Framing-Induced Sycophancy: 35,076 Labeled Responses
+# Framing-Induced Sycophancy: 38,076 Labeled Responses
 
 ## Dataset Description
 
-This dataset contains 35,076 labeled model responses supporting the paper "Framing-Induced Sycophancy in Large Language Models: A Distributional Analysis Across Three Model Families" (NeurIPS 2026 submission). It includes single-shot evaluation (3,000), framing ablation (576), and distributional analysis across 5 framing conditions and 3 temperatures (31,500).
+This dataset contains 38,076 labeled model responses supporting the paper "Framing-Induced Sycophancy in Large Language Models: A Distributional Analysis Across Three Model Families" (NeurIPS 2026 submission). It includes single-shot evaluation (3,000), framing ablation (576), distributional analysis across 5 framing conditions and 3 temperatures (31,500), and a 70B+ scale extension (3,000).
 
 ### Summary
 
@@ -28,18 +28,21 @@ This dataset contains 35,076 labeled model responses supporting the paper "Frami
 |-----------|---|-------------|
 | Single-shot evaluation | 3,000 | 500 false-premise prompts × 6 models (§3) |
 | Framing ablation | 576 | 96 prompts × 6 models, neutral rephrasing (§3.4) |
-| Distributional analysis | 31,500 | 50 facts × 5 framings × 6 models × 3 temps × 10 samples (§4) |
+| Distributional analysis | 31,500 | 50 facts × 5 framings × 6 models × 3 temps × 10 samples (§5) |
+| Scale extension (70B+) | 3,000 | 50 facts × 5 framings × 2 models × 2 temps × 5 samples (§7) |
 
-- **Models:** Mistral v0.1/v0.2, Llama 3/3.1, Qwen 1.5/2.5 (all 7–8B, fp16)
+- **Models (7–8B):** Mistral v0.1/v0.2, Llama 3/3.1, Qwen 1.5/2.5 (all fp16)
+- **Models (70B+):** Llama 3.1 70B, Qwen 2.5 72B (fp16, SageMaker TGI)
 - **Labeling:** GPT-4o-mini (κ=0.752 vs human, 100% S1/R recall)
 - **Taxonomy:** S1 (sycophantic agreement), S2 (confabulation), C (correct), H (hedge), R (refusal)
 
 ### Key Findings
 
 - **86% of sycophancy involves latent knowledge** (N=135 ablation pairs, dual-judge validated)
-- **KDG metric:** Mistral v0.1 authority KDG=0.61 (S1-driven) vs Llama 3.1 authority KDG=0.31 (R-driven)
+- **KDG metric:** Mistral v0.1 authority KDG=0.61 (S1-driven) vs Llama 3.1 8B authority KDG=0.31 (R-driven)
 - **Basin escape:** 37% of T=0 sycophantic responses escape at T=0.7
-- **Sharma boundary condition:** Opinion framing increases S1 in Mistral (+5–10pp) but decreases it in Llama/Qwen 2.5 (−1 to −3pp)
+- **Scale convergence:** At 70B+, KDG→0 (Qwen 72B authority: −0.007), refusal basins evaporate (Llama 70B R: 0.5%)
+- **Diplomatic sycophancy:** Opinion framing reverses at scale — decreases S1 at 7B (−1.4pp) but increases it at 72B (+3.3pp)
 
 ## Files
 
@@ -69,6 +72,16 @@ This dataset contains 35,076 labeled model responses supporting the paper "Frami
 | `phase3_distributional/*_labeled.jsonl` | 31,500 labeled responses (5,250/model) |
 | `phase3_distributional/kdg_results.json` | 3,600 KDG entries (model × fact × framing × temp) |
 | `phase3_distributional/entropy_results.json` | 4,500 entropy entries (model × fact × framing × temp) |
+
+### Phase 4: Scale Extension — 70B+ (§7)
+
+| File | Description |
+|------|-------------|
+| `phase4_scale/Llama-3.1-70B-Instruct_completions.jsonl` | 1,500 raw completions (Llama 3.1 70B) |
+| `phase4_scale/Llama-3.1-70B-Instruct_labeled.jsonl` | 1,500 labeled responses (Llama 3.1 70B) |
+| `phase4_scale/Qwen2.5-72B-Instruct_completions.jsonl` | 1,500 raw completions (Qwen 2.5 72B) |
+| `phase4_scale/Qwen2.5-72B-Instruct_labeled.jsonl` | 1,500 labeled responses (Qwen 2.5 72B) |
+| `phase4_scale/phase4_kdg_comparison.json` | KDG decomposition comparison (7B vs 70B) |
 
 ### Archived: NF4 Quantized (Appendix E)
 
