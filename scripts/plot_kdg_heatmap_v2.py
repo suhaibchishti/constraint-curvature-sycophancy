@@ -1,9 +1,18 @@
-"""Generate two-panel KDG heatmap using all-temperature aggregation."""
+"""Generate two-panel KDG heatmap with 7-8B and 70B+ models."""
 import json, glob, numpy as np, matplotlib.pyplot as plt
 from collections import defaultdict
 
 counts = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+
+# Phase 3 (7-8B)
 for f in sorted(glob.glob('huggingface_upload/phase3_distributional/*_labeled.jsonl')):
+    for line in open(f):
+        d = json.loads(line)
+        model = d['model'].split('/')[-1]
+        counts[model][d['framing']][d['gpt4o_label']] += 1
+
+# Phase 4 (70B+)
+for f in sorted(glob.glob('phase4/outputs/*_labeled.jsonl')):
     for line in open(f):
         d = json.loads(line)
         model = d['model'].split('/')[-1]
@@ -12,9 +21,15 @@ for f in sorted(glob.glob('huggingface_upload/phase3_distributional/*_labeled.js
 model_order = [
     'Mistral-7B-Instruct-v0.1', 'Mistral-7B-Instruct-v0.2',
     'Meta-Llama-3-8B-Instruct', 'Llama-3.1-8B-Instruct',
-    'Qwen1.5-7B-Chat', 'Qwen2.5-7B-Instruct'
+    'Qwen1.5-7B-Chat', 'Qwen2.5-7B-Instruct',
+    'Llama-3.1-70B-Instruct', 'Qwen2.5-72B-Instruct',
 ]
-model_labels = ['Mistral v0.1', 'Mistral v0.2', 'Llama 3', 'Llama 3.1', 'Qwen 1.5', 'Qwen 2.5']
+model_labels = [
+    'Mistral v0.1 (7B)', 'Mistral v0.2 (7B)',
+    'Llama 3 (8B)', 'Llama 3.1 (8B)',
+    'Qwen 1.5 (7B)', 'Qwen 2.5 (7B)',
+    'Llama 3.1 (70B)', 'Qwen 2.5 (72B)',
+]
 framings = ['original', 'authority', 'leading', 'opinion']
 
 def rate(model, framing, label):
@@ -32,7 +47,7 @@ for i, m in enumerate(model_order):
         kdg_s1[i, j] = rate(m, fr, 'S1') - s1_n
         kdg_r[i, j] = rate(m, fr, 'R') - r_n
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5), sharey=True)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 6), sharey=True)
 vmax = max(abs(kdg_s1).max(), abs(kdg_r).max())
 vmin = -vmax
 
@@ -46,10 +61,13 @@ for ax, data, title in [(ax1, kdg_s1, r'KDG$_{S1}$ (Sycophancy Shift)'),
         for j in range(len(framings)):
             val = data[i, j]
             color = 'white' if abs(val) > vmax * 0.6 else 'black'
-            ax.text(j, i, f'{val:+.2f}', ha='center', va='center', fontsize=9, color=color)
+            ax.text(j, i, f'{val:+.2f}', ha='center', va='center', fontsize=8, color=color)
+
+    # Add horizontal line separating 7-8B from 70B+
+    ax.axhline(y=5.5, color='white', linewidth=2, linestyle='--')
 
 ax1.set_yticks(range(len(model_labels)))
-ax1.set_yticklabels(model_labels, fontsize=10)
+ax1.set_yticklabels(model_labels, fontsize=9)
 
 fig.subplots_adjust(right=0.88, wspace=0.08)
 cbar_ax = fig.add_axes([0.90, 0.15, 0.02, 0.7])
@@ -58,6 +76,7 @@ fig.colorbar(im, cax=cbar_ax, label='Δ Rate (framed − neutral)')
 plt.savefig('docs/figures/kdg_heatmap.png', dpi=200, bbox_inches='tight')
 print('Saved docs/figures/kdg_heatmap.png')
 
-# Print key values for verification
-print(f"\nMistral v0.1 authority: KDG_S1={kdg_s1[0,1]:+.4f}  KDG_R={kdg_r[0,1]:+.4f}")
-print(f"Llama 3.1 authority:   KDG_S1={kdg_s1[3,1]:+.4f}  KDG_R={kdg_r[3,1]:+.4f}")
+for i, ml in enumerate(model_labels):
+    for j, fr in enumerate(framings):
+        if abs(kdg_s1[i,j]) > 0.01 or abs(kdg_r[i,j]) > 0.01:
+            print(f"  {ml:22s} {fr:12s}: KDG_S1={kdg_s1[i,j]:+.3f}  KDG_R={kdg_r[i,j]:+.3f}")

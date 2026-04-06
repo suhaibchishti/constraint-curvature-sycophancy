@@ -296,7 +296,7 @@ The 19 WRONG cases were dual-judged by GPT-4o, with 83\% agreement (19 confirmed
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/kdg_heatmap.png}
-    \caption{Knowledge Deployment Gap decomposed into its two failure-mode components: sycophancy shift (KDG$_{S1}$, left heatmap) and refusal shift (KDG$_R$, right heatmap). Cell values show $\Delta$rate (framed $-$ neutral). Key comparison: Mistral v0.1 under authority framing is sycophancy-driven (KDG$_{S1}$=+0.39, KDG$_R$=+0.00), while Llama 3.1 under authority is refusal-driven (KDG$_R$=+0.39, KDG$_{S1}$=$-$0.06)---same headline KDG magnitude, mechanistically opposite failures. Full decomposition in Table~\ref{tab:kdg_decomp}.}
+    \caption{Knowledge Deployment Gap decomposed into sycophancy shift (KDG$_{S1}$, left) and refusal shift (KDG$_R$, right) across 7--8B and 70B+ models. Dashed line separates scales. At 7--8B, Mistral v0.1 authority is sycophancy-driven (KDG$_{S1}$=+0.39) while Llama~3.1~8B is refusal-driven (KDG$_R$=+0.39)---mechanistically opposite failures. At 70B+, both rows are near-zero: the chaotic failure landscape of small models converges to a flat landscape at scale. Full decomposition in Table~\ref{tab:kdg_decomp}.}
     \label{fig:kdg_heatmap}
 \end{figure}
 
@@ -363,7 +363,7 @@ Each model exhibits a distinct framing sensitivity profile. Mistral v0.1 is maxi
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/sharma_opinion_effect.png}
-    \caption{Opinion framing effect on S1 rate ($\Delta$S1 = opinion $-$ neutral). Sharma et al.'s prediction (opinion increases sycophancy) holds for both Mistral models (v0.1: +5.4\,pp, v0.2: +9.6\,pp) but \emph{reverses} for Llama~3 ($-$1.7\,pp), Llama~3.1 ($-$2.9\,pp), and Qwen~2.5 ($-$1.4\,pp). This identifies a boundary condition: opinion framing amplifies sycophancy only in models whose alignment prioritized agreeableness.}
+    \caption{Opinion framing effect on S1 rate ($\Delta$S1 = opinion $-$ neutral) across scales. At 7--8B, Sharma et al.'s prediction (opinion increases sycophancy) holds for Mistral but \emph{reverses} for Llama and Qwen~2.5. At 70B+, the effect re-emerges for Qwen~2.5~72B ($+$3.3\,pp)---a scale-emergent ``diplomatic sycophancy'' where the model yields to personal beliefs while rejecting false authority (\S\ref{sec:diplomatic}).}
     \label{fig:sharma}
 \end{figure}
 
