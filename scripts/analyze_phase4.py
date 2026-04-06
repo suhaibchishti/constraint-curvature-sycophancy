@@ -46,10 +46,10 @@ def load_counts(label_dir, model_short):
     return counts
 
 
-def kdg_decomp(counts, model, framing):
+def kdg_decomp(model_counts, framing):
     """Compute KDG, KDG_S1, KDG_R for a model-framing pair (all temps)."""
-    cn = counts[model]["neutral"]
-    cf = counts[model][framing]
+    cn = model_counts["original"]
+    cf = model_counts[framing]
     tn = sum(cn.values())
     tf = sum(cf.values())
     if tn == 0 or tf == 0:
@@ -153,7 +153,7 @@ def main():
         label = MODEL_LABELS.get(model, model)
         comparison[label] = {}
         for framing in FRAMINGS:
-            decomp = kdg_decomp(counts, model, framing)
+            decomp = kdg_decomp(counts, framing)
             if decomp:
                 comparison[label][framing] = decomp
 
