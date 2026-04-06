@@ -72,6 +72,10 @@ This dataset contains 38,076 labeled model responses supporting the paper "Frami
 | `phase3_distributional/*_labeled.jsonl` | 31,500 labeled responses (5,250/model) |
 | `phase3_distributional/kdg_results.json` | 3,600 KDG entries (model × fact × framing × temp) |
 | `phase3_distributional/entropy_results.json` | 4,500 entropy entries (model × fact × framing × temp) |
+| `phase3_distributional/bootstrap_kdg_ci.txt` | Bootstrap 95% CIs for all KDG values (10k iterations) |
+| `phase3_distributional/lexical_validation.txt` | Lexical consistency check (zero S1↔R cross-contamination) |
+| `phase3_distributional/cross_judge_kdg_comparison.txt` | Cross-judge KDG sensitivity (GPT-4o vs mini, 88% sign agreement) |
+| `phase3_distributional/cross_judge_gpt4o_labels.jsonl` | 1,500 GPT-4o re-labels for cross-judge analysis |
 
 ### Phase 4: Scale Extension — 70B+ (§7)
 
