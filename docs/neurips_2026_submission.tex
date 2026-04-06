@@ -179,7 +179,7 @@ We define the \emph{Knowledge Deployment Gap} as:
 \begin{equation}
     \text{KDG}(m, f) = P_m(C \cup H \mid \text{neutral}) - P_m(C \cup H \mid f)
 \end{equation}
-where $m$ is a model, $f$ is a framing condition, and $C$ (Correct) and $H$ (Hedge) are the taxonomy categories defined in Table~\ref{tab:taxonomy}. We count $H$ as knowledge at least partially deployed: the model demonstrates awareness of the correct answer even if it does not fully commit to the correction. Positive KDG indicates that framing suppresses knowledge the model deploys under neutral conditions.
+where $m$ is a model, $f$ is a framing condition, and $C$ (Correct) and $H$ (Hedge) are the taxonomy categories defined in Table~\ref{tab:taxonomy}. We count $H$ as knowledge at least partially deployed: the model demonstrates awareness of the correct answer even if it does not fully commit to the correction, while recognizing its role as a probabilistic transition state in the basin analysis (\S\ref{sec:temperature}). Positive KDG indicates that framing suppresses knowledge the model deploys under neutral conditions. KDG should be interpreted as a framing-sensitivity metric---a behavioral proxy for knowledge suppression---rather than an absolute measure of internal knowledge state.
 
 Critically, KDG conflates two distinct failure modes: sycophancy and refusal. We decompose:
 \begin{align}
@@ -334,7 +334,7 @@ Three findings emerge:
 
 \textbf{Same KDG, different mechanisms.} Llama~3.1 under authority shows KDG=0.31, superficially comparable to Mistral v0.1's original-framing KDG of 0.22. But the decomposition reveals opposite mechanisms: Llama~3.1's suppression is entirely refusal-driven (KDG$_R$=+0.39, KDG$_{S1}$=$-$0.06). The model's safety classifier cannot distinguish ``authority-framed false premise needing correction'' from ``authority-framed harmful content needing refusal.'' Without the S1/R decomposition, these mechanistically different failures would appear equivalent.
 
-\textbf{Alignment reduces KDG.} Mistral v0.1$\to$v0.2 reduces authority KDG dramatically. Qwen~2.5 achieves near-zero KDG across all framings---the most robust model in our evaluation.
+\textbf{Alignment reduces KDG.} Mistral v0.1$\to$v0.2 reduces authority KDG dramatically. Qwen~2.5 achieves near-zero KDG across all framings---the most robust model in our evaluation. Notably, KDG produces opposite signs for different models under the same framing condition (e.g., Mistral v0.1 positive, Qwen~1.5 negative under authority), ruling out the possibility that KDG merely reflects prompt-difficulty differences between neutral and framed conditions.
 
 \subsection{Framing Sensitivity Profiles}
 
