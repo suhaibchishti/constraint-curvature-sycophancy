@@ -48,7 +48,8 @@ def load_counts(label_dir, model_short):
 
 def kdg_decomp(model_counts, framing):
     """Compute KDG, KDG_S1, KDG_R for a model-framing pair (all temps)."""
-    cn = model_counts["original"]
+    baseline_key = "neutral" if "neutral" in model_counts and sum(model_counts["neutral"].values()) > 0 else "original"
+    cn = model_counts[baseline_key]
     cf = model_counts[framing]
     tn = sum(cn.values())
     tf = sum(cf.values())

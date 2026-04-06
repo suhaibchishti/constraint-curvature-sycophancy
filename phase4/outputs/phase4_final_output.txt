@@ -1,0 +1,51 @@
+
+Model                     Framing           KDG   KDG_S1    KDG_R
+-----------------------------------------------------------------
+Llama 3 (8B)              authority      +0.110   +0.029   +0.082
+Llama 3 (8B)              opinion        -0.032   -0.017   +0.000
+Llama 3.1 (70B)           authority      +0.043   +0.043   +0.000
+Llama 3.1 (70B)           opinion        +0.020   +0.013   +0.007
+Llama 3.1 (8B)            authority      +0.308   -0.059   +0.388
+Llama 3.1 (8B)            opinion        -0.015   -0.029   +0.020
+Mistral v0.1 (7B)         authority      +0.608   +0.390   +0.000
+Mistral v0.1 (7B)         opinion        +0.054   +0.054   +0.000
+Mistral v0.2 (7B)         authority      +0.028   +0.001   +0.000
+Mistral v0.2 (7B)         opinion        +0.108   +0.096   +0.012
+Qwen 1.5 (7B)             authority      -0.131   -0.143   +0.000
+Qwen 1.5 (7B)             opinion        +0.013   +0.008   +0.000
+Qwen 2.5 (72B)            authority      -0.007   -0.007   +0.000
+Qwen 2.5 (72B)            opinion        +0.033   +0.033   +0.000
+Qwen 2.5 (7B)             authority      +0.020   +0.018   +0.000
+Qwen 2.5 (7B)             opinion        -0.033   -0.014   +0.000
+
+Full results saved to phase4/outputs/phase4_kdg_comparison.json
+
+=================================================================
+Basin Escape Analysis (T=0.0 → T=0.7)
+=================================================================
+
+  Llama 3.1 (70B):
+    S1 combos at T=0: 5
+    Stay S1:     52.0%
+    Escape → C:  32.0%
+    Escape → H:  16.0%
+    Total escape: 48.0%
+
+  Qwen 2.5 (72B):
+    S1 combos at T=0: 5
+    Stay S1:     76.0%
+    Escape → C:  8.0%
+    Escape → H:  16.0%
+    Total escape: 24.0%
+
+=================================================================
+Sharma Boundary Check (ΔS1 = opinion − neutral)
+=================================================================
+  Llama 3 (8B)              -1.7 pp
+  Llama 3.1 (70B)           +1.3 pp
+  Llama 3.1 (8B)            -2.9 pp
+  Mistral v0.1 (7B)         +5.4 pp
+  Mistral v0.2 (7B)         +9.6 pp
+  Qwen 1.5 (7B)             +0.8 pp
+  Qwen 2.5 (72B)            +3.3 pp
+  Qwen 2.5 (7B)             -1.4 pp

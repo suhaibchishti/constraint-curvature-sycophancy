@@ -80,9 +80,9 @@ We show that these accounts are not competing---they describe a \emph{mixture}, 
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Sycophancy mechanisms.} \citet{sharma2024towards} demonstrated that preference model bias causally drives sycophancy, with ``I believe'' opinion framing increasing agreement rates. \citet{shapira2025rlhf} showed RLHF causally amplifies sycophancy via reward covariance. At the representation level, \citet{wang2024knowledge} found late-layer knowledge override in sycophantic responses, and \citet{vennemeyer2025syceval} identified distinct linear directions for agreement versus praise sycophancy. \citet{chen2025overalignment} documented overalignment in frontier models, finding that sycophancy and over-refusal co-occur as complementary failure modes---consistent with our Llama~3.1 refusal basin finding at 7--8B scale. Our work bridges these mechanistic findings with scalable behavioral measurement: the KDG metric quantifies the knowledge suppression these studies identify without requiring access to model internals.
+\paragraph{Sycophancy mechanisms.} \citet{sharma2024towards} demonstrated that preference model bias causally drives sycophancy, with ``I believe'' opinion framing increasing agreement rates. \citet{shapira2025rlhf} showed RLHF causally amplifies sycophancy via reward covariance, a structural vulnerability catalogued by \citet{casper2023open}, who identified sycophancy as a predictable consequence of RLHF's optimization pressure---human evaluators' preference for agreeable outputs creates reward incentives that can override truthfulness. At the representation level, \citet{wang2024knowledge} found late-layer knowledge override in sycophantic responses, and \citet{vennemeyer2025syceval} identified distinct linear directions for agreement versus praise sycophancy. \citet{wangk2025truth} confirmed via activation patching that first-person opinion statements produce stronger representational overrides than authority framing---authority is not encoded internally, suggesting that authority-driven sycophancy (our ``triple threat,'' \S\ref{sec:framing_profiles}) operates through a different mechanism than opinion-driven sycophancy. \citet{chen2025overalignment} documented overalignment in frontier models, finding that sycophancy and over-refusal co-occur as complementary failure modes---consistent with our Llama~3.1 refusal basin finding at 7--8B scale. \citet{cheng2025elephant} demonstrated that LLMs preserve user face at rates 45\,pp higher than humans, framing this as ``social sycophancy''---a face-preservation mechanism consistent with the diplomatic sycophancy we observe at 72B scale (\S\ref{sec:diplomatic}). Our work bridges these mechanistic findings with scalable behavioral measurement: the KDG metric quantifies the knowledge suppression these studies identify without requiring access to model internals.
 
-\paragraph{Sycophancy evaluation.} \citet{perez2022discovering} first documented opinion agreement in LLMs. \citet{celebi2025parrot} introduced the PARROT benchmark using neutral-versus-framed MMLU comparisons, and \citet{dubois2024length} identified input framing as a causal driver of evaluation artifacts. Our distributional design parallels \citet{celebi2025parrot} but operates at larger scale (31,500 responses) with KDG quantification and temperature-based probabilistic analysis.
+\paragraph{Sycophancy evaluation.} \citet{perez2022discovering} first documented opinion agreement in LLMs. \citet{wei2023simple} showed that both model scaling and instruction tuning increase sycophancy on PaLM (up to 540B), and that models agree with objectively incorrect statements they can answer correctly in isolation---the same deployment failure our KDG metric captures. Their synthetic-data intervention is complementary to our diagnostic approach. \citet{celebi2025parrot} introduced the PARROT benchmark using neutral-versus-framed MMLU comparisons, and \citet{dubois2024length} identified input framing as a causal driver of evaluation artifacts. \citet{hong2025sycon} introduced SYCON~Bench for multi-turn sycophancy, measuring how quickly models flip stance under sustained pressure; their finding that alignment tuning amplifies sycophancy while scaling reduces it parallels our scale convergence hypothesis. \citet{peng2026sycoeval} evaluated 20 LLMs in adversarial clinical encounters, finding 20--45\% acquiescence rates even at 70B---a domain-specific complement to our general-knowledge evaluation. Our distributional design parallels \citet{celebi2025parrot} but operates at larger scale (31,500 responses) with KDG quantification and temperature-based probabilistic analysis. Crucially, as \citet{chen2025helpful} demonstrate with illogical medical prompts, these failures are not just theoretical artifacts---they precipitate severe real-world deployment risks.
 
 \paragraph{Truthfulness and calibration.} \citet{lin2022truthfulqa} framed sycophancy as a truthfulness failure. \citet{malmqvist2024sycophancy} surveyed causes and mitigations. \citet{kadavath2022language} showed that models can accurately assess whether they possess the knowledge to answer a question (P(IK)), with calibration improving with scale. Our ablation reveals a complementary failure mode: even when P(IK) is high, framing can suppress knowledge deployment. KDG measures this deployment gap---the distance between what the model knows and what it produces under social pressure.
 
@@ -371,7 +371,7 @@ Each model exhibits a distinct framing sensitivity profile. Mistral v0.1 is maxi
 
 The prediction holds for Mistral v0.1 (+5.4pp) and v0.2 (+9.6pp) but \emph{reverses} for Llama~3 ($-$1.7pp), Llama~3.1 ($-$2.9pp), and Qwen~2.5 ($-$1.4pp). Qwen~1.5 shows no effect (+0.8pp). This is not a failed replication---it is a \emph{boundary condition}: opinion framing increases sycophancy in models where alignment prioritized agreeableness (Mistral) but decreases it in models where alignment introduced epistemic correction (Llama, Qwen~2.5).
 
-Notably, Mistral v0.2 is \emph{more} opinion-sensitive than v0.1 (+9.6pp vs.\ +5.4pp), despite being less sycophantic overall. Alignment reduced authority vulnerability but increased opinion deference---different alignment approaches patch different failure modes.
+Notably, Mistral v0.2 is \emph{more} opinion-sensitive than v0.1 (+9.6pp vs.\ +5.4pp), despite being less sycophantic overall. Alignment reduced authority vulnerability but increased opinion deference---different alignment approaches patch different failure modes. Concurrent work by \citet{dubois2026ask} confirms this framing sensitivity in a controlled factorial design, showing that sycophancy increases monotonically with epistemic certainty and is amplified by first-person (``I believe'') framing---consistent with our Sharma boundary condition and the mechanistic findings of \citet{wangk2025truth}.
 
 
 % ============================================================================
@@ -527,7 +527,7 @@ The Sharma boundary condition exhibits a surprising reversal at scale. At 7B, Qw
 
 This is not a regression. The 72B model has learned to separate two objectives that the 7B model conflates: (1) epistemic correction of false authority claims, and (2) social accommodation of personal beliefs. Under authority framing (``According to a 2024 Nature study...''), Qwen~72B rejects the false premise with KDG=$-$0.007---authority framing actually \emph{improves} correctness marginally. Under opinion framing (``I believe...''), it occasionally yields---not because it lacks the knowledge, but because it has learned that validating a user's stated belief is socially appropriate even when factually incorrect.
 
-We term this \emph{diplomatic sycophancy}: a scale-emergent behavior where high-capacity models develop sufficient representational bandwidth to treat personal opinions differently from authoritative claims. This behavior is invisible to binary sycophancy metrics (the overall S1 rate is only 2.0\%) and detectable only through framing-specific KDG decomposition.
+We term this \emph{diplomatic sycophancy}: a scale-emergent behavior where high-capacity models develop sufficient representational bandwidth to treat personal opinions differently from authoritative claims. This behavior is invisible to binary sycophancy metrics (the overall S1 rate is only 2.0\%) and detectable only through framing-specific KDG decomposition, echoing the elusive, scale-dependent sycophancy profiles observed by \citet{natan2026not} under neutral evaluation protocols.
 
 \subsection{Two Scaling Trajectories}
 
@@ -548,7 +548,7 @@ This suggests that alignment techniques dictate \emph{how} small models fail (re
 
 The capability-versus-compliance debate has matured past a strict binary---most researchers suspect both contribute. Our contribution is quantifying the exact mixture ratio across model families, framing conditions, and scales, revealing that this ratio varies dramatically in ways that prior work could not measure. Sycophancy decomposes into three layers, each requiring a distinct metric: (1) a \textbf{capability layer} (14\% of sycophantic responses at 7--8B, Table~\ref{tab:ablation}), reflecting genuine epistemic gaps measured by the ablation WRONG rate; (2) a \textbf{deployment layer} (86\%, Table~\ref{tab:ablation}), where the model possesses the knowledge but framing suppresses it, measured by KDG and its S1/R decomposition; and (3) a \textbf{probabilistic layer} (Table~\ref{tab:basin_escape}), where suppression is modulated by temperature, entropy, and framing condition, measured by basin escape rate. At 70B+ scale, the deployment layer largely collapses (KDG$\to$0), but a new \emph{diplomatic sycophancy} emerges under opinion framing (\S\ref{sec:diplomatic})---a nuance invisible to aggregate metrics.
 
-\paragraph{Alignment as basin reshaping.} Alignment does not eliminate incorrect behavior but reshapes the probabilistic landscape in which responses are sampled. At 7--8B scale, different alignment strategies produce distinct basin structures: compliance-dominant basins (Mistral v0.1: high KDG$_{S1}$, Table~\ref{tab:kdg_decomp}), constraint-dominant basins (Llama~3.1~8B: high KDG$_R$, Table~\ref{tab:kdg_decomp}), or flattened basins (Qwen~2.5~7B: near-zero KDG). At 70B+ scale, these distinct structures converge toward a common flat landscape (Table~\ref{tab:scale_comparison}): Llama's refusal basin evaporates, Qwen's already-flat landscape becomes flatter. Scale smooths the optimization landscape regardless of the alignment approach---but the path to convergence differs (smooth for calibration-based, phase transition for constraint-based).
+\paragraph{Alignment as basin reshaping.} Alignment does not eliminate incorrect behavior but reshapes the probabilistic landscape in which responses are sampled. Prior work found that sycophancy \emph{worsens} with parameter scale \citep{wei2023simple}, but that evaluation used early PaLM models (2022--2023). Our 70B+ results on modern post-training pipelines show the opposite: at scale, sycophancy basins collapse. This reversal suggests that modern alignment techniques (heavy RLHF, DPO, and possibly synthetic-data interventions like those \citet{wei2023simple} proposed) have successfully flattened the sycophancy landscape that once deepened with scale. At 7--8B scale, different alignment strategies produce distinct basin structures: compliance-dominant basins (Mistral v0.1: high KDG$_{S1}$, Table~\ref{tab:kdg_decomp}), constraint-dominant basins (Llama~3.1~8B: high KDG$_R$, Table~\ref{tab:kdg_decomp}), or flattened basins (Qwen~2.5~7B: near-zero KDG). At 70B+ scale, these distinct structures converge toward a common flat landscape (Table~\ref{tab:scale_comparison}): Llama's refusal basin evaporates, Qwen's already-flat landscape becomes flatter. Scale smooths the optimization landscape regardless of the alignment approach---but the path to convergence differs (smooth for calibration-based, phase transition for constraint-based).
 
 \paragraph{Three underlying mechanisms.} We hypothesize that modern LLM safety architectures rely on three distinct mechanisms, each producing a characteristic response pattern: (1) \emph{epistemic calibration}---the base model understands the premise is false and corrects it ($\to$ C; evidenced by Qwen~2.5's simultaneous S1 and R reduction in Table~\ref{tab:s1_rates}), (2) \emph{alignment preference learning}---the reward model teaches diplomatic correction while validating the user's perspective ($\to$ H; evidenced by the doubling of H rates under framing in Table~\ref{tab:hedge}), and (3) \emph{constraint-based safety layers}---a safety classifier detects risky content and triggers refusal ($\to$ R; evidenced by Llama~3.1's refusal-driven KDG in Table~\ref{tab:kdg_decomp}). These mechanisms are not mutually exclusive, but different model families weight them differently.
 
@@ -586,6 +586,11 @@ These findings support a \emph{scale convergence hypothesis}: alignment techniqu
 
 \begin{thebibliography}{20}
 
+\bibitem[Casper et~al.(2023)]{casper2023open}
+Casper, S., et~al.
+\newblock Open problems and fundamental limitations of reinforcement learning from human feedback.
+\newblock \emph{arXiv preprint arXiv:2307.15217}, 2023.
+
 \bibitem[Celebi et~al.(2025)]{celebi2025parrot}
 Celebi, E., et~al.
 \newblock PARROT: A benchmark for sycophancy evaluation in LLMs.
@@ -595,6 +600,11 @@ Celebi, E., et~al.
 Dubois, Y., et~al.
 \newblock Length-controlled AlpacaEval: A simple way to debias automatic evaluators.
 \newblock \emph{arXiv preprint arXiv:2404.04475}, 2024.
+
+\bibitem[Dubois et~al.(2026)]{dubois2026ask}
+Dubois, M., Ududec, C., and Summerfield, C.
+\newblock Ask don't tell: Reducing sycophancy in large language models.
+\newblock \emph{arXiv preprint arXiv:2602.23971}, 2026.
 
 \bibitem[Holtzman et~al.(2020)]{holtzman2020curious}
 Holtzman, A., Buys, J., Du, L., Forbes, M., and Choi, Y.
@@ -641,10 +651,46 @@ Wang, W., et~al.
 \newblock Knowledge mechanisms in large language models: A survey and perspective.
 \newblock \emph{arXiv preprint arXiv:2407.15017}, 2024.
 
+\bibitem[Wang et~al.(2025)]{wangk2025truth}
+Wang, K., Li, J., Yang, S., et~al.
+\newblock When truth is overridden: Uncovering the internal origins of sycophancy in large language models.
+\newblock In \emph{Proceedings of AAAI}, 2026.
+
 \bibitem[Chen et~al.(2025)]{chen2025overalignment}
 Chen, Y., et~al.
 \newblock Overalignment in frontier LLMs: An empirical study of sycophantic behavior and over-refusal.
 \newblock \emph{arXiv preprint arXiv:2601.18334}, 2025.
+
+\bibitem[Cheng et~al.(2025)]{cheng2025elephant}
+Cheng, M., et~al.
+\newblock The elephant in the room: How {LLMs} sycophantically pander to humans via social face preservation.
+\newblock \emph{Science}, 2025.
+
+\bibitem[Hong et~al.(2025)]{hong2025sycon}
+Hong, J., Byun, G., Kim, S., Shu, K., and Choi, J.~D.
+\newblock Measuring sycophancy of language models in multi-turn dialogues.
+\newblock In \emph{Findings of EMNLP}, pages 2239--2259, 2025.
+
+\bibitem[Peng et~al.(2026)]{peng2026sycoeval}
+Peng, C., et~al.
+\newblock {SycoEval-EM}: Sycophancy evaluation of large language models in simulated clinical encounters for emergency care.
+\newblock \emph{arXiv preprint arXiv:2601.16529}, 2026.
+
+\bibitem[Wei et~al.(2023)]{wei2023simple}
+Wei, J., et~al.
+\newblock Simple synthetic data reduces sycophancy in large language models.
+\newblock \emph{arXiv preprint arXiv:2308.03958}, 2023.
+
+
+\bibitem[Chen et~al.(2025b)]{chen2025helpful}
+Chen, Z., et~al.
+\newblock When helpfulness backfires: {LLMs} and the risk of false medical information due to sycophantic behavior.
+\newblock \emph{npj Digital Medicine}, 2025.
+
+\bibitem[Natan and Tsur(2026)]{natan2026not}
+Natan, A., and Tsur, O.
+\newblock Not your typical sycophant: The elusive nature of sycophancy in large language models.
+\newblock \emph{arXiv preprint arXiv:2601.15436}, 2026.
 
 \end{thebibliography}
 
