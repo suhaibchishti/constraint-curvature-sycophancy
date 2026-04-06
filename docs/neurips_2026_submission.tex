@@ -288,7 +288,7 @@ Qwen 2.5 & 3 & 3 & 0 & 6 & 100\% \\
 \end{tabular}
 \end{table}
 
-The 19 WRONG cases were dual-judged by GPT-4o, with 83\% agreement (19 confirmed WRONG, 2 reclassified as PARTIAL, 2 as CORRECT). All reported numbers use the dual-judge-validated labels.
+The 19 WRONG cases identified by GPT-4o-mini were dual-judged by GPT-4o: 19 of 23 confirmed WRONG, 2 reclassified as PARTIAL, 2 as CORRECT (83\% agreement). All reported numbers use the dual-judge-validated labels.
 
 \paragraph{Quantization transparency.} An earlier experimental run used NF4 4-bit quantization. Re-running at fp16 produced 70\% label agreement on S1 pairs with 0\% text overlap between runs (every completion differs). The headline finding is stable across precisions (CORRECT: 51\%$\to$53\%, WRONG: 13\%$\to$14\%), but per-model shifts occur (e.g., Qwen~2.5: 83\%$\to$100\% knows). All results reported use fp16. Full comparison is provided in Appendix~\ref{app:quantization}.
 
