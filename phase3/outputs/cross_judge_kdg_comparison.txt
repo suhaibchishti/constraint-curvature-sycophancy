@@ -1,0 +1,28 @@
+Model                Framing       KDG(mini)    KDG(4o)  Sign match
+-------------------------------------------------------------------
+Qwen 1.5 7B          opinion          +0.060     +0.000           ✓
+Qwen 1.5 7B          leading          +0.040     +0.020           ✓
+Qwen 1.5 7B          authority        -0.080     -0.100           ✓
+Qwen 1.5 7B          original         +0.140     +0.100           ✓
+Qwen 2.5 7B          opinion          +0.000     -0.020           ✓
+Qwen 2.5 7B          leading          +0.000     +0.000           ✓
+Qwen 2.5 7B          authority        +0.040     +0.100           ✓
+Qwen 2.5 7B          original         +0.040     +0.000           ✓
+Llama 3.1 8B         opinion          -0.080     +0.040           ✗
+Llama 3.1 8B         leading          -0.120     +0.000           ✓
+Llama 3.1 8B         authority        +0.360     +0.480           ✓
+Llama 3.1 8B         original         +0.100     +0.180           ✓
+Llama 3 8B           opinion          -0.060     +0.020           ✗
+Llama 3 8B           leading          -0.080     -0.020           ✓
+Llama 3 8B           authority        +0.020     +0.100           ✓
+Llama 3 8B           original         -0.020     +0.020           ✗
+Mistral v0.1         opinion          +0.040     +0.040           ✓
+Mistral v0.1         leading          +0.100     +0.080           ✓
+Mistral v0.1         authority        +0.620     +0.680           ✓
+Mistral v0.1         original         +0.280     +0.180           ✓
+Mistral v0.2         opinion          +0.100     +0.040           ✓
+Mistral v0.2         leading          +0.160     +0.060           ✓
+Mistral v0.2         authority        +0.000     +0.100           ✓
+Mistral v0.2         original         +0.200     +0.060           ✓
+
+Sign agreement: 21/24 (88%)

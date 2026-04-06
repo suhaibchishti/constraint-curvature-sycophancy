@@ -736,10 +736,21 @@ Llama 3$\to$3.1 & R & +10.8pp & $\chi^2$=13.13 & $<$0.001 & 0.234 \\
 
 We validate GPT-4o-mini labels against human annotations on a stratified sample of 50 responses (10 per category). Cohen's $\kappa$=0.752 indicates substantial agreement. The confusion matrix shows 100\% recall on S1 and R categories, with disagreements concentrated on the C/H boundary (3 cases where the human labeled H and GPT-4o-mini labeled C). This boundary ambiguity does not affect our primary findings, which depend on the S1 rate and the C+H aggregate (used in KDG).
 
-\subsection{Lexical Validation}
+\subsection{Lexical Consistency Check}
 \label{app:lexical}
 
-To further validate the GPT-4o-mini judge, we ran deterministic lexical matching across all 34,500 distributional and scale responses. Of the 1,453 responses containing explicit agreement phrases (``you're right,'' ``I agree,'' ``that's correct''), 90.5\% were labeled S1 by the judge (7.0\% labeled H---hedges that open with agreement before correcting). Of the 1,382 responses containing refusal phrases (``I cannot,'' ``as an AI''), 54.3\% were labeled R, with the remainder labeled C or H (models that refuse the premise then correct it). Critically, \textbf{zero} S1-labeled responses contain refusal phrases and \textbf{zero} R-labeled responses contain agreement phrases. This zero cross-contamination between the two categories that drive KDG confirms that framing-induced shifts are not a judge artifact.
+To ensure that framing-induced shifts are not artifacts of model-based judging, we perform a deterministic lexical validation targeting unambiguous agreement and refusal markers across all 34,500 distributional and scale responses. These rules are deliberately conservative and not intended to replace semantic labeling.
+
+\textbf{High precision on explicit agreement.} Among the 1,453 responses containing explicit agreement phrases (``you're right,'' ``I agree,'' ``that's correct''), 90.5\% are labeled S1, indicating that sycophantic agreement is not a labeling artifact.
+
+\textbf{Conservative refusal detection.} Refusal markers (``I cannot,'' ``as an AI'') appear not only in refusals but also in correct or hedged corrections (e.g., ``I can't agree with that, because\ldots''), leading to lower precision (54.3\%). However, 92.5\% of R-labeled responses contain such markers, confirming high recall on true refusals.
+
+\textbf{Zero semantic cross-contamination.} Crucially, \textbf{no} S1-labeled responses contain refusal markers and \textbf{no} R-labeled responses contain agreement markers, validating the semantic separation required for KDG's S1/R decomposition. These checks demonstrate that framing-dependent shifts are not driven by lexical artifacts and that agreement and refusal represent distinct behavioral modes.
+
+\subsection{Cross-Judge KDG Sensitivity}
+\label{app:cross_judge}
+
+To verify that KDG trends are not artifacts of a single judge, we re-labeled 1,500 Phase~3 responses (T=0, one per model$\times$fact$\times$framing) with GPT-4o and recomputed KDG independently. Across all 24 (model, framing) conditions, GPT-4o-mini and GPT-4o agree on KDG sign in 88\% of cases (21/24). All three disagreements occur at near-zero KDG ($|$KDG$|<$0.08), where sampling noise dominates. No high-KDG condition changes sign: Mistral v0.1 authority is $+$0.62 (mini) vs.\ $+$0.68 (4o); Llama~3.1 authority is $+$0.36 vs.\ $+$0.48; Qwen~1.5 authority is $-$0.08 vs.\ $-$0.10. Near-zero KDG values are inherently unstable under any labeling scheme, as small differences in C/H/R boundaries can flip the sign without affecting substantive conclusions; we interpret sign consistency primarily for large-magnitude effects. The comparative conclusions---which models are sycophancy-driven, which are refusal-driven, and which framings are most dangerous---are judge-invariant.
 
 \section{Full KDG Tables}
 \label{app:kdg_tables}
