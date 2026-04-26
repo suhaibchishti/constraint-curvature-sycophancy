@@ -1,0 +1,132 @@
+======================================================================
+DATASET TOTALS
+======================================================================
+Phase 1: 3000
+Ablation: 576
+Phase 3: 31500
+Phase 4: 3000
+Total: 38076
+
+======================================================================
+PHASE 3 STRUCTURE
+======================================================================
+T=0.0: 1500 records, 1500 cells, samples/cell={1}
+T=0.3: 15000 records, 1500 cells, samples/cell={10}
+T=0.7: 15000 records, 1500 cells, samples/cell={10}
+
+======================================================================
+TABLE 1: Per-model response distribution (Phase 1)
+======================================================================
+     Llama 3: N=500 | S1=2.6 S2=0.4 C=70.2 H=1.2 R=25.6
+   Llama 3.1: N=500 | S1=0.0 S2=0.0 C=58.8 H=4.8 R=36.4
+Mistral v0.1: N=500 | S1=13.6 S2=0.2 C=73.2 H=5.0 R=8.0
+Mistral v0.2: N=500 | S1=5.4 S2=0.0 C=75.8 H=8.2 R=10.6
+    Qwen 1.5: N=500 | S1=4.2 S2=0.0 C=74.0 H=0.8 R=21.0
+    Qwen 2.5: N=500 | S1=1.2 S2=0.0 C=85.0 H=3.4 R=10.4
+
+======================================================================
+TABLE 2: Ablation decomposition
+======================================================================
+Total ablation: 576
+All ablation: {'PARTIAL': 184, 'CORRECT': 323, 'WRONG': 69}
+Paper claims: CORRECT=71, PARTIAL=45, WRONG=19 (total=135)
+86% = (71+45)/135 = 86%
+
+======================================================================
+TABLE 5: S1 rate by model and framing (Phase 3, all temps)
+======================================================================
+    Qwen 1.5: neutral=19.3 opinion=20.1 leading=23.0 authority=5.0 original=22.3
+    Qwen 2.5: neutral=9.0 opinion=7.6 leading=5.0 authority=10.9 original=7.9
+   Llama 3.1: neutral=5.9 opinion=3.0 leading=0.1 authority=0.0 original=3.0
+     Llama 3: neutral=8.7 opinion=7.0 leading=3.4 authority=11.5 original=10.9
+Mistral v0.1: neutral=6.4 opinion=11.8 leading=12.5 authority=45.3 original=25.8
+Mistral v0.2: neutral=8.3 opinion=17.9 leading=19.0 authority=8.4 original=17.9
+
+======================================================================
+KDG VALUES (all temps aggregated)
+======================================================================
+    Qwen 1.5    opinion: KDG=+0.013 (S1=+0.008 R=+0.000)
+    Qwen 1.5    leading: KDG=+0.028 (S1=+0.037 R=+0.000)
+    Qwen 1.5  authority: KDG=-0.131 (S1=-0.143 R=+0.000)
+    Qwen 1.5   original: KDG=+0.039 (S1=+0.030 R=+0.001)
+    Qwen 2.5    opinion: KDG=-0.033 (S1=-0.014 R=+0.000)
+    Qwen 2.5    leading: KDG=-0.062 (S1=-0.040 R=+0.000)
+    Qwen 2.5  authority: KDG=+0.020 (S1=+0.018 R=+0.000)
+    Qwen 2.5   original: KDG=-0.032 (S1=-0.011 R=+0.000)
+   Llama 3.1    opinion: KDG=-0.015 (S1=-0.029 R=+0.020)
+   Llama 3.1    leading: KDG=-0.079 (S1=-0.058 R=+0.000)
+   Llama 3.1  authority: KDG=+0.308 (S1=-0.059 R=+0.388)
+   Llama 3.1   original: KDG=+0.130 (S1=-0.030 R=+0.181)
+     Llama 3    opinion: KDG=-0.032 (S1=-0.017 R=+0.000)
+     Llama 3    leading: KDG=-0.052 (S1=-0.052 R=+0.010)
+     Llama 3  authority: KDG=+0.110 (S1=+0.029 R=+0.082)
+     Llama 3   original: KDG=+0.037 (S1=+0.022 R=+0.030)
+Mistral v0.1    opinion: KDG=+0.054 (S1=+0.054 R=+0.000)
+Mistral v0.1    leading: KDG=+0.061 (S1=+0.061 R=+0.000)
+Mistral v0.1  authority: KDG=+0.608 (S1=+0.390 R=+0.000)
+Mistral v0.1   original: KDG=+0.200 (S1=+0.194 R=+0.006)
+Mistral v0.2    opinion: KDG=+0.108 (S1=+0.096 R=+0.012)
+Mistral v0.2    leading: KDG=+0.116 (S1=+0.107 R=+0.010)
+Mistral v0.2  authority: KDG=+0.028 (S1=+0.001 R=+0.000)
+Mistral v0.2   original: KDG=+0.121 (S1=+0.096 R=+0.026)
+
+======================================================================
+TABLE 14: Complete distributions (all temps) — CORRECT VALUES
+======================================================================
+    Qwen 1.5    neutral: S1= 19.3 S2=  1.0 C= 73.9 H=  5.8 R=  0.0
+    Qwen 1.5    opinion: S1= 20.1 S2=  1.5 C= 64.1 H= 14.3 R=  0.0
+    Qwen 1.5    leading: S1= 23.0 S2=  0.0 C= 63.6 H= 13.3 R=  0.0
+    Qwen 1.5  authority: S1=  5.0 S2=  2.1 C= 63.9 H= 29.0 R=  0.0
+    Qwen 1.5   original: S1= 22.3 S2=  1.8 C= 61.2 H= 14.6 R=  0.1
+
+    Qwen 2.5    neutral: S1=  9.0 S2=  2.2 C= 79.1 H=  9.6 R=  0.0
+    Qwen 2.5    opinion: S1=  7.6 S2=  0.3 C= 64.4 H= 27.7 R=  0.0
+    Qwen 2.5    leading: S1=  5.0 S2=  0.0 C= 74.0 H= 21.0 R=  0.0
+    Qwen 2.5  authority: S1= 10.9 S2=  2.4 C= 69.7 H= 17.0 R=  0.0
+    Qwen 2.5   original: S1=  7.9 S2=  0.1 C= 63.9 H= 28.1 R=  0.0
+
+   Llama 3.1    neutral: S1=  5.9 S2=  2.1 C= 63.6 H= 28.4 R=  0.0
+   Llama 3.1    opinion: S1=  3.0 S2=  1.4 C= 54.1 H= 39.4 R=  2.0
+   Llama 3.1    leading: S1=  0.1 S2=  0.0 C= 55.0 H= 44.9 R=  0.0
+   Llama 3.1  authority: S1=  0.0 S2=  0.0 C= 33.1 H= 28.1 R= 38.8
+   Llama 3.1   original: S1=  3.0 S2=  0.0 C= 51.3 H= 27.6 R= 18.1
+
+     Llama 3    neutral: S1=  8.7 S2=  1.5 C= 63.3 H= 26.5 R=  0.0
+     Llama 3    opinion: S1=  7.0 S2=  0.0 C= 55.4 H= 37.6 R=  0.0
+     Llama 3    leading: S1=  3.4 S2=  0.6 C= 66.1 H= 29.0 R=  1.0
+     Llama 3  authority: S1= 11.5 S2=  1.4 C= 38.4 H= 40.5 R=  8.2
+     Llama 3   original: S1= 10.9 S2=  0.0 C= 58.2 H= 27.9 R=  3.0
+
+Mistral v0.1    neutral: S1=  6.4 S2=  0.0 C= 90.1 H=  3.5 R=  0.0
+Mistral v0.1    opinion: S1= 11.8 S2=  0.0 C= 78.5 H=  9.7 R=  0.0
+Mistral v0.1    leading: S1= 12.5 S2=  0.0 C= 77.2 H= 10.3 R=  0.0
+Mistral v0.1  authority: S1= 45.3 S2= 21.8 C= 22.0 H= 10.9 R=  0.0
+Mistral v0.1   original: S1= 25.8 S2=  0.0 C= 61.7 H= 11.9 R=  0.6
+
+Mistral v0.2    neutral: S1=  8.3 S2=  0.1 C= 81.7 H=  9.9 R=  0.0
+Mistral v0.2    opinion: S1= 17.9 S2=  0.0 C= 50.8 H= 30.1 R=  1.2
+Mistral v0.2    leading: S1= 19.0 S2=  0.0 C= 56.8 H= 23.2 R=  1.0
+Mistral v0.2  authority: S1=  8.4 S2=  2.8 C= 63.5 H= 25.3 R=  0.0
+Mistral v0.2   original: S1= 17.9 S2=  0.0 C= 49.2 H= 30.3 R=  2.6
+
+======================================================================
+TABLE 8: Scale comparison (Phase 4)
+======================================================================
+   Qwen 2.5 72B: N=1500 | S1=2.0 S2=0.0 C=90.4 H=7.6 R=0.0
+  Llama 3.1 70B: N=1500 | S1=2.5 S2=0.0 C=82.9 H=14.1 R=0.5
+
+   Qwen 2.5 72B    opinion: KDG=+0.033
+   Qwen 2.5 72B  authority: KDG=-0.007
+  Llama 3.1 70B    opinion: KDG=+0.020
+  Llama 3.1 70B  authority: KDG=+0.043
+
+======================================================================
+TABLE 7: Hedge rate by framing (all models, all temps)
+======================================================================
+   neutral: H=14.0%
+   opinion: H=26.5%
+   leading: H=23.6%
+ authority: H=25.1%
+  original: H=23.4%
+
+✅ All totals verified
