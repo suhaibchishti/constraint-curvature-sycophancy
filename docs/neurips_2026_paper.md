@@ -8,7 +8,7 @@
 
 ## Abstract
 
-When users present factually incorrect claims to large language models, these models frequently agree—a failure mode known as sycophancy. Prior work attributes this to either lack of knowledge or social compliance, but does not quantify which mechanism dominates or how it varies across models, framing conditions, and scales. We show that sycophancy is primarily a *deployment* failure, not a capability gap: across 38,076 labeled responses from eight models spanning three families (Mistral, Llama, Qwen) at two scales (7–8B and 70B+), 86% of sycophantic responses occur when models possess the correct knowledge—responses classified as Correct (C) or Hedge (H) in our taxonomy—but fail to deploy it under confirmatory framing (N=135 ablation pairs, fp16, dual-judge validated).
+When users present factually incorrect claims to large language models, these models frequently agree—a failure mode known as sycophancy. Prior work attributes this to either lack of knowledge or social compliance, but does not quantify which mechanism dominates or how it varies across models, framing conditions, and scales. We show that sycophancy is primarily a *deployment* failure, not a capability gap: across 38,076 labeled responses from eight models spanning three families (Mistral, Llama, Qwen) at two scales (7–8B and 70B+), 86% of sycophantic responses occur when models possess the correct knowledge—responses classified as Correct (C) or Hedge (H) in our taxonomy—but fail to deploy it under confirmatory framing (N=135 ablation pairs, fp16).
 
 To measure this at scale, we introduce the *Knowledge Deployment Gap* (KDG)—the fraction of correct knowledge a model suppresses under framing—and apply it to 31,500 responses across 5 framing conditions and 3 temperatures. KDG reveals dramatic heterogeneity: Mistral v0.1 exhibits KDG=0.61 under authority framing (driven by sycophancy) while Llama 3.1 8B shows KDG=0.31 driven entirely by refusal—same metric, mechanistically opposite failures. At 70B+ scale, both failure modes largely evaporate (Qwen 2.5 72B: KDG=−0.007 under authority, 90.4% correct), but a new *diplomatic sycophancy* emerges: opinion framing, which *decreased* sycophancy at 7B (−1.4 pp), *increases* it at 72B (+3.3 pp)—the model has learned to treat personal beliefs differently from authoritative claims. Temperature analysis reveals sycophancy as a probabilistic basin: 37% of deterministically sycophantic responses at 7–8B escape at T=0.7, with the Hedge state serving as the transition state. We release the complete dataset (38,076 labeled responses) and analysis code.
 
@@ -41,7 +41,7 @@ We show that these accounts are not competing—they describe a *mixture*, and t
 
 ### 1.2 Contributions
 
-1. **Behavioral audit.** A validated five-category taxonomy (S1/S2/C/H/R, κ=0.752) and framing ablation proving 86% of sycophancy at 7–8B involves latent correct knowledge (fp16, dual-judge validated).
+1. **Behavioral audit.** A validated five-category taxonomy (S1/S2/C/H/R, κ=0.752) and framing ablation proving 86% of sycophancy at 7–8B involves latent correct knowledge (fp16; WRONG cases validated by second judge).
 2. **KDG metric.** The Knowledge Deployment Gap with an S1/R decomposition that separates sycophancy-driven from refusal-driven knowledge suppression, applied to 31,500+ responses across 5 framing conditions, 3 model families, and 2 scales (7–8B and 70B+).
 3. **Scale convergence.** At 70B+, both sycophancy and refusal basins largely evaporate, but a new *diplomatic sycophancy* emerges under opinion framing—a scale-emergent behavior invisible to binary metrics. Alignment strategies that produce distinct failure modes at 7–8B converge toward similar outcomes at 70B+. Full dataset (38,076 labeled responses) and analysis code released.
 
@@ -53,7 +53,7 @@ We show that these accounts are not competing—they describe a *mixture*, and t
 
 **Sycophancy evaluation.** Perez et al. [1] first documented opinion agreement in LLMs. Wei et al. [18] showed that both model scaling and instruction tuning increase sycophancy on PaLM (up to 540B), and that models agree with objectively incorrect statements they can answer correctly in isolation—the same deployment failure our KDG metric captures. Their synthetic-data intervention is complementary to our diagnostic approach. Çelebi et al. [10] introduced the PARROT benchmark using neutral-versus-framed MMLU comparisons, and Dubois et al. [7] identified input framing as a causal driver of evaluation artifacts. Hong et al. [19] introduced SYCON Bench for multi-turn sycophancy, measuring how quickly models flip stance under sustained pressure; their finding that alignment tuning amplifies sycophancy while scaling reduces it parallels our scale convergence hypothesis. Peng et al. [20] evaluated 20 LLMs in adversarial clinical encounters, finding 20–45% acquiescence rates even at 70B—a domain-specific complement to our general-knowledge evaluation. Our distributional design parallels Çelebi et al. but operates at larger scale (31,500 responses) with KDG quantification and temperature-based probabilistic analysis. Crucially, as Chen et al. [21] demonstrate with illogical medical prompts, these failures are not just theoretical artifacts—they precipitate severe real-world deployment risks.
 
-**Truthfulness and calibration.** Lin et al. [4] framed sycophancy as a truthfulness failure. Malmqvist [8] surveyed causes and mitigations. Kadavath et al. [13] showed that models can accurately assess whether they possess the knowledge to answer a question (P(IK)), with calibration improving with scale. Our ablation reveals a complementary failure mode: even when P(IK) is high, framing can suppress knowledge deployment. KDG measures this deployment gap—the distance between what the model knows and what it produces under social pressure.
+**Truthfulness and calibration.** Lin et al. [4] framed sycophancy as a truthfulness failure. Malmqvist [8] surveyed causes and mitigations. Kadavath et al. [13] study whether models can accurately assess the correctness of their own answers under neutral conditions, finding that calibration improves with scale. Our work addresses an orthogonal failure mode: even when models demonstrably possess correct knowledge, they fail to deploy it under confirmatory or authoritative framing. KDG measures this deployment gap directly—not epistemic self-assessment, but the distance between what the model knows and what it produces under social pressure.
 
 **Our position.** We extend the mechanistic camp's finding that models "know the truth but suppress it" by providing a scalable black-box metric (KDG) to measure this gap without weights access. We extend Sharma et al. by showing their opinion-framing prediction is model-specific, not universal. And we extend the calibration literature by showing that sycophancy forms probabilistic basins with measurable escape rates, not deterministic failures.
 
@@ -108,7 +108,7 @@ We select 50 core facts from domains where sycophancy was observed in §3 and ge
 - **Opinion**: "I believe [false claim]. Can you confirm?" (following Sharma et al. [5])
 - **Authority**: "According to [authority], [false claim]. Can you elaborate?"
 
-Each of the 6 models generates 10 samples per fact-framing-temperature combination at T ∈ {0.0, 0.3, 0.7}, yielding 50 × 5 × 6 × 3 × 10 = 31,500 responses, all at fp16. Responses are labeled using GPT-4o-mini via the OpenAI Batch API (single batch, zero errors) with the same taxonomy from §3.
+Each of the 6 models generates 1 sample per fact-framing combination at T=0, and 10 samples each at T ∈ {0.3, 0.7}, yielding 50 × 5 × 6 × 21 = 31,500 responses, all at fp16. Responses are labeled using GPT-4o-mini via the OpenAI Batch API (single batch, zero errors) with the same taxonomy from §3.
 
 **Methodological note.** The 50 Phase 3 facts are a targeted diagnostic subset chosen from domains where S1 was observed, not a representative sample of the original 500-prompt distribution. This explains why per-model S1 rates differ between §3 (e.g., Qwen 1.5 S1=4.2% on 500 prompts) and this section (Qwen 1.5 neutral S1=19.3% on 50 targeted facts). The targeted subset is deliberately harder, designed to stress-test framing sensitivity rather than estimate population S1 rates.
 
@@ -161,7 +161,7 @@ The alignment outcomes raise a critical question: when models produce sycophanti
 
 We test this by identifying the 89 prompts that produced at least one S1 response and re-presenting them as neutral factual questions (e.g., "Is the Great Wall of China visible from space?"). This yields N=135 model-prompt pairs where the original framing produced S1. We then classify the neutral response as CORRECT (model deploys the knowledge), PARTIAL (model shows partial knowledge), or WRONG (genuine epistemic gap). Neutral responses are generated at T=0 for determinism.
 
-*Table 2: Framing ablation results (N=135 S1 pairs, fp16, dual-judge validated).*
+*Table 2: Framing ablation results (N=135 S1 pairs, fp16). WRONG cases (N=23) validated by second judge (GPT-4o); see §4.2.*
 
 | Neutral Result | Count | % | Interpretation |
 |----------------|-------|---|----------------|
@@ -186,7 +186,7 @@ Per-model decomposition reveals heterogeneity in this ratio (Table 3, Figure 3).
 | Qwen 1.5 | 6 | 6 | 9 | 21 | 57% |
 | Qwen 2.5 | 3 | 3 | 0 | 6 | 100% |
 
-The 19 WRONG cases were dual-judged by GPT-4o, with 83% agreement (19 confirmed WRONG, 2 reclassified as PARTIAL, 2 as CORRECT). All reported numbers use the dual-judge-validated labels.
+The 19 WRONG cases identified by GPT-4o-mini were dual-judged by GPT-4o: 19 of 23 confirmed WRONG, 2 reclassified as PARTIAL, 2 as CORRECT (83% agreement). All reported numbers use the dual-judge-validated labels.
 
 **Quantization transparency.** An earlier experimental run used NF4 4-bit quantization. Re-running at fp16 produced 70% label agreement on S1 pairs with 0% text overlap between runs (every completion differs). The headline finding is stable across precisions (CORRECT: 51%→53%, WRONG: 13%→14%), but per-model shifts occur (e.g., Qwen 2.5: 83%→100% knows). All results reported use fp16. Full comparison is provided in Appendix E.
 
@@ -381,7 +381,7 @@ The capability-versus-compliance debate has matured past a strict binary—most 
 
 **Scale coverage.** We evaluate two model families at 70B+ scale. Whether the scale convergence hypothesis holds for other families (e.g., Mistral Large) and at frontier scale (400B+) remains open. We also cannot distinguish "scale fixed the alignment" from "the 70B model was deliberately tuned differently" without access to training details.
 
-**Single-turn.** Our evaluation is single-turn. Multi-turn challenge-response dynamics ("Are you sure?") may reveal that the 86% latent-knowledge finding is optimistic—models that correct under neutral framing may cave under sustained pressure.
+**Single-turn.** Our evaluation is single-turn. Multi-turn challenge-response dynamics ("Are you sure?") may reveal that the 86% latent-knowledge finding is optimistic—models that deploy knowledge well in single-turn settings may yield under sustained social pressure. Mapping how KDG evolves across dialogue depth remains a critical future extension.
 
 **Behavioral taxonomy.** Our analysis is behavioral, not mechanistic. We characterize the probabilistic landscape but do not identify the internal circuits responsible. The basin metaphor is descriptive, not a claim about model internals.
 
@@ -473,16 +473,16 @@ Entropy is computed as the Shannon entropy of the label distribution across 10 s
 
 | Model | Framing | S1% | S2% | C% | H% | R% |
 |-------|---------|-----|-----|-----|-----|-----|
-| Mistral v0.1 | neutral | 6.4 | 0.3 | 79.3 | 13.7 | 0.3 |
-| Mistral v0.1 | opinion | 11.8 | 0.1 | 73.2 | 14.7 | 0.2 |
-| Mistral v0.1 | leading | 12.5 | 0.0 | 72.2 | 15.0 | 0.3 |
-| Mistral v0.1 | authority | 45.3 | 12.3 | 18.0 | 24.1 | 0.3 |
-| Mistral v0.1 | original | 25.8 | 0.5 | 55.3 | 17.8 | 0.6 |
-| Llama 3.1 | neutral | 5.9 | 0.0 | 91.7 | 2.3 | 0.1 |
-| Llama 3.1 | opinion | 3.0 | 0.0 | 88.3 | 7.3 | 1.4 |
-| Llama 3.1 | leading | 0.1 | 0.0 | 89.3 | 8.3 | 2.3 |
-| Llama 3.1 | authority | 0.0 | 5.3 | 53.0 | 2.9 | 38.8 |
-| Llama 3.1 | original | 3.0 | 0.1 | 79.3 | 5.3 | 12.3 |
+| Mistral v0.1 | neutral | 6.4 | 0.0 | 90.1 | 3.5 | 0.0 |
+| Mistral v0.1 | opinion | 11.8 | 0.0 | 78.5 | 9.7 | 0.0 |
+| Mistral v0.1 | leading | 12.5 | 0.0 | 77.2 | 10.3 | 0.0 |
+| Mistral v0.1 | authority | 45.3 | 21.8 | 22.0 | 10.9 | 0.0 |
+| Mistral v0.1 | original | 25.8 | 0.0 | 61.7 | 11.9 | 0.6 |
+| Llama 3.1 | neutral | 5.9 | 2.1 | 63.6 | 28.4 | 0.0 |
+| Llama 3.1 | opinion | 3.0 | 1.4 | 54.1 | 39.4 | 2.0 |
+| Llama 3.1 | leading | 0.1 | 0.0 | 55.0 | 44.9 | 0.0 |
+| Llama 3.1 | authority | 0.0 | 0.0 | 33.1 | 28.1 | 38.8 |
+| Llama 3.1 | original | 3.0 | 0.0 | 51.3 | 27.6 | 18.1 |
 
 ## Appendix E: Quantization Transparency
 

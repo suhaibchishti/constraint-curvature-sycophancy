@@ -51,6 +51,8 @@ def ch_rate(recs):
     return sum(1 for r in recs if r["gpt4o_label"] in ("C", "H")) / len(recs)
 
 def main():
+    import os
+    os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
     p1 = load_phase1()
     abl = load_ablation()
     p3 = load_phase3()
