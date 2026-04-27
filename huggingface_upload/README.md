@@ -28,7 +28,7 @@ This dataset contains 38,076 labeled model responses supporting the paper "Frami
 |-----------|---|-------------|
 | Single-shot evaluation | 3,000 | 500 false-premise prompts × 6 models (§3) |
 | Framing ablation | 576 | 96 prompts × 6 models, neutral rephrasing (§3.4) |
-| Distributional analysis | 31,500 | 50 facts × 5 framings × 6 models × 3 temps × 10 samples (§5) |
+| Distributional analysis | 31,500 | 50 facts × 5 framings × 6 models × 21 samples (1 at T=0, 10 each at T=0.3/0.7) (§5) |
 | Scale extension (70B+) | 3,000 | 50 facts × 5 framings × 2 models × 2 temps × 5 samples (§7) |
 
 - **Models (7–8B):** Mistral v0.1/v0.2, Llama 3/3.1, Qwen 1.5/2.5 (all fp16)
@@ -38,7 +38,7 @@ This dataset contains 38,076 labeled model responses supporting the paper "Frami
 
 ### Key Findings
 
-- **86% of sycophancy involves latent knowledge** (N=135 ablation pairs, dual-judge validated)
+- **86% of sycophancy involves latent knowledge** (N=135 ablation pairs; WRONG cases validated by second judge)
 - **KDG metric:** Mistral v0.1 authority KDG=0.61 (S1-driven) vs Llama 3.1 8B authority KDG=0.31 (R-driven)
 - **Basin escape:** 37% of T=0 sycophantic responses escape at T=0.7
 - **Scale convergence:** At 70B+, KDG→0 (Qwen 72B authority: −0.007), refusal basins evaporate (Llama 70B R: 0.5%)
@@ -59,7 +59,7 @@ This dataset contains 38,076 labeled model responses supporting the paper "Frami
 
 | File | Description |
 |------|-------------|
-| `full_ablation_labels.json` | 576 ablation responses (fp16, dual-judge validated) |
+| `full_ablation_labels.json` | 576 ablation responses (fp16; WRONG cases validated by GPT-4o) |
 | `full_ablation_prompts.json` | 96 prompt pairs (original → neutral + ground truth) |
 | `dual_label_wrong_results.json` | 23 WRONG cases dual-judged by GPT-4o (83% agreement) |
 | `manual_spot_check.md` | Human validation of ablation boundary cases |
