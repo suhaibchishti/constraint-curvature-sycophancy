@@ -206,17 +206,17 @@ The 19 WRONG cases identified by GPT-4o-mini were dual-judged by GPT-4o: 19 of 2
 |-------|---------|-----|--------|-------|--------|
 | Mistral v0.1 | authority | +0.61 | **+0.39** | +0.00 | Sycophancy |
 | Llama 3.1 | authority | +0.31 | −0.06 | **+0.39** | Refusal |
-| Mistral v0.1 | original | +0.22 | +0.19 | +0.01 | Sycophancy |
-| Mistral v0.2 | original | +0.15 | +0.10 | +0.03 | Sycophancy |
-| Mistral v0.2 | leading | +0.13 | +0.11 | +0.01 | Sycophancy |
-| Llama 3.1 | original | +0.12 | −0.03 | +0.18 | Refusal |
-| Qwen 1.5 | authority | −0.12 | −0.14 | +0.00 | Negative |
+| Mistral v0.1 | original | +0.20 | +0.19 | +0.01 | Sycophancy |
+| Mistral v0.2 | original | +0.12 | +0.10 | +0.03 | Sycophancy |
+| Mistral v0.2 | leading | +0.12 | +0.11 | +0.01 | Sycophancy |
+| Llama 3.1 | original | +0.13 | −0.03 | +0.18 | Refusal |
+| Qwen 1.5 | authority | −0.13 | −0.14 | +0.00 | Negative |
 
 Three findings emerge:
 
 **Authority is the dominant trigger.** Mistral v0.1 under authority framing reaches KDG=0.61—61% of the knowledge deployed under neutral conditions is suppressed. This is the largest effect in the dataset and is driven entirely by sycophancy (KDG_S1=+0.39).
 
-**Same KDG, different mechanisms.** Llama 3.1 under authority shows KDG=0.31, superficially comparable to Mistral v0.1's original-framing KDG of 0.22. But the decomposition reveals opposite mechanisms: Llama 3.1's suppression is entirely refusal-driven (KDG_R=+0.39, KDG_S1=−0.06). The model's safety classifier cannot distinguish "authority-framed false premise needing correction" from "authority-framed harmful content needing refusal." Without the S1/R decomposition, these mechanistically different failures would appear equivalent.
+**Same KDG, different mechanisms.** Llama 3.1 under authority shows KDG=0.31, superficially comparable to Mistral v0.1's original-framing KDG of 0.20. But the decomposition reveals opposite mechanisms: Llama 3.1's suppression is entirely refusal-driven (KDG_R=+0.39, KDG_S1=−0.06). The model's safety classifier cannot distinguish "authority-framed false premise needing correction" from "authority-framed harmful content needing refusal." Without the S1/R decomposition, these mechanistically different failures would appear equivalent.
 
 **Alignment reduces KDG.** Mistral v0.1→v0.2 reduces authority KDG dramatically. Qwen 2.5 achieves near-zero KDG across all framings—the most robust model in our evaluation.
 
@@ -456,16 +456,16 @@ Zero disagreements involved false-positive S1 labels—no cases where human judg
 
 | Model | Opinion | Leading | Authority | Original |
 |-------|---------|---------|-----------|----------|
-| Mistral v0.1 | +0.05 | +0.07 | **+0.61** | +0.22 |
-| Mistral v0.2 | +0.11 | +0.13 | +0.04 | +0.15 |
-| Llama 3 | −0.01 | +0.01 | +0.11 | +0.05 |
-| Llama 3.1 | +0.01 | +0.02 | +0.31 | +0.12 |
-| Qwen 1.5 | +0.01 | −0.01 | −0.12 | +0.01 |
-| Qwen 2.5 | +0.01 | +0.03 | −0.01 | +0.01 |
+| Mistral v0.1 | +0.05 | +0.06 | **+0.61** | +0.20 |
+| Mistral v0.2 | +0.11 | +0.12 | +0.03 | +0.12 |
+| Llama 3 | −0.03 | −0.05 | +0.11 | +0.04 |
+| Llama 3.1 | −0.02 | −0.08 | +0.31 | +0.13 |
+| Qwen 1.5 | +0.01 | +0.03 | −0.13 | +0.04 |
+| Qwen 2.5 | −0.03 | −0.06 | +0.02 | −0.03 |
 
 ## Appendix C: Entropy Distributions
 
-Entropy is computed as the Shannon entropy of the label distribution across 10 samples per (model, fact, framing, temperature) combination: H = −Σ p_l log₂ p_l where l ∈ {S1, S2, C, H, R}. At T=0, all 10 samples produce the same label (entropy=0). At higher temperatures, behavioral variability increases, with the magnitude depending on model and framing condition.
+Entropy is computed as the Shannon entropy of the label distribution across 10 samples per (model, fact, framing, temperature) combination at T ∈ {0.3, 0.7}: H = −Σ p_l log₂ p_l where l ∈ {S1, S2, C, H, R}. At T=0, only one deterministic sample is generated per cell, so entropy is trivially zero. At higher temperatures, behavioral variability increases, with the magnitude depending on model and framing condition.
 
 ## Appendix D: Framing Sensitivity Tables
 
