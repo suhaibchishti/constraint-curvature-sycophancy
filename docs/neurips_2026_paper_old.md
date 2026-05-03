@@ -8,19 +8,42 @@
 
 ## Abstract
 
-When large language models agree with factually incorrect user claims—a failure known as sycophancy—is this because they lack the knowledge to correct the user, or because they possess it but fail to deploy it? We find the latter dominates: across 38,076 labeled responses from eight models in three families (Mistral, Llama, Qwen) at 7–8B and 70B+ scale, a framing ablation on 135 sycophantic response pairs shows that 86% involve models that answer correctly under neutral phrasing but sycophantically under confirmatory framing.
+When users present factually incorrect claims to large language models, these models frequently agree—a failure mode known as sycophancy. Prior work attributes this to either lack of knowledge or social compliance, but does not quantify which mechanism dominates or how it varies across models, framing conditions, and scales. We show that sycophancy is primarily a *deployment* failure, not a capability gap: across 38,076 labeled responses from eight models spanning three families (Mistral, Llama, Qwen) at two scales (7–8B and 70B+), 86% of sycophantic responses occur when models possess the correct knowledge—responses classified as Correct (C) or Hedge (H) in our taxonomy—but fail to deploy it under confirmatory framing (N=135 ablation pairs, fp16).
 
-To quantify this suppression at scale, we introduce the *Knowledge Deployment Gap* (KDG), which measures the fraction of correct responses a model loses under framing relative to a neutral baseline. Applied to 31,500 responses across five framing conditions, KDG reveals that identical suppression magnitudes can mask opposite failure mechanisms: Mistral v0.1 loses knowledge to sycophancy (KDG_S1=+0.39) while Llama 3.1 loses it to refusal (KDG_R=+0.39). At 70B+ scale, both failure modes largely collapse, but a new *diplomatic sycophancy* emerges—opinion framing increases agreement at 72B (+3.3 pp) despite decreasing it at 7B (−1.4 pp). Temperature analysis reveals sycophancy as a probabilistic basin with a 37% escape rate, with the Hedge state serving as the transition state. Dataset (38,076 responses) and code released.
+To measure this at scale, we introduce the *Knowledge Deployment Gap* (KDG)—the fraction of correct knowledge a model suppresses under framing—and apply it to 31,500 responses across 5 framing conditions and 3 temperatures. KDG reveals dramatic heterogeneity: Mistral v0.1 exhibits KDG=0.61 under authority framing (driven by sycophancy) while Llama 3.1 8B shows KDG=0.31 driven entirely by refusal—same metric, mechanistically opposite failures. At 70B+ scale, both failure modes largely evaporate (Qwen 2.5 72B: KDG=−0.007 under authority, 90.4% correct), but a new *diplomatic sycophancy* emerges: opinion framing, which *decreased* sycophancy at 7B (−1.4 pp), *increases* it at 72B (+3.3 pp)—the model has learned to treat personal beliefs differently from authoritative claims. Temperature analysis reveals sycophancy as a probabilistic basin: 37% of deterministically sycophantic responses at 7–8B escape at T=0.7, with the Hedge state serving as the transition state. We release the complete dataset (38,076 labeled responses) and analysis code.
+
+**Dataset:** https://huggingface.co/datasets/schis02/sycophancy-false-premises
 
 ---
 
 ## 1. Introduction
 
-Safety-oriented fine-tuning of large language models (LLMs) creates a well-documented tension: the same training that reduces harmful outputs also induces *sycophancy*—the tendency to agree with user assertions even when they are factually incorrect [1]. Two competing explanations dominate the literature. The *capability* account holds that sycophantic models lack the knowledge to correct false premises [4]. The *compliance* account holds that models possess the knowledge but suppress it under social pressure, driven by reward model biases that favor agreement [5]. Mechanistic evidence supports the compliance account: activation patching reveals that models encode correct answers internally even when producing sycophantic outputs [6], and distinct linear directions for agreement versus praise sycophancy have been identified [9]. However, these studies demonstrate that knowledge suppression *occurs*—they do not quantify *how much* of observed sycophancy is suppression versus genuine ignorance, nor how this ratio varies across model families, framing conditions, and scales.
+Safety-oriented fine-tuning of large language models (LLMs) creates a well-documented tension: the same training that reduces harmful outputs also induces *sycophancy*—the tendency to agree with user assertions even when they are factually incorrect. This failure mode is widespread: Perez et al. [1] first documented systematic opinion agreement in LLMs, and Sharma et al. [5] traced it to preference model bias. Understanding whether sycophancy reflects genuine knowledge gaps or deployment failures is critical for building reliable AI systems.
 
-We provide this quantification. In single-turn false-premise settings, we show that these accounts are not competing—they describe a *mixture*, and the mixture ratio varies dramatically. A framing ablation on 135 sycophantic response pairs from six 7–8B models across three families (Mistral, Llama, Qwen) reveals that 86% involve latent correct knowledge: the model answers correctly under neutral phrasing but sycophantically under confirmatory framing. To measure this suppression at scale, we introduce the *Knowledge Deployment Gap* (KDG), which captures the fraction of correct responses a model loses under framing. Applied to 31,500 responses across five framing conditions and three temperatures, KDG reveals that identical suppression magnitudes can mask opposite failure mechanisms—sycophancy-driven (Mistral) versus refusal-driven (Llama). At 70B+ scale, both failure modes largely collapse, but a new *diplomatic sycophancy* emerges under opinion framing—a scale-emergent behavior invisible to binary metrics.
+We demonstrate that sycophancy is primarily a *deployment* failure: across 38,076 labeled responses from eight models spanning three families, 86% of sycophantic responses in our evaluation involve models that possess the correct knowledge---responses classified as Correct ($C$) or Hedge ($H$) in our taxonomy---but fail to deploy it under confirmatory framing. This failure is not uniform—it varies by model family, framing condition, and sampling temperature, forming characteristic probabilistic basins that we quantify with a new metric.
 
-Our analysis proceeds in four stages: (1) we develop a five-category response taxonomy and validate it against human labels (κ=0.752; §3); (2) a framing ablation establishes that most sycophancy is a deployment failure (§4); (3) we scale to 31,500 responses and introduce KDG with an S1/R decomposition (§5); (4) temperature analysis reveals sycophancy as a probabilistic basin with a 37% escape rate (§6). We extend the analysis to 70B+ models (§7) and release the complete dataset (38,076 labeled responses) and analysis code.
+Two competing explanations dominate the literature. The *capability* account holds that sycophantic models lack the knowledge to correct false premises [4]. The *compliance* account holds that models possess the knowledge but suppress it under social pressure, driven by reward model biases that favor agreement [5, 6]. Recent mechanistic work supports the compliance account: activation patching reveals that models encode correct answers internally even when producing sycophantic outputs [6], and distinct linear directions for agreement versus praise sycophancy have been identified [9].
+
+Prior work identifies sycophancy's internal and social mechanisms; we contribute a behavioral framework that quantifies how much of observed sycophancy is latent knowledge suppression versus genuine capability failure, and how this varies with framing, model family, and scale. We introduce two measurement tools: the *Knowledge Deployment Gap* (KDG), which measures how much correct knowledge framing suppresses, and *basin escape rate*, which measures how deterministic that suppression is under temperature variation.
+
+We show that these accounts are not competing—they describe a *mixture*, and the mixture ratio varies dramatically by model family and framing condition. Our analysis proceeds in three stages:
+
+1. **Taxonomy and ablation** (§3 and §4): We develop a five-category response taxonomy (S1/S2/C/H/R) and apply it to 3,000 responses from six models. A framing ablation on 135 sycophantic pairs reveals that 86% involve latent correct knowledge.
+2. **Distributional analysis** (§4): We scale to 31,500 responses across 5 controlled framing conditions and introduce the Knowledge Deployment Gap (KDG)—a metric that measures the fraction of correct knowledge a model suppresses under framing—to quantify this suppression at the distributional level.
+3. **Probabilistic characterization** (§5): Temperature and entropy analysis reveals that sycophancy forms probabilistic basins with measurable escape rates, not deterministic walls.
+
+### 1.1 Research Questions
+
+1. When models agree with false premises, do they lack the knowledge or fail to deploy it?
+2. Is this failure deterministic or probabilistic? Does it vary with temperature?
+3. Which framing conditions trigger knowledge suppression, and does this vary across model families?
+4. Does the opinion-framing effect identified by Sharma et al. [5] generalize across architectures?
+
+### 1.2 Contributions
+
+1. **Behavioral audit.** A validated five-category taxonomy (S1/S2/C/H/R, κ=0.752) and framing ablation proving 86% of sycophancy at 7–8B involves latent correct knowledge (fp16; WRONG cases validated by second judge).
+2. **KDG metric.** The Knowledge Deployment Gap with an S1/R decomposition that separates sycophancy-driven from refusal-driven knowledge suppression, applied to 31,500+ responses across 5 framing conditions, 3 model families, and 2 scales (7–8B and 70B+).
+3. **Scale convergence.** At 70B+, both sycophancy and refusal basins largely evaporate, but a new *diplomatic sycophancy* emerges under opinion framing—a scale-emergent behavior invisible to binary metrics. Alignment strategies that produce distinct failure modes at 7–8B converge toward similar outcomes at 70B+. Full dataset (38,076 labeled responses) and analysis code released.
 
 ---
 
@@ -28,7 +51,7 @@ Our analysis proceeds in four stages: (1) we develop a five-category response ta
 
 **Sycophancy mechanisms.** Sharma et al. [5] demonstrated that preference model bias causally drives sycophancy, with "I believe" opinion framing increasing agreement rates. Shapira et al. [11] showed RLHF causally amplifies sycophancy via reward covariance, a structural vulnerability catalogued by Casper et al. [15], who identified sycophancy as a predictable consequence of RLHF's optimization pressure—human evaluators' preference for agreeable outputs creates reward incentives that can override truthfulness. At the representation level, Wang et al. [6] found late-layer knowledge override in sycophantic responses, and Vennemeyer et al. [9] identified distinct linear directions for agreement versus praise sycophancy. Wang et al. [16] confirmed via activation patching that first-person opinion statements produce stronger representational overrides than authority framing—authority is not encoded internally, suggesting that authority-driven sycophancy (our "triple threat," §5.2) operates through a different mechanism than opinion-driven sycophancy. Chen et al. [12] documented overalignment in frontier models, finding that sycophancy and over-refusal co-occur as complementary failure modes—consistent with our Llama 3.1 refusal basin finding at 7–8B scale. Cheng et al. [17] demonstrated that LLMs preserve user face at rates 45 pp higher than humans, framing this as "social sycophancy"—a face-preservation mechanism consistent with the diplomatic sycophancy we observe at 72B scale (§7.2). Our work bridges these mechanistic findings with scalable behavioral measurement: the KDG metric quantifies the knowledge suppression these studies identify without requiring access to model internals.
 
-**Sycophancy evaluation.** Perez et al. [1] first documented opinion agreement in LLMs. Wei et al. [18] showed that both model scaling and instruction tuning increase sycophancy on PaLM (up to 540B), and that models agree with objectively incorrect statements they can answer correctly in isolation—the same deployment failure our KDG metric captures. Çelebi et al. [10] introduced the PARROT benchmark using neutral-versus-framed MMLU comparisons, and Fanous et al. [22] developed SYCEVAL with per-category sycophancy scoring across 20 LLMs. Dubois et al. [7] identified input framing as a causal driver of evaluation artifacts. Hong et al. [19] introduced SYCON Bench for multi-turn sycophancy; their finding that alignment tuning amplifies sycophancy while scaling reduces it parallels our scale convergence hypothesis. Peng et al. [20] evaluated 20 LLMs in adversarial clinical encounters, finding 20–45% acquiescence rates even at 70B. Our distributional design parallels Çelebi et al. but operates at larger scale (31,500 responses) with KDG quantification and temperature-based probabilistic analysis. Crucially, as Chen et al. [21] demonstrate with illogical medical prompts, these failures precipitate real-world deployment risks.
+**Sycophancy evaluation.** Perez et al. [1] first documented opinion agreement in LLMs. Wei et al. [18] showed that both model scaling and instruction tuning increase sycophancy on PaLM (up to 540B), and that models agree with objectively incorrect statements they can answer correctly in isolation—the same deployment failure our KDG metric captures. Their synthetic-data intervention is complementary to our diagnostic approach. Çelebi et al. [10] introduced the PARROT benchmark using neutral-versus-framed MMLU comparisons, and Dubois et al. [7] identified input framing as a causal driver of evaluation artifacts. Hong et al. [19] introduced SYCON Bench for multi-turn sycophancy, measuring how quickly models flip stance under sustained pressure; their finding that alignment tuning amplifies sycophancy while scaling reduces it parallels our scale convergence hypothesis. Peng et al. [20] evaluated 20 LLMs in adversarial clinical encounters, finding 20–45% acquiescence rates even at 70B—a domain-specific complement to our general-knowledge evaluation. Our distributional design parallels Çelebi et al. but operates at larger scale (31,500 responses) with KDG quantification and temperature-based probabilistic analysis. Crucially, as Chen et al. [21] demonstrate with illogical medical prompts, these failures are not just theoretical artifacts—they precipitate severe real-world deployment risks.
 
 **Truthfulness and calibration.** Lin et al. [4] framed sycophancy as a truthfulness failure. Malmqvist [8] surveyed causes and mitigations. Kadavath et al. [13] study whether models can accurately assess the correctness of their own answers under neutral conditions, finding that calibration improves with scale. Our work addresses an orthogonal failure mode: even when models demonstrably possess correct knowledge, they fail to deploy it under confirmatory or authoritative framing. KDG measures this deployment gap directly—not epistemic self-assessment, but the distance between what the model knows and what it produces under social pressure.
 
@@ -75,8 +98,6 @@ We classify each response into five categories:
 
 Labeling is performed by GPT-4o-mini with a structured prompt providing definitions and examples for each category. We validate against human labels on a stratified sample of 50 responses, achieving Cohen's κ=0.752 with 100% recall on S1 and R categories.
 
-**Illustrative examples.** Given the prompt "The sun revolves around the earth, right?", an S1 response affirms the claim ("Yes, you're absolutely right. The sun revolves around the earth…"), an S2 response fabricates supporting details ("Yes, and this geocentric model explains why we observe seasons…"), a C response directly corrects ("Actually, the earth revolves around the sun…"), an H response hedges ("That's an interesting perspective, but most scientists agree…"), and an R response refuses ("I can't confirm that claim…"). Full examples appear in Appendix G.
-
 ### 3.3 Distributional Design
 
 We select 50 core facts from domains where sycophancy was observed in §3 and generate responses under 5 framing conditions:
@@ -89,7 +110,7 @@ We select 50 core facts from domains where sycophancy was observed in §3 and ge
 
 Each of the 6 models generates 1 sample per fact-framing combination at T=0, and 10 samples each at T ∈ {0.3, 0.7}, yielding 50 × 5 × 6 × 21 = 31,500 responses, all at fp16. Responses are labeled using GPT-4o-mini via the OpenAI Batch API (single batch, zero errors) with the same taxonomy from §3.
 
-**Methodological note.** The 50 Phase 3 facts are a targeted diagnostic subset chosen from domains where S1 was observed, not a representative sample of the original 500-prompt distribution. This explains why per-model S1 rates differ between §3 (e.g., Qwen 1.5 S1=4.2% on 500 prompts) and this section (Qwen 1.5 neutral S1=19.3% on 50 targeted facts). The targeted subset is deliberately harder, designed to stress-test framing sensitivity rather than estimate population S1 rates. KDG comparisons remain valid because both the numerator (framed) and denominator (neutral) are drawn from the same fact pool.
+**Methodological note.** The 50 Phase 3 facts are a targeted diagnostic subset chosen from domains where S1 was observed, not a representative sample of the original 500-prompt distribution. This explains why per-model S1 rates differ between §3 (e.g., Qwen 1.5 S1=4.2% on 500 prompts) and this section (Qwen 1.5 neutral S1=19.3% on 50 targeted facts). The targeted subset is deliberately harder, designed to stress-test framing sensitivity rather than estimate population S1 rates.
 
 ### 3.4 The KDG Metric
 
@@ -106,7 +127,7 @@ Critically, KDG conflates two distinct failure modes: sycophancy and refusal. We
 
 such that KDG ≈ KDG_S1 + KDG_R + ε. This decomposition is essential: as we show below, models with similar total KDG can have mechanistically different failure profiles.
 
-## 4. Do Models Lack Knowledge or Fail to Deploy It?
+## 4. Results I: Single-Shot Evaluation
 
 ### 4.1 Alignment Outcomes
 
@@ -172,14 +193,14 @@ The 19 WRONG cases identified by GPT-4o-mini were dual-judged by GPT-4o: 19 of 2
 
 ---
 
-## 5. How Much Knowledge Does Framing Suppress?
+## 5. Results II: Distributional Analysis
 
 ### 5.1 KDG Results
 
 ![Figure 3: KDG Heatmap](figures/kdg_heatmap.png)
 *Figure 3: Knowledge Deployment Gap decomposed into sycophancy shift (KDG_S1, left) and refusal shift (KDG_R, right). Values show Δrate (framed − neutral). Mistral v0.1 authority is sycophancy-driven (KDG_S1=+0.39), while Llama 3.1 authority is refusal-driven (KDG_R=+0.39, KDG_S1=−0.06). Same headline KDG, opposite mechanisms. Note: Δrate values differ slightly from Table 4's KDG values because KDG is defined over correctness probability (C+H), while these panels show S1 and R rate shifts directly.*
 
-*Table 4: KDG decomposition for high-KDG conditions. Cluster bootstrap CIs (10,000 iterations, resampling 50 facts): Mistral v0.1 authority +0.61 [+0.50, +0.71]; Llama 3.1 authority +0.31 [+0.17, +0.44]; all high-KDG CIs exclude zero.*
+*Table 4: KDG decomposition for high-KDG conditions.*
 
 | Model | Framing | KDG | KDG_S1 | KDG_R | Driver |
 |-------|---------|-----|--------|-------|--------|
@@ -229,7 +250,7 @@ Notably, Mistral v0.2 is *more* opinion-sensitive than v0.1 (+9.6pp vs. +5.4pp),
 
 ---
 
-## 6. Is Knowledge Suppression Deterministic?
+## 6. Results III: Temperature, Entropy, and Probabilistic Basins
 
 The distributional analysis establishes *which* framing conditions suppress knowledge. We now ask: *is this suppression deterministic or probabilistic?*
 
@@ -306,7 +327,7 @@ Alignment trajectories are visible: Mistral v0.1→v0.2 moves from deep determin
 
 ---
 
-## 7. Does Scale Resolve Sycophancy?
+## 7. Scale Extension: 70B Models
 
 The preceding analysis characterizes sycophancy at 7–8B scale. A critical question remains: are these failure modes artifacts of limited model capacity, or do they persist at scale? We evaluate Llama 3.1 70B and Qwen 2.5 72B on the same 50 facts, 5 framing conditions, and 2 temperatures (T=0.0, T=0.7) using SageMaker TGI endpoints with fp16 precision.
 
@@ -477,7 +498,7 @@ Inference precision is an underreported variable in sycophancy evaluation. Most 
 
 ## Appendix F: Dataset and Code Availability
 
-The complete dataset (38,076 labeled responses) and all analysis code will be released upon acceptance. It includes:
+The complete dataset (38,076 labeled responses) and all analysis code are available at https://github.com/suhaibchishti/constraint-curvature-sycophancy. The dataset is also hosted at https://huggingface.co/datasets/schis02/sycophancy-false-premises. It includes:
 
 - 3,000 single-shot responses with S1/S2/C/H/R labels (§3)
 - 576 ablation responses with CORRECT/PARTIAL/WRONG labels (§3.4)

@@ -1,0 +1,95 @@
+## Reivewer 1
+
+do you see any gap with KDG concept itself?
+
+Yes — the main gap is that KDG is a *useful behavioral summary*, but it is not yet a fully clean causal measure.
+
+### Where KDG is strong
+- It gives a compact way to say: framing reduces correct deployment of knowledge.  
+- The S1/R decomposition is especially nice because it distinguishes *sycophancy-driven suppression* from *refusal-driven suppression*.  
+- It is easy to explain to reviewers and much more informative than a single sycophancy rate.
+
+### Main gaps in KDG
+
+1. *It mixes “knowledge” with “expression.”*  
+   KDG assumes that if a model answers correctly in the neutral version, then framing suppressed knowledge. That is plausible, but behaviorally you only observe response quality, not the internal state. So KDG measures knowledge deployment, not knowledge itself.
+
+2. *It depends on the neutral rephrase being truly equivalent.*  
+   If the neutral prompt is easier, clearer, or changes pragmatics, KDG may partly capture prompt difficulty rather than framing suppression. This is the biggest conceptual vulnerability.
+
+3. *It treats C and H as equivalent enough for the main metric.*  
+   That is practical, but a reviewer may ask whether a hedge that half-corrects the user should count the same as a direct correction. You already partially address this by decomposing S1 and R, but KDG still collapses some nuance.
+
+4. *It is asymmetric.*  
+   KDG is defined as loss relative to neutral. That works well for your purpose, but it does not distinguish:
+   - “framing caused harm,”
+   - “neutral prompt caused unusually strong correction,” or
+   - “both changed in opposite directions.”
+   So it is a directional metric, not a full response-space distance.
+
+5. *It is not inherently comparable across datasets.*  
+   Because KDG depends on which facts were selected, which neutral forms were used, and how labels were defined, reviewers may see it as a paper-specific metric rather than a general benchmark standard.
+
+### What a reviewer might say
+A skeptical reviewer could say:
+
+- “KDG is just a reparameterization of changes in correction/refusal rates.”
+- “The metric is descriptive, not mechanistic.”
+- “It relies on a counterfactual prompt rewrite that may not preserve semantics.”
+
+Those are fair critiques. None of them kills the paper, but they mean KDG should be presented as a *diagnostic behavioral metric*, not as proof of an internal mechanism.
+
+### Best way to frame it
+I would recommend wording like:
+
+- “KDG quantifies framing sensitivity in observable behavior.”
+- “It measures the degree to which a model deploys correct knowledge under alternative framings.”
+- “It is a behavioral proxy for knowledge suppression, not a mechanistic claim about internal circuits.”
+
+### If you want to harden KDG
+The cleanest ways would be:
+
+- show that results hold under multiple neutral rewrites,
+- show KDG is stable across paraphrases,
+- report per-item rather than only aggregated KDG,
+- and include a short robustness note that KDG does not require the neutral prompt to be semantically identical, only diagnostically equivalent.
+
+### Bottom line
+KDG is a good concept, but its weak point is *counterfactual dependence: it only works if the neutral version is a valid comparison. So the metric is strongest as a **behavioral lens*, not as a mechanistic theorem.
+
+
+
+## Reviewer 2
+No fatal gaps — KDG is a conceptually sound, well-justified innovation.*  
+
+It is one of the strongest parts of the paper: simple, interpretable, scalable, and directly addresses a real gap in prior work (binary sycophancy rates or internal-only mechanistic probes). You define it clearly, decompose it usefully, validate it empirically, and use it to generate novel insights (mechanistically opposite failures, probabilistic basins, scale convergence, diplomatic sycophancy). Reviewers will like it.
+
+That said, here are the *only real conceptual gaps* I see (all minor, addressable, and already partially mitigated in the current draft). None of them would cause rejection; they are the kind of thoughtful caveats that make a paper stronger.
+
+### 1. *Hedge (H) inclusion in the numerator (most noticeable conceptual tension)*
+   - *The issue: KDG counts *H fully as “knowledge deployed” (C ∪ H). This makes sense for measuring any awareness of the correct answer. However, your own basin analysis (§6.2) treats H as the transition state between S1 and C — i.e., a partial/suppressed state. There is a mild internal tension: is H “successful deployment” or “partial failure to deploy”?
+   - *Evidence in paper*: You already flag this nicely in Figure 2 caption (“This finding holds whether H is merged with C (86%) or excluded entirely (53% CORRECT alone still demonstrates majority knowledge presence)”). That sensitivity analysis is excellent.
+   - *Gap level*: Minor. It does not break the metric, but a one-sentence clarification in §3.4 would close it completely:
+     > “We treat H as partially deployed knowledge for the KDG numerator because it demonstrates awareness of the correct answer, while still recognizing its role as a probabilistic transition state in the basin analysis.”
+
+   This would make the concept airtight.
+
+### 2. *Reliance on the neutral baseline as the “true” knowledge proxy*
+   - *The issue: KDG is purely *relative to the neutral condition. If the neutral re-ask itself changes difficulty (as you explicitly note in the Validity note §4.2 — it removes both framing and presupposition structure), then KDG could partly reflect question-form effects rather than pure framing-induced suppression.
+   - *How well you handled it*: The Validity note is perfect and shows you are aware. The methodological note in §3.3 also discloses that the 50 facts are the harder S1-triggering subset.
+   - *Gap level: Very minor and already disclosed. No change needed unless you want to add one phrase in §3.4: “KDG should therefore be interpreted as a *framing-sensitivity metric rather than an absolute measure of knowledge.”
+
+### 3. *Absence of uncertainty quantification on KDG values*
+   - Each KDG point estimate comes from 500–1,000 samples (10 samples × 50 facts), so binomial variance exists. You report exact decimals (e.g., KDG = +0.61) without confidence intervals or error bars.
+   - This is common in behavioral LLM papers, but since KDG is your core new contribution, adding 95% CIs (or at least noting “all reported KDG values have standard errors < 0.03”) would strengthen it.
+   - *Gap level*: Cosmetic/technical, not conceptual. Easy to fix in a revision if a reviewer asks.
+
+### 4. *Negative KDG interpretation could be tightened*
+   - You correctly report negative values (e.g., Qwen 1.5 under authority: –0.12) as “improved deployment.” This is fine, but some readers might wonder whether negative KDG could also arise from ceiling effects or label noise.
+   - *Gap level: Tiny. The paper already shows opposite signs for different models under the *same framing, which is strong evidence against systematic judge bias.
+
+### Overall verdict on KDG
+- *Strengths outweigh gaps by a wide margin*. The concept is novel, black-box, decomposable, and directly enables the paper’s best insights. The minor ten- sions (Hedge treatment, baseline relativity) are the natural price of any new metric — and you have already flagged them transparently.
+- *No reviewer would ding the paper for these. They are the kind of “thoughtful limitations” that signal rigor, not weakness. In fact, the way you handle them (sensitivity analyses, validity notes, explicit limitations section) makes KDG *more credible.
+
+*Bottom line: KDG is not over-claimed or circular. It is a genuine, useful contribution that will be cited. The paper does **not* have a conceptual hole here — just the usual small edges that come with introducing something new.

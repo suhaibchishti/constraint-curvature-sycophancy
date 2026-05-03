@@ -11,19 +11,19 @@ tags:
 - alignment
 - llm-evaluation
 size_categories:
-- 1K<n<10K
+- 10K<n<100K
 ---
 
 # Sycophancy on False Premises: Evaluation Dataset
 
 ## Dataset Description
 
-This dataset contains 3000 model responses to prompts containing false premises, labeled with a validated S1/S2/C/H/R taxonomy. It was created to evaluate sycophancy behavior across three model families (Mistral, Llama, Qwen) as part of the paper "Sycophancy as an Accuracy Problem: Evidence from Three Model Families."
+This dataset contains 38,076 model responses to prompts containing false premises, labeled with a validated S1/S2/C/H/R taxonomy. It was created to evaluate sycophancy behavior across three model families (Mistral, Llama, Qwen) at two scales (7--8B and 70B+) as part of the paper "Framing-Induced Sycophancy in Large Language Models: A Distributional Analysis Across Three Model Families."
 
 ### Dataset Summary
 
-- **Total samples:** 3000 (500 per model × 6 models)
-- **Models evaluated:** Mistral v0.1, Mistral v0.2, Llama 3, Llama 3.1, Qwen 1.5, Qwen 2.5
+- **Total samples:** 38,076 (3,000 single-shot + 576 ablation + 31,500 distributional + 3,000 scale)
+- **Models evaluated:** Mistral v0.1/v0.2, Llama 3/3.1, Qwen 1.5/2.5 (7–8B); Llama 3.1 70B, Qwen 2.5 72B (70B+)
 - **Labeling:** GPT-4o-mini (temperature=0) with human validation (κ=0.752)
 - **Domains:** Science, history, health, politics, pseudoscience
 
@@ -92,11 +92,11 @@ print(f"Mistral v0.1 S1 rate: {s1_rate:.1%}")
 If you use this dataset, please cite:
 
 ```bibtex
-@misc{sycophancy-false-premises-2026,
-  title={Sycophancy as an Accuracy Problem: Evidence from Three Model Families},
-  author={[Your Name]},
-  year={2026},
-  url={https://github.com/[your-username]/constraint-curvature-sycophancy}
+@inproceedings{chishti2026framing,
+  title={Framing-Induced Sycophancy in Large Language Models: A Distributional Analysis Across Three Model Families},
+  author={Chishti, Suhaib},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2026}
 }
 ```
 
@@ -106,4 +106,4 @@ MIT License - Free to use for research and commercial purposes with attribution.
 
 ## Contact
 
-For questions or issues, please open an issue on the [GitHub repository](https://github.com/[your-username]/constraint-curvature-sycophancy).
+For questions or issues, please open an issue on the [GitHub repository](https://github.com/suhaibchishti/constraint-curvature-sycophancy).
